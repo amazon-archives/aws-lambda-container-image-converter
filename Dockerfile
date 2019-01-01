@@ -39,8 +39,11 @@ RUN mkdir bin && \
 RUN curl -sS https://getcomposer.org/installer | ./bin/php -- --install-dir=/runtime/bin --filename=composer && \
     ./bin/php ./bin/composer require guzzlehttp/guzzle
 
+# Copy in runtime bootstrap
+COPY runtime/bootstrap /runtime/
+
 ###### Create runtime image ######
 
 FROM lambci/lambda:provided as runtime
 
-COPY --from=builder /runtime /opt
+COPY --from=builder /runtime/ /opt/
