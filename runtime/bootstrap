@@ -39,3 +39,5 @@ do {
     // Submit the response back to the runtime API.
     sendResponse($request['invocationId'], $response);
 } while (true);
+
+?>

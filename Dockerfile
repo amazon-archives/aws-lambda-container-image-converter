@@ -31,19 +31,24 @@ RUN mkdir ~/php-7-bin && \
     make install && \
     /opt/php-7-bin/bin/php -v
 
+# Prepare runtime files
 WORKDIR /runtime
 RUN mkdir bin && \
     cp /opt/php-7-bin/bin/php bin/php
 
-# Install composer and guzzle lib
 RUN curl -sS https://getcomposer.org/installer | ./bin/php -- --install-dir=/runtime/bin --filename=composer && \
     ./bin/php ./bin/composer require guzzlehttp/guzzle
-
-# Copy in runtime bootstrap
-COPY runtime/bootstrap /runtime/
 
 ###### Create runtime image ######
 
 FROM lambci/lambda:provided as runtime
 
 COPY --from=builder /runtime/ /opt/
+
+COPY runtime/bootstrap /opt/
+
+###### Create function image ######
+
+FROM runtime as function
+
+COPY function/ /var/task/src/
