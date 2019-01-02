@@ -22,30 +22,35 @@ RUN sed -i 's;^releasever.*;releasever=2017.03;;' /etc/yum.conf && \
                 unzip \
                 git
 
-# Download the PHP 7.3.0 source, compile, and install
-RUN mkdir ~/php-7-bin && \
-    curl -sL https://github.com/php/php-src/archive/php-7.3.0.tar.gz | tar -xvz && \
+# Download the PHP 7.3.0 source, compile, and install both PHP and Composer
+RUN curl -sL https://github.com/php/php-src/archive/php-7.3.0.tar.gz | tar -xvz && \
     cd php-src-php-7.3.0 && \
     ./buildconf --force && \
     ./configure --prefix=/opt/php-7-bin/ --with-openssl --with-curl --with-zlib && \
     make install && \
-    /opt/php-7-bin/bin/php -v
+    /opt/php-7-bin/bin/php -v && \
+    curl -sS https://getcomposer.org/installer | /opt/php-7-bin/bin/php -- --install-dir=/opt/php-7-bin/bin/ --filename=composer
 
 # Prepare runtime files
-WORKDIR /runtime
-RUN mkdir bin && \
-    cp /opt/php-7-bin/bin/php bin/php
+RUN mkdir -p /lambda-php-runtime/bin && \
+    cp /opt/php-7-bin/bin/php /lambda-php-runtime/bin/php
 
-RUN curl -sS https://getcomposer.org/installer | ./bin/php -- --install-dir=/runtime/bin --filename=composer && \
-    ./bin/php ./bin/composer require guzzlehttp/guzzle
+COPY runtime/bootstrap /lambda-php-runtime/
+
+# Install Guzzle, prepare vendor files
+RUN mkdir /lambda-php-vendor && \
+    cd /lambda-php-vendor && \
+    /opt/php-7-bin/bin/php /opt/php-7-bin/bin/composer require guzzlehttp/guzzle
 
 ###### Create runtime image ######
 
 FROM lambci/lambda:provided as runtime
 
-COPY --from=builder /runtime/ /opt/
+# Layer 1
+COPY --from=builder /lambda-php-runtime /opt/
 
-COPY runtime/bootstrap /opt/
+# Layer 2
+COPY --from=builder /lambda-php-vendor/vendor /opt/vendor
 
 ###### Create function image ######
 
