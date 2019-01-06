@@ -77,7 +77,7 @@ func ConvertImage(name string) (retErr error) {
 		}
 		defer layerStream.Close()
 
-		fileCreated, err := RepackLayer(lambdaLayerFilename, layerStream, "opt/**/**")
+		fileCreated, err := RepackLayer(lambdaLayerFilename, layerStream)
 		if err != nil {
 			return err
 		}

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 
 	zglob "github.com/mattn/go-zglob"
@@ -15,7 +16,7 @@ import (
 // Converts container image layer archive (tar) to Lambda layer archive (zip).
 // Filters files from the source and only writes a new archive if at least
 // one file in the source matches the filter (i.e. does not create empty archives).
-func RepackLayer(outputFilename string, layerContents io.Reader, filterPattern string) (created bool, retError error) {
+func RepackLayer(outputFilename string, layerContents io.Reader) (created bool, retError error) {
 	// TODO: support image types other than local Docker images (docker-daemon transport),
 	// where the layer format is tar. For example, layers directly from a Docker registry
 	// will be .tar.gz-formatted. OCI images can be either tar or tar.gz, based on the
@@ -56,7 +57,7 @@ func RepackLayer(outputFilename string, layerContents io.Reader, filterPattern s
 		}
 
 		// Determine if this file should be repacked
-		repack, err := shouldRepackLayerFile(f, filterPattern)
+		repack, err := shouldRepackLayerFile(f)
 		if err != nil {
 			return false, fmt.Errorf("filtering file in layer tar: %v", err)
 		}
@@ -95,7 +96,7 @@ func startZipFile(destination string) (zip *archiver.Zip, zipFile *os.File, err 
 	return z, out, nil
 }
 
-func shouldRepackLayerFile(f archiver.File, matchPattern string) (should bool, err error) {
+func shouldRepackLayerFile(f archiver.File) (should bool, err error) {
 	header, ok := f.Header.(*tar.Header)
 	if !ok {
 		return false, fmt.Errorf("expected header to be *tar.Header but was %T", f.Header)
@@ -110,7 +111,8 @@ func shouldRepackLayerFile(f archiver.File, matchPattern string) (should bool, e
 		return false, nil
 	}
 
-	return zglob.Match(matchPattern, header.Name)
+	// Only extract files that can be used for Lambda custom runtimes
+	return zglob.Match("opt/**/**", header.Name)
 }
 
 func repackLayerFile(f archiver.File, z *archiver.Zip) error {
@@ -119,12 +121,14 @@ func repackLayerFile(f archiver.File, z *archiver.Zip) error {
 		return fmt.Errorf("expected header to be *tar.Header but was %T", f.Header)
 	}
 
+	filename := strings.TrimPrefix(filepath.ToSlash(hdr.Name), "opt/")
+
 	switch hdr.Typeflag {
 	case tar.TypeReg, tar.TypeRegA, tar.TypeChar, tar.TypeBlock, tar.TypeFifo, tar.TypeSymlink, tar.TypeLink:
 		return z.Write(archiver.File{
 			FileInfo: archiver.FileInfo{
 				FileInfo:   f.FileInfo,
-				CustomName: hdr.Name,
+				CustomName: filename,
 			},
 			ReadCloser: f,
 		})
