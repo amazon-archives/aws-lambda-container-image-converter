@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
 
 	"github.com/containers/image/image"
@@ -23,6 +22,7 @@ func main() {
 	}
 }
 
+// Converts container image to Lambda layers
 func ConvertImage(name string) (retErr error) {
 	// Get image's layer data from image name
 	ref, err := alltransports.ParseImageName(name)
@@ -57,35 +57,35 @@ func ConvertImage(name string) (retErr error) {
 
 	layerInfos := src.LayerInfos()
 
+	// Unpack and inspect each image layer, copy relevant files to new Lambda layer
 	dir, err := os.Getwd()
 	if err != nil {
 		log.Fatal(err)
 	}
+	layerOutputDir := filepath.Join(dir, "image-output", name)
+	if err := os.MkdirAll(layerOutputDir, 0777); err != nil {
+		return err
+	}
 
-	// Unpack each layer onto disk
+	lambdaLayerNum := 1
+
 	for _, layerInfo := range layerInfos {
-		blobStream, _, err := rawSource.GetBlob(ctx, layerInfo, cache)
+		lambdaLayerFilename := filepath.Join(layerOutputDir, fmt.Sprintf("layer-%d.zip", lambdaLayerNum))
+
+		layerStream, _, err := rawSource.GetBlob(ctx, layerInfo, cache)
+		if err != nil {
+			return err
+		}
+		defer layerStream.Close()
+
+		fileCreated, err := RepackLayer(lambdaLayerFilename, layerStream, "opt/**/**")
 		if err != nil {
 			return err
 		}
 
-		imageDir := filepath.Join(dir, "image-output", name, string(layerInfo.Digest))
-
-		if err := os.MkdirAll(imageDir, 0777); err != nil {
-			return err
+		if fileCreated {
+			lambdaLayerNum++
 		}
-
-		fmt.Printf("Layer %s, size %d, media type %s\n", layerInfo.Digest, layerInfo.Size, layerInfo.MediaType)
-		fmt.Printf("Dir %s\n", imageDir)
-
-		tarCmd := exec.Command("tar", "-p", "-x", "-C", imageDir)
-		tarCmd.Stdin = blobStream
-		if output, err := tarCmd.CombinedOutput(); err != nil {
-			fmt.Printf("combined out:\n%s\n", string(output))
-			return err
-		}
-
-		blobStream.Close()
 	}
 
 	return nil
