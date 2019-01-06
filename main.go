@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 
@@ -60,7 +59,7 @@ func ConvertImage(name string) (retErr error) {
 	// Unpack and inspect each image layer, copy relevant files to new Lambda layer
 	dir, err := os.Getwd()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	layerOutputDir := filepath.Join(dir, "image-output", name)
 	if err := os.MkdirAll(layerOutputDir, 0777); err != nil {
