@@ -56,4 +56,4 @@ COPY --from=builder /lambda-php-vendor/vendor /opt/vendor
 
 FROM runtime as function
 
-COPY function/ /var/task/src/
+COPY function/src /var/task/src/
