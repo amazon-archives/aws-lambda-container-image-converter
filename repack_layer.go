@@ -26,8 +26,8 @@ func RepackLayer(outputFilename string, layerContents io.Reader) (created bool, 
 	defer t.Close()
 
 	// Walk the files in the tar
-	z := (*archiver.Zip)(nil)
-	out := (*os.File)(nil)
+	var z *archiver.Zip
+	var out *os.File
 	defer func() {
 		if z != nil {
 			if err := z.Close(); err != nil {

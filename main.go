@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"log"
 	"os"
 
@@ -28,7 +29,7 @@ func createApp() (*cli.App, *cmdOptions) {
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:        "image, i",
-			Usage:       "Name of the source container image. Format is 'transport:details', such as 'docker-daemon:my-docker-image:latest",
+			Usage:       "Name of the source container image. For example, 'my-docker-image:latest'",
 			Destination: &opts.image,
 		},
 		cli.StringFlag{
@@ -59,7 +60,23 @@ func createApp() (*cli.App, *cmdOptions) {
 }
 
 func repackImageAction(opts *cmdOptions) error {
-	return RepackImage(opts.image, opts.outputDir)
+	layers, err := RepackImage("docker-daemon:"+opts.image, opts.outputDir)
+	if err != nil {
+		return err
+	}
+
+	if len(layers) == 0 {
+		return errors.New("No compatible layers found in the image (likely nothing found in /opt)")
+	}
+
+	if !opts.dryRun {
+		err := PublishLambdaLayers(opts.image, layers, opts.region, opts.layerNamespace, opts.outputDir)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func main() {

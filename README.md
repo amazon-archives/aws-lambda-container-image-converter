@@ -13,8 +13,11 @@ docker run lambda-php goodbye '{"name": "World"}'
 ```
 
 TODO:
+* Support image types other than local Docker images, where the layer format is tar. For example, layers directly from a Docker registry will be .tar.gz-formatted. OCI images can be either tar or tar.gz, based on the layer's media type.
+* De-dupe Lambda layers before publishing them (compare local file's SHA256 to published layer versions with the same name)
+* Accept additional parameters for PublishLayerVersion API (license, description, etc)
+* Support Lambda compatible runtimes other than 'provided'
 * Utility for creating a function deployment package from a Docker image
-* Support image types other than local Docker images ('docker-daemon' transport), where the layer format is tar. For example, layers directly from a Docker registry will be .tar.gz-formatted. OCI images can be either tar or tar.gz, based on the layer's media type.
 
 ## License Summary
 
