@@ -17,10 +17,6 @@ import (
 // Filters files from the source and only writes a new archive if at least
 // one file in the source matches the filter (i.e. does not create empty archives).
 func RepackLayer(outputFilename string, layerContents io.Reader) (created bool, retError error) {
-	// TODO: support image types other than local Docker images (docker-daemon transport),
-	// where the layer format is tar. For example, layers directly from a Docker registry
-	// will be .tar.gz-formatted. OCI images can be either tar or tar.gz, based on the
-	// layer's media type.
 	t := archiver.NewTar()
 
 	err := t.Open(layerContents, 0)

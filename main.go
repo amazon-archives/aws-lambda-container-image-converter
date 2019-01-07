@@ -51,7 +51,7 @@ func createApp() (*cli.App, *cmdOptions) {
 		},
 		cli.BoolFlag{
 			Name:        "dry-run, d",
-			Usage:       "Conduct a dry-run: Repackage the image, but write the Lambda layers to local disk (do not publish to Lambda)",
+			Usage:       "Conduct a dry-run: Repackage the image, but only write the Lambda layers to local disk (do not publish to Lambda)",
 			Destination: &opts.dryRun,
 		},
 	}
@@ -59,7 +59,7 @@ func createApp() (*cli.App, *cmdOptions) {
 }
 
 func repackImageAction(opts *cmdOptions) error {
-	return RepackImage(opts.image)
+	return RepackImage(opts.image, opts.outputDir)
 }
 
 func main() {
