@@ -8,6 +8,8 @@ docker build -t lambda-php .
 docker run lambda-php hello '{"name": "World"}'
 
 docker run lambda-php goodbye '{"name": "World"}'
+
+../../bin/img2lambda -i docker-daemon:lambda-php:latest
 ```
 
 ## License Summary
