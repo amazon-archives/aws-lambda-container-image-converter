@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 
@@ -20,6 +21,8 @@ type LambdaLayer struct {
 
 // Converts container image to Lambda layer archive files
 func RepackImage(imageName string, layerOutputDir string) (layers []LambdaLayer, retErr error) {
+	log.Printf("Parsing the docker image %s", imageName)
+
 	// Get image's layer data from image name
 	ref, err := alltransports.ParseImageName(imageName)
 	if err != nil {
@@ -53,6 +56,8 @@ func RepackImage(imageName string, layerOutputDir string) (layers []LambdaLayer,
 
 	layerInfos := src.LayerInfos()
 
+	log.Printf("Image %s has %d layers", imageName, len(layerInfos))
+
 	// Unpack and inspect each image layer, copy relevant files to new Lambda layer
 	if err := os.MkdirAll(layerOutputDir, 0777); err != nil {
 		return nil, err
@@ -75,10 +80,15 @@ func RepackImage(imageName string, layerOutputDir string) (layers []LambdaLayer,
 		}
 
 		if fileCreated {
+			log.Printf("Created Lambda layer file %s from image layer %s", lambdaLayerFilename, string(layerInfo.Digest))
 			lambdaLayerNum++
 			layers = append(layers, LambdaLayer{Digest: string(layerInfo.Digest), File: lambdaLayerFilename})
+		} else {
+			log.Printf("Did not create a Lambda layer file from image layer %s (no relevant files found)", string(layerInfo.Digest))
 		}
 	}
+
+	log.Printf("Created %d Lambda layer files for image %s", len(layers), imageName)
 
 	return layers, nil
 }

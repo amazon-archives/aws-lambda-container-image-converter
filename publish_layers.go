@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -47,6 +48,8 @@ func PublishLambdaLayers(sourceImageName string, layers []LambdaLayer, region st
 		if err != nil {
 			return err
 		}
+
+		log.Printf("Published Lambda layer file %s (image layer %s) to Lambda: %s", layer.File, layer.Digest, *resp.LayerVersionArn)
 	}
 
 	jsonArns, err := json.MarshalIndent(layerArns, "", "  ")
@@ -65,6 +68,8 @@ func PublishLambdaLayers(sourceImageName string, layers []LambdaLayer, region st
 	if err != nil {
 		return err
 	}
+
+	log.Printf("Lambda layer ARNs (%d total) are written to %s", len(layerArns), resultsPath)
 
 	return nil
 }
