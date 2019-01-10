@@ -12,5 +12,4 @@
 *.out
 
 bin/
-vendor/
 output/

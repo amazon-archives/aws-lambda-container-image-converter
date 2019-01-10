@@ -18,7 +18,7 @@ GLOBAL OPTIONS:
 ## Build
 
 ```
-go get -t -v ./...
+make
 ```
 
 ## Example
@@ -39,7 +39,7 @@ docker run lambda-php goodbye '{"name": "World"}'
 
 Run the tool to create and publish Lambda layers that contain the PHP custom runtime:
 ```
-../../../bin/img2lambda -i lambda-php:latest -r us-east-1
+./bin/local/img2lambda -i lambda-php:latest -r us-east-1
 ```
 
 Create a PHP function that uses the layers:
