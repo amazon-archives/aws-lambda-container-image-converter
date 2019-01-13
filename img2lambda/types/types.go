@@ -1,6 +1,35 @@
 package types
 
+import (
+	"github.com/aws/aws-sdk-go/service/lambda/lambdaiface"
+	"github.com/awslabs/aws-lambda-container-image-converter/img2lambda/clients"
+)
+
 type LambdaLayer struct {
 	Digest string
 	File   string
+}
+
+type CmdOptions struct {
+	Image          string // Name of the container image
+	Region         string // AWS region
+	OutputDir      string // Output directory for the Lambda layers
+	DryRun         bool   // Dry-run (will not register with Lambda)
+	LayerNamespace string // Prefix for published Lambda layers
+}
+
+type PublishOptions struct {
+	LambdaClient    lambdaiface.LambdaAPI
+	LayerPrefix     string
+	ResultsDir      string
+	SourceImageName string
+}
+
+func ConvertToPublishOptions(opts *CmdOptions) *PublishOptions {
+	return &PublishOptions{
+		SourceImageName: opts.Image,
+		LambdaClient:    clients.NewLambdaClient(opts.Region),
+		LayerPrefix:     opts.LayerNamespace,
+		ResultsDir:      opts.OutputDir,
+	}
 }

@@ -22,15 +22,18 @@ $(LOCAL_BINARY): $(SOURCES) GITCOMMIT_SHA
 
 .PHONY: test
 test:
-	env -i PATH=$$PATH GOPATH=$$GOPATH GOROOT=$$GOROOT go test -timeout=120s -v -cover ./...
+	go test -v -timeout 30s -short -cover $(shell go list ./img2lambda/... | grep -v /vendor/)
 
 .PHONY: generate
 generate: $(SOURCES)
-	PATH=$(LOCAL_PATH) go generate ./...
+	PATH=$(LOCAL_PATH) go generate -x $(shell go list ./img2lambda/... | grep -v '/vendor/')
 
 .PHONY: install-deps
 install-deps:
 	curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+	go get golang.org/x/tools/cmd/cover
+	go get github.com/golang/mock/mockgen
+	go get golang.org/x/tools/cmd/goimports
 
 .PHONY: windows-build
 windows-build: $(WINDOWS_BINARY)

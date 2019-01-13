@@ -9,22 +9,15 @@ import (
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/awslabs/aws-lambda-container-image-converter/img2lambda/types"
 )
 
-func PublishLambdaLayers(sourceImageName string, layers []types.LambdaLayer, region string, layerPrefix string, resultsDir string) error {
+func PublishLambdaLayers(opts *types.PublishOptions, layers []types.LambdaLayer) error {
 	layerArns := []string{}
 
-	sess := session.Must(session.NewSessionWithOptions(session.Options{
-		SharedConfigState: session.SharedConfigEnable,
-	}))
-
-	svc := lambda.New(sess, &aws.Config{Region: aws.String(region)})
-
 	for _, layer := range layers {
-		layerName := layerPrefix + "-" + strings.Replace(layer.Digest, ":", "-", -1)
+		layerName := opts.LayerPrefix + "-" + strings.Replace(layer.Digest, ":", "-", -1)
 
 		layerContents, err := ioutil.ReadFile(layer.File)
 		if err != nil {
@@ -34,11 +27,11 @@ func PublishLambdaLayers(sourceImageName string, layers []types.LambdaLayer, reg
 		publishArgs := &lambda.PublishLayerVersionInput{
 			CompatibleRuntimes: []*string{aws.String("provided")},
 			Content:            &lambda.LayerVersionContentInput{ZipFile: layerContents},
-			Description:        aws.String("created by img2lambda from image " + sourceImageName),
+			Description:        aws.String("created by img2lambda from image " + opts.SourceImageName),
 			LayerName:          aws.String(layerName),
 		}
 
-		resp, err := svc.PublishLayerVersion(publishArgs)
+		resp, err := opts.LambdaClient.PublishLayerVersion(publishArgs)
 		if err != nil {
 			return err
 		}
@@ -58,7 +51,7 @@ func PublishLambdaLayers(sourceImageName string, layers []types.LambdaLayer, reg
 		return err
 	}
 
-	resultsPath := filepath.Join(resultsDir, "layers.json")
+	resultsPath := filepath.Join(opts.ResultsDir, "layers.json")
 	jsonFile, err := os.Create(resultsPath)
 	if err != nil {
 		return err
