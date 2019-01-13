@@ -2,11 +2,9 @@
 bin
 output
 img2lambda
-vendor
 AUTHORS.md
 CONTRIBUTING.md
 LICENSE
 NOTICE
 README.md
 Dockerfile
-Makefile
