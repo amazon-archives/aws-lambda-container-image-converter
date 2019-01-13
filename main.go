@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"os"
 
@@ -22,14 +23,15 @@ func createApp() (*cli.App, *cmdOptions) {
 	app := cli.NewApp()
 	app.EnableBashCompletion = true
 	app.Name = "img2lambda"
-	app.Usage = "Repackages a container image into Lambda layers and publishes them to Lambda"
+	app.Usage = "Repackages a container image into AWS Lambda layers and publishes them to Lambda"
 	app.Action = func(c *cli.Context) error {
+		validateCliOptions(&opts, c)
 		return repackImageAction(&opts)
 	}
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:        "image, i",
-			Usage:       "Name of the source container image. For example, 'my-docker-image:latest'",
+			Usage:       "Name of the source container image. For example, 'my-docker-image:latest'. The Docker daemon must be pulled locally already.",
 			Destination: &opts.image,
 		},
 		cli.StringFlag{
@@ -56,7 +58,18 @@ func createApp() (*cli.App, *cmdOptions) {
 			Destination: &opts.dryRun,
 		},
 	}
+
+	app.Setup()
+	app.Commands = []cli.Command{}
+
 	return app, &opts
+}
+
+func validateCliOptions(opts *cmdOptions, context *cli.Context) {
+	if opts.image == "" {
+		fmt.Println("ERROR: Image name is required\n")
+		cli.ShowAppHelpAndExit(context, 1)
+	}
 }
 
 func repackImageAction(opts *cmdOptions) error {
@@ -84,6 +97,5 @@ func main() {
 	err := app.Run(os.Args)
 	if err != nil {
 		log.Fatal(err)
-		os.Exit(1)
 	}
 }
