@@ -6,6 +6,9 @@ import (
 	"log"
 	"os"
 
+	"github.com/awslabs/aws-lambda-container-image-converter/img2lambda/extract"
+	"github.com/awslabs/aws-lambda-container-image-converter/img2lambda/publish"
+	"github.com/awslabs/aws-lambda-container-image-converter/img2lambda/version"
 	"github.com/urfave/cli"
 )
 
@@ -23,7 +26,7 @@ func createApp() (*cli.App, *cmdOptions) {
 	app := cli.NewApp()
 	app.EnableBashCompletion = true
 	app.Name = "img2lambda"
-	app.Version = VersionString()
+	app.Version = version.VersionString()
 	app.Usage = "Repackages a container image into AWS Lambda layers and publishes them to Lambda"
 	app.Action = func(c *cli.Context) error {
 		validateCliOptions(&opts, c)
@@ -74,7 +77,7 @@ func validateCliOptions(opts *cmdOptions, context *cli.Context) {
 }
 
 func repackImageAction(opts *cmdOptions) error {
-	layers, err := RepackImage("docker-daemon:"+opts.image, opts.outputDir)
+	layers, err := extract.RepackImage("docker-daemon:"+opts.image, opts.outputDir)
 	if err != nil {
 		return err
 	}
@@ -84,7 +87,7 @@ func repackImageAction(opts *cmdOptions) error {
 	}
 
 	if !opts.dryRun {
-		err := PublishLambdaLayers(opts.image, layers, opts.region, opts.layerNamespace, opts.outputDir)
+		err := publish.PublishLambdaLayers(opts.image, layers, opts.region, opts.layerNamespace, opts.outputDir)
 		if err != nil {
 			return err
 		}

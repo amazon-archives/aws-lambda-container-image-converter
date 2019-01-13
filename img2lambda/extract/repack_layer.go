@@ -1,4 +1,4 @@
-package main
+package extract
 
 import (
 	"archive/tar"
@@ -16,7 +16,7 @@ import (
 // Converts container image layer archive (tar) to Lambda layer archive (zip).
 // Filters files from the source and only writes a new archive if at least
 // one file in the source matches the filter (i.e. does not create empty archives).
-func RepackLayer(outputFilename string, layerContents io.Reader) (created bool, retError error) {
+func repackLayer(outputFilename string, layerContents io.Reader) (created bool, retError error) {
 	t := archiver.NewTar()
 
 	err := t.Open(layerContents, 0)

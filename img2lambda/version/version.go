@@ -1,4 +1,4 @@
-package main
+package version
 
 // Version indicates which version of the binary is running.
 var Version = "master"

@@ -9,15 +9,17 @@ mkdir -p $1
 
 cd "${ROOT}"
 
+PACKAGE_ROOT="github.com/awslabs/aws-lambda-container-image-converter/img2lambda"
+
 BUILDTAGS="containers_image_ostree_stub exclude_graphdriver_devicemapper exclude_graphdriver_overlay exclude_graphdriver_btrfs containers_image_openpgp"
 
 VERSION_LDFLAGS=""
 if [[ -n "${2}" ]]; then
-  VERSION_LDFLAGS="-X main.Version=${2}"
+  VERSION_LDFLAGS="-X ${PACKAGE_ROOT}/version.Version=${2}"
 fi
 
 if [[ -n "${3}" ]]; then
-  VERSION_LDFLAGS="$VERSION_LDFLAGS -X main.GitCommitSHA=${3}"
+  VERSION_LDFLAGS="$VERSION_LDFLAGS -X ${PACKAGE_ROOT}/version.GitCommitSHA=${3}"
 fi
 
-GOOS=$TARGET_GOOS go build -a -tags="${BUILDTAGS}" -ldflags "-s ${VERSION_LDFLAGS}" -o $1/img2lambda .
+GOOS=$TARGET_GOOS go build -a -tags="${BUILDTAGS}" -ldflags "-s ${VERSION_LDFLAGS}" -o $1/img2lambda ./img2lambda/cli

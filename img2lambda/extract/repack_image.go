@@ -1,4 +1,4 @@
-package main
+package extract
 
 import (
 	"context"
@@ -7,20 +7,16 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/awslabs/aws-lambda-container-image-converter/img2lambda/types"
 	"github.com/containers/image/image"
 	"github.com/containers/image/pkg/blobinfocache"
 	"github.com/containers/image/transports/alltransports"
-	"github.com/containers/image/types"
+	imgtypes "github.com/containers/image/types"
 	"github.com/pkg/errors"
 )
 
-type LambdaLayer struct {
-	Digest string
-	File   string
-}
-
 // Converts container image to Lambda layer archive files
-func RepackImage(imageName string, layerOutputDir string) (layers []LambdaLayer, retErr error) {
+func RepackImage(imageName string, layerOutputDir string) (layers []types.LambdaLayer, retErr error) {
 	log.Printf("Parsing the docker image %s", imageName)
 
 	// Get image's layer data from image name
@@ -29,7 +25,7 @@ func RepackImage(imageName string, layerOutputDir string) (layers []LambdaLayer,
 		return nil, err
 	}
 
-	sys := &types.SystemContext{}
+	sys := &imgtypes.SystemContext{}
 
 	ctx := context.Background()
 
@@ -74,7 +70,7 @@ func RepackImage(imageName string, layerOutputDir string) (layers []LambdaLayer,
 		}
 		defer layerStream.Close()
 
-		fileCreated, err := RepackLayer(lambdaLayerFilename, layerStream)
+		fileCreated, err := repackLayer(lambdaLayerFilename, layerStream)
 		if err != nil {
 			return nil, err
 		}
@@ -82,7 +78,7 @@ func RepackImage(imageName string, layerOutputDir string) (layers []LambdaLayer,
 		if fileCreated {
 			log.Printf("Created Lambda layer file %s from image layer %s", lambdaLayerFilename, string(layerInfo.Digest))
 			lambdaLayerNum++
-			layers = append(layers, LambdaLayer{Digest: string(layerInfo.Digest), File: lambdaLayerFilename})
+			layers = append(layers, types.LambdaLayer{Digest: string(layerInfo.Digest), File: lambdaLayerFilename})
 		} else {
 			log.Printf("Did not create a Lambda layer file from image layer %s (no relevant files found)", string(layerInfo.Digest))
 		}

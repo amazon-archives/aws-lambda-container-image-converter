@@ -2,7 +2,8 @@ ROOT := $(shell pwd)
 
 all: build
 
-SOURCEDIR := ./
+SOURCEDIR := ./img2lambda
+BINARY_NAME=img2lambda
 SOURCES := $(shell find $(SOURCEDIR) -name '*.go')
 LOCAL_BINARY := bin/local/img2lambda
 LINUX_BINARY := bin/linux-amd64/img2lambda
@@ -82,4 +83,5 @@ GITCOMMIT_SHA: $(GITFILES)
 .PHONY: clean
 clean:
 	- rm -rf ./bin
+	- rm -rf ./output
 	- rm -f GITCOMMIT_SHA

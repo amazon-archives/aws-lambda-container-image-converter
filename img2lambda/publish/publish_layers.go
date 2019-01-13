@@ -1,4 +1,4 @@
-package main
+package publish
 
 import (
 	"encoding/json"
@@ -11,9 +11,10 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/lambda"
+	"github.com/awslabs/aws-lambda-container-image-converter/img2lambda/types"
 )
 
-func PublishLambdaLayers(sourceImageName string, layers []LambdaLayer, region string, layerPrefix string, resultsDir string) error {
+func PublishLambdaLayers(sourceImageName string, layers []types.LambdaLayer, region string, layerPrefix string, resultsDir string) error {
 	layerArns := []string{}
 
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
