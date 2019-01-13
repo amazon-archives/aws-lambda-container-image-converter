@@ -4,9 +4,20 @@
 ROOT=$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )
 cd "${ROOT}"
 
-# Builds the ecs-cli binary from source in the specified destination paths.
+# Builds the binary from source in the specified destination paths.
 mkdir -p $1
 
 cd "${ROOT}"
 
-GOOS=$TARGET_GOOS go build -tags="containers_image_ostree_stub exclude_graphdriver_devicemapper exclude_graphdriver_overlay exclude_graphdriver_btrfs containers_image_openpgp" -o $1/img2lambda .
+BUILDTAGS="containers_image_ostree_stub exclude_graphdriver_devicemapper exclude_graphdriver_overlay exclude_graphdriver_btrfs containers_image_openpgp"
+
+VERSION_LDFLAGS=""
+if [[ -n "${2}" ]]; then
+  VERSION_LDFLAGS="-X main.Version=${2}"
+fi
+
+if [[ -n "${3}" ]]; then
+  VERSION_LDFLAGS="$VERSION_LDFLAGS -X main.GitCommitSHA=${3}"
+fi
+
+GOOS=$TARGET_GOOS go build -a -tags="${BUILDTAGS}" -ldflags "-s ${VERSION_LDFLAGS}" -o $1/img2lambda .

@@ -23,6 +23,7 @@ func createApp() (*cli.App, *cmdOptions) {
 	app := cli.NewApp()
 	app.EnableBashCompletion = true
 	app.Name = "img2lambda"
+	app.Version = VersionString()
 	app.Usage = "Repackages a container image into AWS Lambda layers and publishes them to Lambda"
 	app.Action = func(c *cli.Context) error {
 		validateCliOptions(&opts, c)
