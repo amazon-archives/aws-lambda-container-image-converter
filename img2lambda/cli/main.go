@@ -80,7 +80,7 @@ func repackImageAction(opts *types.CmdOptions) error {
 	}
 
 	if !opts.DryRun {
-		err := publish.PublishLambdaLayers(types.ConvertToPublishOptions(opts), layers)
+		_, err := publish.PublishLambdaLayers(types.ConvertToPublishOptions(opts), layers)
 		if err != nil {
 			return err
 		}
