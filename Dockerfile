@@ -1,3 +1,6 @@
+# Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+
 FROM golang:1.11 AS builder
 
 WORKDIR /go/src/github.com/awslabs/img2lambda

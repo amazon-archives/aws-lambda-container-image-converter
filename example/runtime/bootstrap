@@ -1,6 +1,9 @@
 #!/opt/bin/php
 <?php
 
+// Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: MIT-0
+
 // This invokes Composer's autoloader so that we'll be able to use Guzzle and any other 3rd party libraries we need.
 require __DIR__ . '/vendor/autoload.php';
 
