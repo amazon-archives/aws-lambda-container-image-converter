@@ -30,10 +30,6 @@ func RepackImage(imageName string, layerOutputDir string) (layers []types.Lambda
 		return nil, err
 	}
 
-	return repackImage(ref, imageName, layerOutputDir)
-}
-
-func repackImage(ref imgtypes.ImageReference, imageName string, layerOutputDir string) (layers []types.LambdaLayer, retErr error) {
 	sys := &imgtypes.SystemContext{}
 
 	ctx := context.Background()
@@ -59,21 +55,42 @@ func repackImage(ref imgtypes.ImageReference, imageName string, layerOutputDir s
 		}
 	}()
 
-	layerInfos := src.LayerInfos()
+	return repackImage(&repackOptions{
+		ctx:            ctx,
+		cache:          cache,
+		imageSource:    src,
+		rawImageSource: rawSource,
+		imageName:      imageName,
+		layerOutputDir: layerOutputDir,
+	})
+}
 
-	log.Printf("Image %s has %d layers", imageName, len(layerInfos))
+type repackOptions struct {
+	ctx            context.Context
+	cache          imgtypes.BlobInfoCache
+	imageSource    imgtypes.ImageCloser
+	rawImageSource imgtypes.ImageSource
+	imageName      string
+	layerOutputDir string
+}
+
+func repackImage(opts *repackOptions) (layers []types.LambdaLayer, retErr error) {
+
+	layerInfos := opts.imageSource.LayerInfos()
+
+	log.Printf("Image %s has %d layers", opts.imageName, len(layerInfos))
 
 	// Unpack and inspect each image layer, copy relevant files to new Lambda layer
-	if err := os.MkdirAll(layerOutputDir, 0777); err != nil {
+	if err := os.MkdirAll(opts.layerOutputDir, 0777); err != nil {
 		return nil, err
 	}
 
 	lambdaLayerNum := 1
 
 	for _, layerInfo := range layerInfos {
-		lambdaLayerFilename := filepath.Join(layerOutputDir, fmt.Sprintf("layer-%d.zip", lambdaLayerNum))
+		lambdaLayerFilename := filepath.Join(opts.layerOutputDir, fmt.Sprintf("layer-%d.zip", lambdaLayerNum))
 
-		layerStream, _, err := rawSource.GetBlob(ctx, layerInfo, cache)
+		layerStream, _, err := opts.rawImageSource.GetBlob(opts.ctx, layerInfo, opts.cache)
 		if err != nil {
 			return nil, err
 		}
@@ -93,7 +110,7 @@ func repackImage(ref imgtypes.ImageReference, imageName string, layerOutputDir s
 		}
 	}
 
-	log.Printf("Created %d Lambda layer files for image %s", len(layers), imageName)
+	log.Printf("Created %d Lambda layer files for image %s", len(layers), opts.imageName)
 
 	return layers, nil
 }

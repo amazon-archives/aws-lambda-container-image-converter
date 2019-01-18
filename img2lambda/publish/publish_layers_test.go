@@ -71,6 +71,8 @@ func TestNoLayers(t *testing.T) {
 
 	resultArns := parseResult(t, resultsFilename)
 	assert.Len(t, resultArns, 0)
+
+	os.Remove(dir)
 }
 
 func TestPublishSuccess(t *testing.T) {
@@ -128,6 +130,8 @@ func TestPublishSuccess(t *testing.T) {
 	assert.Len(t, resultArns, 2)
 	assert.Equal(t, "arn:aws:lambda:us-east-2:123456789012:layer:example-layer-1:1", resultArns[0])
 	assert.Equal(t, "arn:aws:lambda:us-east-2:123456789012:layer:example-layer-2:1", resultArns[1])
+
+	os.Remove(dir)
 }
 
 func TestPublishError(t *testing.T) {
@@ -165,4 +169,6 @@ func TestPublishError(t *testing.T) {
 
 	os.Remove(layers[0].File)
 	os.Remove(layers[1].File)
+
+	os.Remove(dir)
 }
