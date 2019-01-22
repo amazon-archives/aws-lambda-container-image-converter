@@ -71,14 +71,6 @@ aws lambda invoke \
 cat hello-output.txt
 ```
 
-## TODO
-
-* Support image types other than local Docker images, where the layer format is tar. For example, layers directly from a Docker registry will be .tar.gz-formatted. OCI images can be either tar or tar.gz, based on the layer's media type.
-* De-dupe Lambda layers before publishing them (compare local file's SHA256 to published layer versions with the same name)
-* Accept additional parameters for PublishLayerVersion API (license, description, etc)
-* Support Lambda compatible runtimes other than 'provided'
-* Utility for creating a function deployment package from a Docker image (copying from /var/task/src instead of /opt)
-
 ## License Summary
 
 This sample code is made available under a modified MIT license. See the LICENSE file.
