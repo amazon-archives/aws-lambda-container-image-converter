@@ -17,12 +17,15 @@ PACKAGE_ROOT="github.com/awslabs/aws-lambda-container-image-converter/img2lambda
 BUILDTAGS="containers_image_ostree_stub exclude_graphdriver_devicemapper exclude_graphdriver_overlay exclude_graphdriver_btrfs containers_image_openpgp"
 
 VERSION_LDFLAGS=""
-if [[ -n "${2}" ]]; then
-  VERSION_LDFLAGS="-X ${PACKAGE_ROOT}/version.Version=${2}"
-fi
-
 if [[ -n "${3}" ]]; then
-  VERSION_LDFLAGS="$VERSION_LDFLAGS -X ${PACKAGE_ROOT}/version.GitCommitSHA=${3}"
+  VERSION_LDFLAGS="-X ${PACKAGE_ROOT}/version.Version=${3}"
 fi
 
-GOOS=$TARGET_GOOS go build -a -tags="${BUILDTAGS}" -ldflags "-s ${VERSION_LDFLAGS}" -o $1/img2lambda ./img2lambda/cli
+if [[ -n "${4}" ]]; then
+  VERSION_LDFLAGS="$VERSION_LDFLAGS -X ${PACKAGE_ROOT}/version.GitCommitSHA=${4}"
+fi
+
+GOOS=$TARGET_GOOS go build -a -tags="${BUILDTAGS}" -ldflags "-s ${VERSION_LDFLAGS}" -o $1/$2 ./img2lambda/cli
+cd $1
+md5sum $2 > $2.md5
+sha256sum $2 > $2.sha256

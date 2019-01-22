@@ -20,7 +20,7 @@ GITFILES := $(shell find ".git/")
 build: $(LOCAL_BINARY)
 
 $(LOCAL_BINARY): $(SOURCES) GITCOMMIT_SHA
-	./scripts/build_binary.sh ./bin/local $(VERSION) $(shell cat GITCOMMIT_SHA)
+	./scripts/build_binary.sh ./bin/local img2lambda $(VERSION) $(shell cat GITCOMMIT_SHA)
 	@echo "Built img2lambda"
 
 .PHONY: test
@@ -64,23 +64,19 @@ docker-test:
 		--env IMG_TOOL_RELEASE=$(IMG_TOOL_RELEASE) \
 		golang:1.11 make test
 
-.PHONY: all-platforms
-all-platforms: $(LINUX_BINARY) $(DARWIN_BINARY) $(WINDOWS_BINARY)
+.PHONY: stage-release-binaries
+stage-release-binaries: $(LINUX_BINARY) $(DARWIN_BINARY) $(WINDOWS_BINARY)
 
 $(WINDOWS_BINARY): $(SOURCES) GITCOMMIT_SHA
-	@mkdir -p ./bin/windows-amd64
-	TARGET_GOOS=windows GOARCH=amd64 ./scripts/build_binary.sh ./bin/windows-amd64 $(VERSION) $(shell cat GITCOMMIT_SHA)
-	mv ./bin/windows-amd64/img2lambda ./bin/windows-amd64/img2lambda.exe
+	TARGET_GOOS=windows GOARCH=amd64 ./scripts/build_binary.sh ./bin/release-$(VERSION) windows-amd64-img2lambda.exe $(VERSION) $(shell cat GITCOMMIT_SHA)
 	@echo "Built img2lambda.exe for windows"
 
 $(LINUX_BINARY): $(SOURCES) GITCOMMIT_SHA
-	@mkdir -p ./bin/linux-amd64
-	TARGET_GOOS=linux GOARCH=amd64 ./scripts/build_binary.sh ./bin/linux-amd64 $(VERSION) $(shell cat GITCOMMIT_SHA)
+	TARGET_GOOS=linux GOARCH=amd64 ./scripts/build_binary.sh ./bin/release-$(VERSION) linux-amd64-img2lambda $(VERSION) $(shell cat GITCOMMIT_SHA)
 	@echo "Built img2lambda for linux"
 
 $(DARWIN_BINARY): $(SOURCES) GITCOMMIT_SHA
-	@mkdir -p ./bin/darwin-amd64
-	TARGET_GOOS=darwin GOARCH=amd64 ./scripts/build_binary.sh ./bin/darwin-amd64 $(VERSION) $(shell cat GITCOMMIT_SHA)
+	TARGET_GOOS=darwin GOARCH=amd64 ./scripts/build_binary.sh ./bin/release-$(VERSION) darwin-amd64-img2lambda $(VERSION) $(shell cat GITCOMMIT_SHA)
 	@echo "Built img2lambda for darwin"
 
 GITCOMMIT_SHA: $(GITFILES)
