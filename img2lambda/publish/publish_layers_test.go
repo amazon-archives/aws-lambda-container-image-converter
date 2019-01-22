@@ -5,6 +5,7 @@ package publish
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"strconv"
@@ -35,6 +36,7 @@ func mockLayer(t *testing.T, n int) types.LambdaLayer {
 
 	_, err = tmpFile.WriteString("hello world " + strconv.Itoa(n))
 	assert.Nil(t, err)
+
 	return types.LambdaLayer{
 		Digest: "sha256:" + strconv.Itoa(n),
 		File:   tmpFile.Name(),
@@ -46,8 +48,143 @@ func mockLayers(t *testing.T) []types.LambdaLayer {
 
 	layers = append(layers, mockLayer(t, 1))
 	layers = append(layers, mockLayer(t, 2))
+	layers = append(layers, mockLayer(t, 3))
 
 	return layers
+}
+
+func mockPublishNoExistingLayers(t *testing.T, lambdaClient *mocks.MockLambdaAPI, n int) {
+	layerName := aws.String(fmt.Sprintf("test-prefix-sha256-%d", n))
+
+	expectedPublishInput := &lambda.PublishLayerVersionInput{
+		CompatibleRuntimes: []*string{aws.String("provided")},
+		Content:            &lambda.LayerVersionContentInput{ZipFile: []byte(fmt.Sprintf("hello world %d", n))},
+		Description:        aws.String("created by img2lambda from image test-image"),
+		LayerName:          layerName,
+	}
+
+	expectedPublishOutput := &lambda.PublishLayerVersionOutput{
+		LayerVersionArn: aws.String(fmt.Sprintf("arn:aws:lambda:us-east-2:123456789012:layer:example-layer-%d:1", n)),
+	}
+
+	// Test out pagination
+	expectedListInput1 := &lambda.ListLayerVersionsInput{
+		LayerName: layerName,
+	}
+
+	expectedListOutput1 := &lambda.ListLayerVersionsOutput{
+		LayerVersions: []*lambda.LayerVersionsListItem{},
+		NextMarker:    aws.String("hello"),
+	}
+
+	expectedListInput2 := &lambda.ListLayerVersionsInput{
+		LayerName: layerName,
+		Marker:    aws.String("hello"),
+	}
+
+	expectedListOutput2 := &lambda.ListLayerVersionsOutput{
+		LayerVersions: []*lambda.LayerVersionsListItem{},
+	}
+
+	gomock.InOrder(
+		lambdaClient.EXPECT().ListLayerVersions(gomock.Eq(expectedListInput1)).Return(expectedListOutput1, nil),
+		lambdaClient.EXPECT().ListLayerVersions(gomock.Eq(expectedListInput2)).Return(expectedListOutput2, nil),
+		lambdaClient.EXPECT().PublishLayerVersion(gomock.Eq(expectedPublishInput)).Return(expectedPublishOutput, nil),
+	)
+}
+
+func mockPublishNoMatchingLayers(t *testing.T, lambdaClient *mocks.MockLambdaAPI, n int) {
+	layerName := aws.String(fmt.Sprintf("test-prefix-sha256-%d", n))
+
+	expectedPublishInput := &lambda.PublishLayerVersionInput{
+		CompatibleRuntimes: []*string{aws.String("provided")},
+		Content:            &lambda.LayerVersionContentInput{ZipFile: []byte(fmt.Sprintf("hello world %d", n))},
+		Description:        aws.String("created by img2lambda from image test-image"),
+		LayerName:          layerName,
+	}
+
+	expectedPublishOutput := &lambda.PublishLayerVersionOutput{
+		LayerVersionArn: aws.String(fmt.Sprintf("arn:aws:lambda:us-east-2:123456789012:layer:example-layer-%d:1", n)),
+	}
+
+	expectedListInput := &lambda.ListLayerVersionsInput{
+		LayerName: layerName,
+	}
+
+	var existingVersions []*lambda.LayerVersionsListItem
+	existingVersionNumber := int64(0)
+	existingVersionListItem := &lambda.LayerVersionsListItem{
+		LayerVersionArn: aws.String(fmt.Sprintf("arn:aws:lambda:us-east-2:123456789012:layer:example-layer-%d:0", n)),
+		Version:         &existingVersionNumber,
+	}
+	existingVersions = append(existingVersions, existingVersionListItem)
+	expectedListOutput := &lambda.ListLayerVersionsOutput{
+		LayerVersions: existingVersions,
+	}
+
+	expectedGetInput := &lambda.GetLayerVersionInput{
+		LayerName:     layerName,
+		VersionNumber: &existingVersionNumber,
+	}
+
+	size := int64(0)
+	expectedContentOutput := &lambda.LayerVersionContentOutput{
+		CodeSha256: aws.String("kjsdflkjfd"),
+		CodeSize:   &size,
+	}
+
+	expectedGetOutput := &lambda.GetLayerVersionOutput{
+		Version:         &existingVersionNumber,
+		Content:         expectedContentOutput,
+		LayerVersionArn: aws.String(fmt.Sprintf("arn:aws:lambda:us-east-2:123456789012:layer:example-layer-%d:0", n)),
+	}
+
+	gomock.InOrder(
+		lambdaClient.EXPECT().ListLayerVersions(gomock.Eq(expectedListInput)).Return(expectedListOutput, nil),
+		lambdaClient.EXPECT().GetLayerVersion(gomock.Eq(expectedGetInput)).Return(expectedGetOutput, nil),
+		lambdaClient.EXPECT().PublishLayerVersion(gomock.Eq(expectedPublishInput)).Return(expectedPublishOutput, nil),
+	)
+}
+
+func mockMatchingLayer(t *testing.T, lambdaClient *mocks.MockLambdaAPI, n int) {
+	layerName := aws.String(fmt.Sprintf("test-prefix-sha256-%d", n))
+
+	expectedListInput := &lambda.ListLayerVersionsInput{
+		LayerName: layerName,
+	}
+
+	var existingVersions []*lambda.LayerVersionsListItem
+	existingVersionNumber := int64(0)
+	existingVersionListItem := &lambda.LayerVersionsListItem{
+		LayerVersionArn: aws.String(fmt.Sprintf("arn:aws:lambda:us-east-2:123456789012:layer:example-layer-%d:1", n)),
+		Version:         &existingVersionNumber,
+	}
+	existingVersions = append(existingVersions, existingVersionListItem)
+	expectedListOutput := &lambda.ListLayerVersionsOutput{
+		LayerVersions: existingVersions,
+	}
+
+	expectedGetInput := &lambda.GetLayerVersionInput{
+		LayerName:     layerName,
+		VersionNumber: &existingVersionNumber,
+	}
+
+	size := int64(13)
+	expectedContentOutput := &lambda.LayerVersionContentOutput{
+		CodeSha256: aws.String("T/q7q052MgJGLfH1mBGUQSFYjwVn9VvOWBoOmevPZgY="),
+		CodeSize:   &size,
+	}
+
+	expectedGetOutput := &lambda.GetLayerVersionOutput{
+		Version:         &existingVersionNumber,
+		Content:         expectedContentOutput,
+		LayerVersionArn: aws.String(fmt.Sprintf("arn:aws:lambda:us-east-2:123456789012:layer:example-layer-%d:1", n)),
+	}
+
+	gomock.InOrder(
+		lambdaClient.EXPECT().ListLayerVersions(gomock.Eq(expectedListInput)).Return(expectedListOutput, nil),
+		lambdaClient.EXPECT().GetLayerVersion(gomock.Eq(expectedGetInput)).Return(expectedGetOutput, nil),
+	)
 }
 
 func TestNoLayers(t *testing.T) {
@@ -95,43 +232,18 @@ func TestPublishSuccess(t *testing.T) {
 
 	layers := mockLayers(t)
 
-	expectedInput1 := &lambda.PublishLayerVersionInput{
-		CompatibleRuntimes: []*string{aws.String("provided")},
-		Content:            &lambda.LayerVersionContentInput{ZipFile: []byte("hello world 1")},
-		Description:        aws.String("created by img2lambda from image test-image"),
-		LayerName:          aws.String("test-prefix-sha256-1"),
-	}
-
-	expectedOutput1 := &lambda.PublishLayerVersionOutput{
-		LayerVersionArn: aws.String("arn:aws:lambda:us-east-2:123456789012:layer:example-layer-1:1"),
-	}
-
-	expectedInput2 := &lambda.PublishLayerVersionInput{
-		CompatibleRuntimes: []*string{aws.String("provided")},
-		Content:            &lambda.LayerVersionContentInput{ZipFile: []byte("hello world 2")},
-		Description:        aws.String("created by img2lambda from image test-image"),
-		LayerName:          aws.String("test-prefix-sha256-2"),
-	}
-
-	expectedOutput2 := &lambda.PublishLayerVersionOutput{
-		LayerVersionArn: aws.String("arn:aws:lambda:us-east-2:123456789012:layer:example-layer-2:1"),
-	}
-
-	lambdaClient.EXPECT().
-		PublishLayerVersion(gomock.Eq(expectedInput1)).
-		Return(expectedOutput1, nil)
-
-	lambdaClient.EXPECT().
-		PublishLayerVersion(gomock.Eq(expectedInput2)).
-		Return(expectedOutput2, nil)
+	mockPublishNoExistingLayers(t, lambdaClient, 1)
+	mockPublishNoMatchingLayers(t, lambdaClient, 2)
+	mockMatchingLayer(t, lambdaClient, 3)
 
 	resultsFilename, err := PublishLambdaLayers(opts, layers)
 	assert.Nil(t, err)
 
 	resultArns := parseResult(t, resultsFilename)
-	assert.Len(t, resultArns, 2)
+	assert.Len(t, resultArns, 3)
 	assert.Equal(t, "arn:aws:lambda:us-east-2:123456789012:layer:example-layer-1:1", resultArns[0])
 	assert.Equal(t, "arn:aws:lambda:us-east-2:123456789012:layer:example-layer-2:1", resultArns[1])
+	assert.Equal(t, "arn:aws:lambda:us-east-2:123456789012:layer:example-layer-3:1", resultArns[2])
 
 	os.Remove(dir)
 }
@@ -154,6 +266,16 @@ func TestPublishError(t *testing.T) {
 
 	layers := mockLayers(t)
 
+	expectedListInput := &lambda.ListLayerVersionsInput{
+		LayerName: aws.String("test-prefix-sha256-1"),
+	}
+
+	expectedListOutput := &lambda.ListLayerVersionsOutput{
+		LayerVersions: []*lambda.LayerVersionsListItem{},
+	}
+
+	lambdaClient.EXPECT().ListLayerVersions(gomock.Eq(expectedListInput)).Return(expectedListOutput, nil)
+
 	expectedInput1 := &lambda.PublishLayerVersionInput{
 		CompatibleRuntimes: []*string{aws.String("provided")},
 		Content:            &lambda.LayerVersionContentInput{ZipFile: []byte("hello world 1")},
@@ -171,6 +293,7 @@ func TestPublishError(t *testing.T) {
 
 	os.Remove(layers[0].File)
 	os.Remove(layers[1].File)
+	os.Remove(layers[2].File)
 
 	os.Remove(dir)
 }
