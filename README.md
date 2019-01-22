@@ -6,6 +6,8 @@ The tool copies all files under '/opt' in the Docker image, maintaining the indi
 
 If a layer is already published to Lambda (same layer name, SHA256 digest, and size), it will not be published again.  Instead the existing layer version ARN will be written to the output file.
 
+![img2lambda Demo](assets/demo.gif)
+
 **Table of Contents**
 
 <!-- toc -->
