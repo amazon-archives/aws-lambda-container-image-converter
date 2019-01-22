@@ -1,6 +1,25 @@
 ## AWS Lambda Container Image Converter
 
-This container image converter tool (img2lambda) repackages container images (such as Docker images) into AWS Lambda layers, and publishes them as new layer versions to Lambda.  The tool copies all files under '/opt' in the Docker image, maintaining the individual Docker image layers as individual Lambda layers.  The published layer ARNs will be stored in a file 'output/layers.json', which can be used as input when creating Lambda functions.
+This container image converter tool (img2lambda) repackages container images (such as Docker images) into AWS Lambda layers, and publishes them as new layer versions to Lambda.
+
+The tool copies all files under '/opt' in the Docker image, maintaining the individual Docker image layers as individual Lambda layers.  The published layer ARNs will be stored in a file 'output/layers.json', which can be used as input when creating Lambda functions.  Each layer is named using a "namespace" prefix (like img2lambda or my-docker-image) and the SHA256 digest of the Docker image layer, in order to provide a way of tracking the provenance of the Lambda layer back to the Docker image that created it.
+
+If a layer is already published to Lambda (same layer name, SHA256 digest, and size), it will not be published again.  Instead the existing layer version ARN will be written to the output file.
+
+**Table of Contents**
+
+<!-- toc -->
+
+- [Usage](#usage)
+- [Install](#install)
+    + [Binaries](#binaries)
+    + [From Source](#from-source)
+- [Example](#example)
+- [License Summary](#license-summary)
+
+<!-- tocstop -->
+
+## Usage
 
 ```
 USAGE:
@@ -15,10 +34,20 @@ GLOBAL OPTIONS:
    --help, -h                          show help
 ```
 
-## Build
+## Install
+
+#### Binaries
+
+Download pre-built binaries from the [Releases Page](https://github.com/awslabs/aws-lambda-container-image-converter/releases).
+
+#### From Source
 
 ```
-make
+$ mkdir -p $GOPATH/src/github.com/awslabs
+$ git clone https://github.com/awslabs/aws-lambda-container-image-converter $GOPATH/src/github.com/awslabs/aws-lambda-container-image-converter
+$ cd !$
+$ make
+$ ./bin/local/img2lambda --help
 ```
 
 ## Example
