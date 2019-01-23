@@ -16,6 +16,7 @@ If a layer is already published to Lambda (same layer name, SHA256 digest, and s
 - [Install](#install)
     + [Binaries](#binaries)
     + [From Source](#from-source)
+- [Permissions](#permissions)
 - [Example](#example)
 - [License Summary](#license-summary)
 
@@ -50,6 +51,59 @@ $ git clone https://github.com/awslabs/aws-lambda-container-image-converter $GOP
 $ cd !$
 $ make
 $ ./bin/local/img2lambda --help
+```
+
+## Permissions
+
+No credentials are required for dry-runs of the img2lambda tool.  When publishing layers to Lambda, img2lambda will look for credentials in the following order (using the default provider chain in the AWS SDK for Go).
+
+1. Environment variables.
+1. Shared credentials file.
+1. If running on Amazon ECS (with task role) or AWS CodeBuild, IAM role from the container credentials endpoint.
+1. If running on an Amazon EC2 instance, IAM role for Amazon EC2.
+
+The credentials must have the following permissions:
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "MinimalPermissions",
+            "Effect": "Allow",
+            "Action": [
+                "lambda:GetLayerVersion",
+                "lambda:ListLayerVersions",
+                "lambda:PublishLayerVersion"
+            ],
+            "Resource": [
+                "arn:aws:lambda:<REGION>:<ACCOUNT ID>:layer:<LAYER NAMESPACE>-sha256-*",
+                "arn:aws:lambda:<REGION>:<ACCOUNT ID>:layer:<LAYER NAMESPACE>-sha256-*:*"
+            ]
+        }
+    ]
+}
+```
+
+For example:
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "MinimalPermissions",
+            "Effect": "Allow",
+            "Action": [
+                "lambda:GetLayerVersion",
+                "lambda:ListLayerVersions",
+                "lambda:PublishLayerVersion"
+            ],
+            "Resource": [
+                "arn:aws:lambda:us-east-1:123456789012:layer:img2lambda-sha256-*",
+                "arn:aws:lambda:us-east-1:123456789012:layer:img2lambda-sha256-*:*"
+            ]
+        }
+    ]
+}
 ```
 
 ## Example
