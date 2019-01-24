@@ -29,7 +29,7 @@ RUN sed -i 's;^releasever.*;releasever=2017.03;;' /etc/yum.conf && \
 RUN curl -sL https://github.com/php/php-src/archive/php-7.3.0.tar.gz | tar -xvz && \
     cd php-src-php-7.3.0 && \
     ./buildconf --force && \
-    ./configure --prefix=/opt/php-7-bin/ --with-openssl --with-curl --with-zlib && \
+    ./configure --prefix=/opt/php-7-bin/ --with-openssl --with-curl --with-zlib --without-pear && \
     make install && \
     /opt/php-7-bin/bin/php -v && \
     curl -sS https://getcomposer.org/installer | /opt/php-7-bin/bin/php -- --install-dir=/opt/php-7-bin/bin/ --filename=composer
