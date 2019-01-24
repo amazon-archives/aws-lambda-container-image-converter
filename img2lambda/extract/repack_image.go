@@ -34,6 +34,12 @@ func RepackImage(imageName string, layerOutputDir string) (layers []types.Lambda
 
 	sys := &imgtypes.SystemContext{}
 
+	// Support communicating with Docker for Windows over local plain-text TCP socket
+	dockerHost := os.Getenv("DOCKER_HOST")
+	if dockerHost == "tcp://localhost:2375" || dockerHost == "tcp://127.0.0.1:2375" {
+		sys.DockerDaemonHost = dockerHost
+	}
+
 	ctx := context.Background()
 
 	cache := blobinfocache.DefaultCache(sys)
