@@ -27,6 +27,10 @@ $(LOCAL_BINARY): $(SOURCES) GITCOMMIT_SHA
 test:
 	go test -v -timeout 30s -short -cover $(shell go list ./img2lambda/... | grep -v /vendor/)
 
+.PHONY: integration-test
+integration-test: $(LOCAL_BINARY)
+	./scripts/build_example.sh
+
 .PHONY: generate
 generate: $(SOURCES)
 	PATH=$(LOCAL_PATH) go generate -x $(shell go list ./img2lambda/... | grep -v '/vendor/')
@@ -86,4 +90,5 @@ GITCOMMIT_SHA: $(GITFILES)
 clean:
 	- rm -rf ./bin
 	- rm -rf ./output
+	- rm -rf ./example/output
 	- rm -f GITCOMMIT_SHA

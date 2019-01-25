@@ -1,0 +1,12 @@
+language: go
+
+services:
+  - docker
+
+go_import_path: github.com/awslabs/aws-lambda-container-image-converter
+
+go:
+    - 1.11.x
+
+script:
+    - make install-deps build test integration-test stage-release-binaries
