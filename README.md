@@ -131,16 +131,16 @@ Create a PHP function that uses the layers:
 ```
 cd function
 
-zip hello.zip src/hello.php
+zip functions.zip src/functions.php
 
 aws lambda create-function \
     --function-name php-example-hello \
     --handler hello \
-    --zip-file fileb://./hello.zip \
+    --zip-file fileb://./function.zip \
     --runtime provided \
     --role "arn:aws:iam::XXXXXXXXXXXX:role/service-role/LambdaPhpExample" \
     --region us-east-1 \
-    --layers file://../output/layers.json
+    --layers file://../../output/layers.json
 ```
 
 Finally, invoke the function:
