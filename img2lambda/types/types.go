@@ -45,8 +45,10 @@ func ConvertToPublishOptions(opts *CmdOptions) *PublishOptions {
 	}
 }
 
+// valid aws lambda function runtimes
 type ValidRuntimes []string
 
+// utility function to validate if a runtime is valid (supported by aws) or not
 func (vr ValidRuntimes) Contains(runtime string) bool {
 	for _, value := range vr {
 		if value == runtime {

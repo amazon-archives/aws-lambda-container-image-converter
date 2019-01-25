@@ -16,9 +16,10 @@ import (
 	"github.com/urfave/cli"
 )
 
+// a list of aws supported runtimes as of 26/01/2019
 var validRuntimes = types.ValidRuntimes{
-	"nodejs",
-	"nodejs4.3",
+	"nodejs",    // eol = 31/10/2016 but included to support existing versions
+	"nodejs4.3", // eol = 30/04/2018 but included to support existing versions
 	"nodejs6.10",
 	"nodejs8.10",
 	"java8",
@@ -28,7 +29,7 @@ var validRuntimes = types.ValidRuntimes{
 	"dotnetcore1.0",
 	"dotnetcore2.0",
 	"dotnetcore2.1",
-	"nodejs4.3-edge",
+	"nodejs4.3-edge", // eol = 30/04/2018 but included to support existing versions
 	"go1.x",
 	"ruby2.5",
 	"provided",
@@ -43,6 +44,7 @@ func createApp() (*cli.App, *types.CmdOptions) {
 	app.Version = version.VersionString()
 	app.Usage = "Repackages a container image into AWS Lambda layers and publishes them to Lambda"
 	app.Action = func(c *cli.Context) error {
+		// parse and store the passed runtime list into the options object
 		for _, runtime := range c.StringSlice("cr") {
 			opts.CompatibleRuntimes = append(opts.CompatibleRuntimes, aws.String(runtime))
 		}

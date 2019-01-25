@@ -36,6 +36,8 @@ GLOBAL OPTIONS:
    --dry-run, -d                       Conduct a dry-run: Repackage the image, but only write the Lambda layers to local disk (do not publish to Lambda)
    --description value, --desc value   The description of this layer version
    --license-info value, -l value      The layer's software license. It can be an SPDX license identifier, the URL of the license hosted on the internet, or the full text of the license
+   --compatible-runtimes value --compatible-runtimes value,
+                --cr value --cr value  A list of compatible function runtimes with this layer.
 
    --help, -h                          show help
 ```
