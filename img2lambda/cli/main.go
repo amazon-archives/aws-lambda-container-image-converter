@@ -109,7 +109,7 @@ func validateCliOptions(opts *types.CmdOptions, context *cli.Context) {
 	}
 
 	for _, runtime := range opts.CompatibleRuntimes {
-		if !validRuntimes.Contains(runtime) {
+		if !validRuntimes.Contains(*runtime) {
 			fmt.Println("ERROR: Compatible runtimes must be one of the supported runtimes\n\n", validRuntimes)
 			cli.ShowAppHelpAndExit(context, 1)
 		}
