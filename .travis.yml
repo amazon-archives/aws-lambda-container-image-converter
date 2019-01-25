@@ -9,4 +9,7 @@ go:
     - 1.11.x
 
 script:
-    - make install-deps build test integration-test stage-release-binaries
+    - make install-deps
+    - make
+    - make integration-test
+    - make stage-release-binaries

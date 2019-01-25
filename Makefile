@@ -23,10 +23,6 @@ $(LOCAL_BINARY): $(SOURCES) GITCOMMIT_SHA
 	./scripts/build_binary.sh ./bin/local img2lambda $(VERSION) $(shell cat GITCOMMIT_SHA)
 	@echo "Built img2lambda"
 
-.PHONY: test
-test:
-	go test -v -timeout 30s -short -cover $(shell go list ./img2lambda/... | grep -v /vendor/)
-
 .PHONY: integration-test
 integration-test: $(LOCAL_BINARY)
 	./scripts/build_example.sh
@@ -66,7 +62,7 @@ docker-test:
 		--workdir=/usr/src/app/src/github.com/awslabs/img2lambda \
 		--env GOPATH=/usr/src/app \
 		--env IMG_TOOL_RELEASE=$(IMG_TOOL_RELEASE) \
-		golang:1.11 make test
+		golang:1.11 make
 
 .PHONY: stage-release-binaries
 stage-release-binaries: $(LINUX_BINARY) $(DARWIN_BINARY) $(WINDOWS_BINARY)
