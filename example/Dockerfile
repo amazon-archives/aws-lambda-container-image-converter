@@ -43,7 +43,7 @@ COPY runtime/bootstrap /lambda-php-runtime/
 # Install Guzzle, prepare vendor files
 RUN mkdir /lambda-php-vendor && \
     cd /lambda-php-vendor && \
-    /opt/php-7-bin/bin/php /opt/php-7-bin/bin/composer require asahasrabuddhe/lambda-php-runtime-bootstrap
+    /opt/php-7-bin/bin/php /opt/php-7-bin/bin/composer require guzzlehttp/guzzle
 
 ###### Create runtime image ######
 
