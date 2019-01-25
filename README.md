@@ -29,11 +29,14 @@ USAGE:
    img2lambda [options]
 
 GLOBAL OPTIONS:
-   --image value, -i value             Name of the source container image. For example, 'my-docker-image:latest'
+   --image value, -i value             Name of the source container image. For example, 'my-docker-image:latest'. The Docker image must be pulled locally already.
    --region value, -r value            AWS region (default: "us-east-1")
    --output-directory value, -o value  Destination directory for command output (default: "./output")
    --layer-namespace value, -n value   Prefix for the layers published to Lambda (default: "img2lambda")
    --dry-run, -d                       Conduct a dry-run: Repackage the image, but only write the Lambda layers to local disk (do not publish to Lambda)
+   --description value, --desc value   The description of this layer version
+   --license-info value, -l value      The layer's software license. It can be an SPDX license identifier, the URL of the license hosted on the internet, or the full text of the license
+
    --help, -h                          show help
 ```
 

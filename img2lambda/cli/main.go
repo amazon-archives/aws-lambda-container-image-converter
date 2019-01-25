@@ -30,7 +30,7 @@ func createApp() (*cli.App, *types.CmdOptions) {
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:        "image, i",
-			Usage:       "Name of the source container image. For example, 'my-docker-image:latest'. The Docker daemon must be pulled locally already.",
+			Usage:       "Name of the source container image. For example, 'my-docker-image:latest'. The Docker image must be pulled locally already.",
 			Destination: &opts.Image,
 		},
 		cli.StringFlag{
@@ -55,6 +55,16 @@ func createApp() (*cli.App, *types.CmdOptions) {
 			Name:        "dry-run, d",
 			Usage:       "Conduct a dry-run: Repackage the image, but only write the Lambda layers to local disk (do not publish to Lambda)",
 			Destination: &opts.DryRun,
+		},
+		cli.StringFlag{
+			Name:        "description, desc",
+			Usage:       "The description of this layer version",
+			Destination: &opts.Description,
+		},
+		cli.StringFlag{
+			Name:        "license-info, l",
+			Usage:       "The layer's software license. It can be an SPDX license identifier, the URL of the license hosted on the internet, or the full text of the license",
+			Destination: &opts.LicenseInfo,
 		},
 	}
 
