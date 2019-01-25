@@ -13,31 +13,45 @@ type LambdaLayer struct {
 }
 
 type CmdOptions struct {
-	Image          string // Name of the container image
-	Region         string // AWS region
-	OutputDir      string // Output directory for the Lambda layers
-	DryRun         bool   // Dry-run (will not register with Lambda)
-	LayerNamespace string // Prefix for published Lambda layers
-	Description    string // Description of the current layer version
-	LicenseInfo    string // Layer's software license
+	Image              string    // Name of the container image
+	Region             string    // AWS region
+	OutputDir          string    // Output directory for the Lambda layers
+	DryRun             bool      // Dry-run (will not register with Lambda)
+	LayerNamespace     string    // Prefix for published Lambda layers
+	Description        string    // Description of the current layer version
+	LicenseInfo        string    // Layer's software license
+	CompatibleRuntimes []*string // A list of function runtimes compatible with the current layer
 }
 
 type PublishOptions struct {
-	LambdaClient    lambdaiface.LambdaAPI
-	LayerPrefix     string
-	ResultsDir      string
-	SourceImageName string
-	Description     string
-	LicenseInfo     string
+	LambdaClient       lambdaiface.LambdaAPI
+	LayerPrefix        string
+	ResultsDir         string
+	SourceImageName    string
+	Description        string
+	LicenseInfo        string
+	CompatibleRuntimes []*string
 }
 
 func ConvertToPublishOptions(opts *CmdOptions) *PublishOptions {
 	return &PublishOptions{
-		SourceImageName: opts.Image,
-		LambdaClient:    clients.NewLambdaClient(opts.Region),
-		LayerPrefix:     opts.LayerNamespace,
-		ResultsDir:      opts.OutputDir,
-		Description:     opts.Description,
-		LicenseInfo:     opts.LicenseInfo,
+		SourceImageName:    opts.Image,
+		LambdaClient:       clients.NewLambdaClient(opts.Region),
+		LayerPrefix:        opts.LayerNamespace,
+		ResultsDir:         opts.OutputDir,
+		Description:        opts.Description,
+		LicenseInfo:        opts.LicenseInfo,
+		CompatibleRuntimes: opts.CompatibleRuntimes,
 	}
+}
+
+type ValidRuntimes []string
+
+func (vr ValidRuntimes) Contains(runtime string) bool {
+	for _, value := range vr {
+		if value == runtime {
+			return true
+		}
+	}
+	return false
 }

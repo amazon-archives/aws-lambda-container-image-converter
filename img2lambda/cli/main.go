@@ -5,6 +5,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"github.com/aws/aws-sdk-go/aws"
 	"log"
 	"os"
 
@@ -15,6 +16,24 @@ import (
 	"github.com/urfave/cli"
 )
 
+var validRuntimes = types.ValidRuntimes{
+	"nodejs",
+	"nodejs4.3",
+	"nodejs6.10",
+	"nodejs8.10",
+	"java8",
+	"python2.7",
+	"python3.6",
+	"python3.7",
+	"dotnetcore1.0",
+	"dotnetcore2.0",
+	"dotnetcore2.1",
+	"nodejs4.3-edge",
+	"go1.x",
+	"ruby2.5",
+	"provided",
+}
+
 func createApp() (*cli.App, *types.CmdOptions) {
 	opts := types.CmdOptions{}
 
@@ -24,6 +43,10 @@ func createApp() (*cli.App, *types.CmdOptions) {
 	app.Version = version.VersionString()
 	app.Usage = "Repackages a container image into AWS Lambda layers and publishes them to Lambda"
 	app.Action = func(c *cli.Context) error {
+		for _, runtime := range c.StringSlice("cr") {
+			opts.CompatibleRuntimes = append(opts.CompatibleRuntimes, aws.String(runtime))
+		}
+
 		validateCliOptions(&opts, c)
 		return repackImageAction(&opts)
 	}
@@ -66,6 +89,11 @@ func createApp() (*cli.App, *types.CmdOptions) {
 			Usage:       "The layer's software license. It can be an SPDX license identifier, the URL of the license hosted on the internet, or the full text of the license",
 			Destination: &opts.LicenseInfo,
 		},
+		cli.StringSliceFlag{
+			Name:  "compatible-runtimes, cr",
+			Usage: "A list of compatible function runtimes with this layer.",
+			Value: &cli.StringSlice{"provided"},
+		},
 	}
 
 	app.Setup()
@@ -78,6 +106,13 @@ func validateCliOptions(opts *types.CmdOptions, context *cli.Context) {
 	if opts.Image == "" {
 		fmt.Print("ERROR: Image name is required\n\n")
 		cli.ShowAppHelpAndExit(context, 1)
+	}
+
+	for _, runtime := range opts.CompatibleRuntimes {
+		if !validRuntimes.Contains(runtime) {
+			fmt.Println("ERROR: Compatible runtimes must be one of the supported runtimes\n\n", validRuntimes)
+			cli.ShowAppHelpAndExit(context, 1)
+		}
 	}
 }
 

@@ -52,7 +52,7 @@ func PublishLambdaLayers(opts *types.PublishOptions, layers []types.LambdaLayer)
 			log.Printf("Matched Lambda layer file %s (image layer %s) to existing Lambda layer: %s", layer.File, layer.Digest, existingArn)
 		} else {
 			publishArgs := &lambda.PublishLayerVersionInput{
-				CompatibleRuntimes: []*string{aws.String("provided")},
+				CompatibleRuntimes: opts.CompatibleRuntimes,
 				Content:            &lambda.LayerVersionContentInput{ZipFile: layerContents},
 				Description:        layerDescription,
 				LayerName:          aws.String(layerName),
