@@ -30,7 +30,7 @@ func createApp() (*cli.App, *types.CmdOptions) {
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:        "image, i",
-			Usage:       "Name of the source container image. For example, 'my-docker-image:latest'. The Docker daemon must be pulled locally already.",
+			Usage:       "Name of the source container image. For example, 'my-docker-image:latest'. The Docker image must be pulled locally already.",
 			Destination: &opts.Image,
 		},
 		cli.StringFlag{
@@ -63,7 +63,7 @@ func createApp() (*cli.App, *types.CmdOptions) {
 		},
 		cli.StringFlag{
 			Name:        "license-info, l",
-			Usage:       "The layer's software license. It can be an SPDX license identifier, the URL of the license hosted on the internet or the full text of the license",
+			Usage:       "The layer's software license. It can be an SPDX license identifier, the URL of the license hosted on the internet, or the full text of the license",
 			Destination: &opts.LicenseInfo,
 		},
 	}
