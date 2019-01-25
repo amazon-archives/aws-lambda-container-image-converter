@@ -117,9 +117,9 @@ docker build -t lambda-php .
 
 The example PHP functions are also built into the example image, so they can be run with Docker:
 ```
-docker run lambda-php hello '{"name": "World"}'
+docker run lambda-php functions.hello '{"name": "World"}'
 
-docker run lambda-php goodbye '{"name": "World"}'
+docker run lambda-php functions.goodbye '{"name": "World"}'
 ```
 
 Run the tool to create and publish Lambda layers that contain the PHP custom runtime:
