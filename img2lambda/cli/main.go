@@ -56,6 +56,16 @@ func createApp() (*cli.App, *types.CmdOptions) {
 			Usage:       "Conduct a dry-run: Repackage the image, but only write the Lambda layers to local disk (do not publish to Lambda)",
 			Destination: &opts.DryRun,
 		},
+		cli.StringFlag{
+			Name:        "description, desc",
+			Usage:       "The description of this layer version",
+			Destination: &opts.Description,
+		},
+		cli.StringFlag{
+			Name:        "license-info, l",
+			Usage:       "The layer's software license. It can be an SPDX license identifier, the URL of the license hosted on the internet or the full text of the license",
+			Destination: &opts.LicenseInfo,
+		},
 	}
 
 	app.Setup()

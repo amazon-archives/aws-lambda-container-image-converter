@@ -24,6 +24,19 @@ func PublishLambdaLayers(opts *types.PublishOptions, layers []types.LambdaLayer)
 	for _, layer := range layers {
 		layerName := opts.LayerPrefix + "-" + strings.Replace(layer.Digest, ":", "-", -1)
 
+		var layerDescription, licenseInfo *string
+
+		if opts.Description == "" {
+			// if no description is passed from commandline, use the default description
+			layerDescription = aws.String("created by img2lambda from image " + opts.SourceImageName)
+		} else {
+			layerDescription = aws.String(opts.Description)
+		}
+
+		if opts.LicenseInfo != "" {
+			licenseInfo = aws.String(opts.LicenseInfo)
+		}
+
 		layerContents, err := ioutil.ReadFile(layer.File)
 		if err != nil {
 			return "", err
@@ -41,8 +54,9 @@ func PublishLambdaLayers(opts *types.PublishOptions, layers []types.LambdaLayer)
 			publishArgs := &lambda.PublishLayerVersionInput{
 				CompatibleRuntimes: []*string{aws.String("provided")},
 				Content:            &lambda.LayerVersionContentInput{ZipFile: layerContents},
-				Description:        aws.String("created by img2lambda from image " + opts.SourceImageName),
+				Description:        layerDescription,
 				LayerName:          aws.String(layerName),
+				LicenseInfo:        licenseInfo,
 			}
 
 			resp, err := opts.LambdaClient.PublishLayerVersion(publishArgs)

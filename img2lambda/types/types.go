@@ -18,6 +18,8 @@ type CmdOptions struct {
 	OutputDir      string // Output directory for the Lambda layers
 	DryRun         bool   // Dry-run (will not register with Lambda)
 	LayerNamespace string // Prefix for published Lambda layers
+	Description    string // Description of the current layer version
+	LicenseInfo    string // Layer's software license
 }
 
 type PublishOptions struct {
@@ -25,6 +27,8 @@ type PublishOptions struct {
 	LayerPrefix     string
 	ResultsDir      string
 	SourceImageName string
+	Description     string
+	LicenseInfo     string
 }
 
 func ConvertToPublishOptions(opts *CmdOptions) *PublishOptions {
@@ -33,5 +37,7 @@ func ConvertToPublishOptions(opts *CmdOptions) *PublishOptions {
 		LambdaClient:    clients.NewLambdaClient(opts.Region),
 		LayerPrefix:     opts.LayerNamespace,
 		ResultsDir:      opts.OutputDir,
+		Description:     opts.Description,
+		LicenseInfo:     opts.LicenseInfo,
 	}
 }
