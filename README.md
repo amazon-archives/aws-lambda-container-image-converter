@@ -1,5 +1,7 @@
 ## AWS Lambda Container Image Converter
 
+[![Build Status](https://travis-ci.org/awslabs/aws-lambda-container-image-converter.svg?branch=master)](https://travis-ci.org/awslabs/aws-lambda-container-image-converter)
+
 This container image converter tool (img2lambda) repackages container images (such as Docker images) into AWS Lambda layers, and publishes them as new layer versions to Lambda.
 
 The tool copies all files under '/opt' in the Docker image, maintaining the individual Docker image layers as individual Lambda layers.  The published layer ARNs will be stored in a file 'output/layers.json', which can be used as input when creating Lambda functions.  Each layer is named using a "namespace" prefix (like img2lambda or my-docker-image) and the SHA256 digest of the Docker image layer, in order to provide a way of tracking the provenance of the Lambda layer back to the Docker image that created it.
