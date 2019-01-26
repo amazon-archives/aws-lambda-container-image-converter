@@ -88,17 +88,11 @@ func validateCliOptions(opts *types.CmdOptions, context *cli.Context) {
 		cli.ShowAppHelpAndExit(context, 1)
 	}
 
-	if len(opts.CompatibleRuntimes) > 0 {
-		// if a list of runtimes is provided, check if they are valid or exit
-		for _, runtime := range opts.CompatibleRuntimes {
-			if !validRuntimes.Contains(*runtime) {
-				fmt.Println("ERROR: Compatible runtimes must be one of the supported runtimes\n\n", validRuntimes)
-				cli.ShowAppHelpAndExit(context, 1)
-			}
+	for _, runtime := range opts.CompatibleRuntimes {
+		if !types.ValidRuntimes.Contains(runtime) {
+			fmt.Println("ERROR: Compatible runtimes must be one of the supported runtimes\n\n", types.ValidRuntimes)
+			cli.ShowAppHelpAndExit(context, 1)
 		}
-	} else {
-		// if no runtimes are provided, use the provided runtime as default
-		opts.CompatibleRuntimes = append(opts.CompatibleRuntimes, aws.String("provided"))
 	}
 }
 

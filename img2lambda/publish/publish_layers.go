@@ -37,6 +37,10 @@ func PublishLambdaLayers(opts *types.PublishOptions, layers []types.LambdaLayer)
 			licenseInfo = aws.String(opts.LicenseInfo)
 		}
 
+		if len(opts.CompatibleRuntimes) == 0 {
+			opts.CompatibleRuntimes = append(opts.CompatibleRuntimes, "provided")
+		}
+
 		layerContents, err := ioutil.ReadFile(layer.File)
 		if err != nil {
 			return "", err
@@ -52,7 +56,7 @@ func PublishLambdaLayers(opts *types.PublishOptions, layers []types.LambdaLayer)
 			log.Printf("Matched Lambda layer file %s (image layer %s) to existing Lambda layer: %s", layer.File, layer.Digest, existingArn)
 		} else {
 			publishArgs := &lambda.PublishLayerVersionInput{
-				CompatibleRuntimes: opts.CompatibleRuntimes,
+				CompatibleRuntimes: aws.StringSlice(opts.CompatibleRuntimes),
 				Content:            &lambda.LayerVersionContentInput{ZipFile: layerContents},
 				Description:        layerDescription,
 				LayerName:          aws.String(layerName),
