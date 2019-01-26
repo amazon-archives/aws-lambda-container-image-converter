@@ -13,14 +13,14 @@ type LambdaLayer struct {
 }
 
 type CmdOptions struct {
-	Image              string    // Name of the container image
-	Region             string    // AWS region
-	OutputDir          string    // Output directory for the Lambda layers
-	DryRun             bool      // Dry-run (will not register with Lambda)
-	LayerNamespace     string    // Prefix for published Lambda layers
-	Description        string    // Description of the current layer version
-	LicenseInfo        string    // Layer's software license
-	CompatibleRuntimes []*string // A list of function runtimes compatible with the current layer
+	Image              string   // Name of the container image
+	Region             string   // AWS region
+	OutputDir          string   // Output directory for the Lambda layers
+	DryRun             bool     // Dry-run (will not register with Lambda)
+	LayerNamespace     string   // Prefix for published Lambda layers
+	Description        string   // Description of the current layer version
+	LicenseInfo        string   // Layer's software license
+	CompatibleRuntimes []string // A list of function runtimes compatible with the current layer
 }
 
 type PublishOptions struct {
@@ -30,7 +30,7 @@ type PublishOptions struct {
 	SourceImageName    string
 	Description        string
 	LicenseInfo        string
-	CompatibleRuntimes []*string
+	CompatibleRuntimes []string
 }
 
 func ConvertToPublishOptions(opts *CmdOptions) *PublishOptions {
@@ -46,14 +46,33 @@ func ConvertToPublishOptions(opts *CmdOptions) *PublishOptions {
 }
 
 // valid aws lambda function runtimes
-type ValidRuntimes []string
+type Runtimes []string
 
 // utility function to validate if a runtime is valid (supported by aws) or not
-func (vr ValidRuntimes) Contains(runtime string) bool {
-	for _, value := range vr {
+func (r Runtimes) Contains(runtime string) bool {
+	for _, value := range r {
 		if value == runtime {
 			return true
 		}
 	}
 	return false
+}
+
+// a list of aws supported runtimes as of 26/01/2019
+var ValidRuntimes = Runtimes{
+	"nodejs",    // eol = 31/10/2016 but included to support existing versions
+	"nodejs4.3", // eol = 30/04/2018 but included to support existing versions
+	"nodejs6.10",
+	"nodejs8.10",
+	"java8",
+	"python2.7",
+	"python3.6",
+	"python3.7",
+	"dotnetcore1.0",
+	"dotnetcore2.0",
+	"dotnetcore2.1",
+	"nodejs4.3-edge", // eol = 30/04/2018 but included to support existing versions
+	"go1.x",
+	"ruby2.5",
+	"provided",
 }
