@@ -5,7 +5,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/aws/aws-sdk-go/aws"
 	"log"
 	"os"
 
@@ -15,25 +14,6 @@ import (
 	"github.com/awslabs/aws-lambda-container-image-converter/img2lambda/version"
 	"github.com/urfave/cli"
 )
-
-// a list of aws supported runtimes as of 26/01/2019
-var validRuntimes = types.ValidRuntimes{
-	"nodejs",    // eol = 31/10/2016 but included to support existing versions
-	"nodejs4.3", // eol = 30/04/2018 but included to support existing versions
-	"nodejs6.10",
-	"nodejs8.10",
-	"java8",
-	"python2.7",
-	"python3.6",
-	"python3.7",
-	"dotnetcore1.0",
-	"dotnetcore2.0",
-	"dotnetcore2.1",
-	"nodejs4.3-edge", // eol = 30/04/2018 but included to support existing versions
-	"go1.x",
-	"ruby2.5",
-	"provided",
-}
 
 func createApp() (*cli.App, *types.CmdOptions) {
 	opts := types.CmdOptions{}
@@ -45,9 +25,7 @@ func createApp() (*cli.App, *types.CmdOptions) {
 	app.Usage = "Repackages a container image into AWS Lambda layers and publishes them to Lambda"
 	app.Action = func(c *cli.Context) error {
 		// parse and store the passed runtime list into the options object
-		for _, runtime := range c.StringSlice("cr") {
-			opts.CompatibleRuntimes = append(opts.CompatibleRuntimes, aws.String(runtime))
-		}
+		opts.CompatibleRuntimes = c.StringSlice("cr")
 
 		validateCliOptions(&opts, c)
 		return repackImageAction(&opts)
