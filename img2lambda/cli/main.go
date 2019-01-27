@@ -71,7 +71,7 @@ func createApp() (*cli.App, *types.CmdOptions) {
 		},
 		cli.StringSliceFlag{
 			Name:  "compatible-runtime, cr",
-			Usage: "An AWS Lambda function runtime compatible with the image layers. To specify multiple runtimes, repeat the option: --cr provided --cr 2.7 (default: \"provided\" )",
+			Usage: "An AWS Lambda function runtime compatible with the image layers. To specify multiple runtimes, repeat the option: --cr provided --cr python2.7 (default: \"provided\" )",
 			Value: &cli.StringSlice{},
 		},
 	}
