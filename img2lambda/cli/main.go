@@ -70,8 +70,8 @@ func createApp() (*cli.App, *types.CmdOptions) {
 			Destination: &opts.LicenseInfo,
 		},
 		cli.StringSliceFlag{
-			Name:  "compatible-runtimes, cr",
-			Usage: "A list of compatible function runtimes with this layer.",
+			Name:  "compatible-runtime, cr",
+			Usage: "An AWS Lambda function runtime compatible with the image layers. To specify multiple runtimes, repeat the option: --cr provided --cr 2.7 (default: \"provided\" )",
 			Value: &cli.StringSlice{},
 		},
 	}
