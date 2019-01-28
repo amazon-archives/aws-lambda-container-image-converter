@@ -66,12 +66,12 @@ func createApp() (*cli.App, *types.CmdOptions) {
 		},
 		cli.StringFlag{
 			Name:        "license-info, l",
-			Usage:       "The layer's software license. It can be an SPDX license identifier, the URL of the license hosted on the internet, or the full text of the license (default: \"no license\"",
+			Usage:       "The layer's software license. It can be an SPDX license identifier, the URL of the license hosted on the internet, or the full text of the license (default: no license)",
 			Destination: &opts.LicenseInfo,
 		},
 		cli.StringSliceFlag{
 			Name:  "compatible-runtime, cr",
-			Usage: "An AWS Lambda function runtime compatible with the image layers. To specify multiple runtimes, repeat the option: --cr provided --cr python2.7 (default: \"provided\" )",
+			Usage: "An AWS Lambda function runtime compatible with the image layers. To specify multiple runtimes, repeat the option: --cr provided --cr python2.7 (default: \"provided\")",
 			Value: &cli.StringSlice{},
 		},
 	}
