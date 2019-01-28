@@ -38,6 +38,8 @@ GLOBAL OPTIONS:
    --dry-run, -d                       Conduct a dry-run: Repackage the image, but only write the Lambda layers to local disk (do not publish to Lambda)
    --description value, --desc value   The description of this layer version (default: "created by img2lambda from image <name of the image>")
    --license-info value, -l value      The layer's software license. It can be an SPDX license identifier, the URL of the license hosted on the internet, or the full text of the license (default: no license)
+   --compatible-runtime value --compatible-runtime value,
+                --cr value --cr value  An AWS Lambda function runtime compatible with the image layers. To specify multiple runtimes, repeat the option: --cr provided --cr python2.7 (default: "provided" )
 
    --help, -h                          show help
 ```
