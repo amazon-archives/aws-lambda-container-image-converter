@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
 
@@ -26,6 +28,9 @@ if [[ -n "${4}" ]]; then
 fi
 
 GOOS=$TARGET_GOOS go build -a -tags="${BUILDTAGS}" -ldflags "-s ${VERSION_LDFLAGS}" -o $1/$2 ./img2lambda/cli
+
+go test -v -tags="${BUILDTAGS}" -timeout 30s -short -cover $(go list ./img2lambda/... | grep -v /vendor/ | grep -v /internal/)
+
 cd $1
 md5sum $2 > $2.md5
 sha256sum $2 > $2.sha256

@@ -61,12 +61,12 @@ func createApp() (*cli.App, *types.CmdOptions) {
 		},
 		cli.StringFlag{
 			Name:        "description, desc",
-			Usage:       "The description of this layer version",
+			Usage:       "The description of this layer version (default: \"created by img2lambda from image <name of the image>\")",
 			Destination: &opts.Description,
 		},
 		cli.StringFlag{
 			Name:        "license-info, l",
-			Usage:       "The layer's software license. It can be an SPDX license identifier, the URL of the license hosted on the internet, or the full text of the license",
+			Usage:       "The layer's software license. It can be an SPDX license identifier, the URL of the license hosted on the internet, or the full text of the license (default: \"no license\"",
 			Destination: &opts.LicenseInfo,
 		},
 		cli.StringSliceFlag{
