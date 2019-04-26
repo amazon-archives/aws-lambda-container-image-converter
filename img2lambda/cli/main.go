@@ -43,6 +43,11 @@ func createApp() (*cli.App, *types.CmdOptions) {
 			Destination: &opts.Region,
 		},
 		cli.StringFlag{
+			Name:        "profile, p",
+			Usage:       "AWS credentials profile. Credentials will default to the same chain as the AWS CLI: environment variables, default profile, container credentials, EC2 instance credentials",
+			Destination: &opts.Profile,
+		},
+		cli.StringFlag{
 			Name:        "output-directory, o",
 			Usage:       "Destination directory for command output",
 			Value:       "./output",

@@ -33,6 +33,7 @@ USAGE:
 GLOBAL OPTIONS:
    --image value, -i value                 Name of the source container image. For example, 'my-docker-image:latest'. The Docker image must be pulled locally already.
    --region value, -r value                AWS region (default: "us-east-1")
+   --profile value, -p value               AWS credentials profile. Credentials will default to the same chain as the AWS CLI: environment variables, default profile, container credentials, EC2 instance credentials
    --output-directory value, -o value      Destination directory for command output (default: "./output")
    --layer-namespace value, -n value       Prefix for the layers published to Lambda (default: "img2lambda")
    --dry-run, -d                           Conduct a dry-run: Repackage the image, but only write the Lambda layers to local disk (do not publish to Lambda)

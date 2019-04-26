@@ -15,9 +15,10 @@ var userAgentHandler = request.NamedHandler{
 	Fn:   request.MakeAddToUserAgentHandler("aws-lambda-container-image-converter", version.Version),
 }
 
-func NewLambdaClient(region string) *lambda.Lambda {
-	sess := session.Must(session.NewSession())
-
+func NewLambdaClient(region string, profile string) *lambda.Lambda {
+	sess := session.Must(session.NewSessionWithOptions(session.Options{
+		Profile: profile,
+	}))
 	sess.Handlers.Build.PushBackNamed(userAgentHandler)
 
 	client := lambda.New(sess, &aws.Config{Region: aws.String(region)})

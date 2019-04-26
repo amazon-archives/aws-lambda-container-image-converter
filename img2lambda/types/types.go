@@ -15,6 +15,7 @@ type LambdaLayer struct {
 type CmdOptions struct {
 	Image              string   // Name of the container image
 	Region             string   // AWS region
+	Profile            string   // AWS credentials profile
 	OutputDir          string   // Output directory for the Lambda layers
 	DryRun             bool     // Dry-run (will not register with Lambda)
 	LayerNamespace     string   // Prefix for published Lambda layers
@@ -36,7 +37,7 @@ type PublishOptions struct {
 func ConvertToPublishOptions(opts *CmdOptions) *PublishOptions {
 	return &PublishOptions{
 		SourceImageName:    opts.Image,
-		LambdaClient:       clients.NewLambdaClient(opts.Region),
+		LambdaClient:       clients.NewLambdaClient(opts.Region, opts.Profile),
 		LayerPrefix:        opts.LayerNamespace,
 		ResultsDir:         opts.OutputDir,
 		Description:        opts.Description,
