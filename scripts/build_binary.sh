@@ -32,5 +32,15 @@ GOOS=$TARGET_GOOS go build -a -tags="${BUILDTAGS}" -ldflags "-s ${VERSION_LDFLAG
 go test -v -tags="${BUILDTAGS}" -timeout 30s -short -cover $(go list ./img2lambda/... | grep -v /vendor/ | grep -v /internal/)
 
 cd $1
-md5sum $2 > $2.md5
-sha256sum $2 > $2.sha256
+
+if hash md5sum 2>/dev/null; then
+  md5sum $2 > $2.md5
+else
+  md5 $2 > $2.md5
+fi
+
+if hash sha256sum 2>/dev/null; then
+  sha256sum $2 > $2.sha256
+else
+  shasum -a 256 $2 > $2.sha256
+fi
