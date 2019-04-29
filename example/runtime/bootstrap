@@ -22,8 +22,8 @@ function sendResponse($invocationId, $response)
 {
     $client = new \GuzzleHttp\Client();
     $client->post(
-    'http://' . $_ENV['AWS_LAMBDA_RUNTIME_API'] . '/2018-06-01/runtime/invocation/' . $invocationId . '/response',
-       ['body' => $response]
+      'http://' . $_ENV['AWS_LAMBDA_RUNTIME_API'] . '/2018-06-01/runtime/invocation/' . $invocationId . '/response',
+      ['body' => json_encode($response)]
     );
 }
 
@@ -42,5 +42,3 @@ do {
     // Submit the response back to the runtime API.
     sendResponse($request['invocationId'], $response);
 } while (true);
-
-?>

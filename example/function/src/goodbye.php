@@ -5,7 +5,9 @@
 
 function goodbye($data)
 {
-    return "Goodbye, {$data['name']}!";
+    $response = [
+        'msg' => "Goodbye, {$data['name']}!",
+        'data' => $data
+    ];
+    return $response;
 }
-
-?>
