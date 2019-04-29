@@ -5,7 +5,9 @@
 
 function hello($data)
 {
-    return "Hello, {$data['name']}!";
+    $response = [
+        'msg' => "Hello, {$data['name']}!",
+        'data' => $data
+    ];
+    return $response;
 }
-
-?>
