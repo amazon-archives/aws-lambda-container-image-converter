@@ -131,7 +131,7 @@ docker run lambda-php goodbye '{"name": "World"}'
 
 Run the tool to create and publish Lambda layers that contain the PHP custom runtime:
 ```
-../bin/local/img2lambda -i lambda-php:latest -r us-east-1
+../bin/local/img2lambda -i lambda-php:latest -r us-east-1 -o ./output
 ```
 
 Create a PHP function that uses the layers:
@@ -147,7 +147,7 @@ aws lambda create-function \
     --runtime provided \
     --role "arn:aws:iam::XXXXXXXXXXXX:role/service-role/LambdaPhpExample" \
     --region us-east-1 \
-    --layers file://../../output/layers.json
+    --layers file://../output/layers.json
 ```
 
 Finally, invoke the function:
