@@ -166,7 +166,7 @@ cat hello-output.txt
 
 ### Deploy with AWS Serverless Application Model (SAM)
 
-See [the sample template.yml](example/function/template.yml) and [the sample template.json](example/function/template.json).
+See [the sample template.yaml](example/function/template.yaml) and [the sample template.json](example/function/template.json).
 
 Insert the layers ARNs into the function definition:
 ```
