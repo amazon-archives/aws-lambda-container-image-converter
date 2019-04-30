@@ -1,0 +1,21 @@
+service: php-example-hello
+
+provider:
+  name: aws
+  runtime: provided
+
+functions:
+  hello:
+    handler: hello.hello
+    package:
+      include:
+        - src/hello.php
+    layers:
+      ${file(../output/layers.json)}
+  goodbye:
+    handler: goodbye.goodbye
+    package:
+      include:
+        - src/goodbye.php
+    layers:
+      ${file(../output/layers.json)}

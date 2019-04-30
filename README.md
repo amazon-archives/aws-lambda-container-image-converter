@@ -134,6 +134,7 @@ Run the tool to create and publish Lambda layers that contain the PHP custom run
 ../bin/local/img2lambda -i lambda-php:latest -r us-east-1 -o ./output
 ```
 
+### Deploy Manually
 Create a PHP function that uses the layers:
 ```
 cd function
@@ -161,6 +162,78 @@ aws lambda invoke \
     --payload '{"name": "World"}' hello-output.txt | base64 --decode
 
 cat hello-output.txt
+```
+
+### Deploy with AWS Serverless Application Model (SAM)
+
+See [the sample template.yml](example/function/template.yml) and [the sample template.json](example/function/template.json).
+
+Insert the layers ARNs into the function definition:
+```
+cd function
+
+sed -i 's/^- /      - /' ../output/layers.yaml && \
+    sed -e "/LAYERS_PLACEHOLDER/r ../output/layers.yaml" -e "s///" template.yaml > template-with-layers.yaml
+
+OR
+
+cd function
+
+sed -e "/\"LAYERS_PLACEHOLDER\"/r ../output/layers.json" -e "s///" template.json | jq . > template-with-layers.json
+```
+
+Deploy the function:
+```
+sam package --template-file template-with-layers.yaml \
+            --output-template-file packaged.yaml \
+            --region us-east-1 \
+            --s3-bucket <bucket name>
+
+sam deploy --template-file packaged.yaml \
+           --capabilities CAPABILITY_IAM  \
+           --region us-east-1 \
+           --stack-name img2lambda-php-example
+
+OR
+
+sam package --template-file template-with-layers.json \
+            --output-template-file packaged.json \
+            --region us-east-1 \
+            --s3-bucket <bucket name>
+
+sam deploy --template-file packaged.json \
+           --capabilities CAPABILITY_IAM  \
+           --region us-east-1 \
+           --stack-name img2lambda-php-example
+```
+
+Invoke the function:
+```
+aws lambda invoke \
+    --function-name sam-php-example-hello \
+    --region us-east-1 \
+    --log-type Tail \
+    --query 'LogResult' \
+    --output text \
+    --payload '{"name": "World"}' hello-output.txt | base64 --decode
+
+cat hello-output.txt
+```
+
+### Deploy with Serverless Framework
+
+See [the sample serverless.yml](example/function/serverless.yml) for how to use the img2lambda-generated layers in your Serverless function.
+
+Deploy the function:
+```
+cd function
+
+serverless deploy -v
+```
+
+Invoke the function:
+```
+serverless invoke -f hello -l -d '{"name": "World"}'
 ```
 
 ## License Summary

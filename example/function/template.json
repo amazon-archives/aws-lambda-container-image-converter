@@ -1,0 +1,26 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Transform": "AWS::Serverless-2016-10-31",
+    "Resources": {
+        "Hello": {
+            "Type": "AWS::Serverless::Function",
+            "Properties": {
+                "FunctionName": "sam-php-example-hello",
+                "Handler": "hello.hello",
+                "Runtime": "provided",
+                "CodeUri": "./",
+                "Layers": "LAYERS_PLACEHOLDER"
+            }
+        },
+        "Goodbye": {
+            "Type": "AWS::Serverless::Function",
+            "Properties": {
+                "FunctionName": "sam-php-example-goodbye",
+                "Handler": "goodbye.goodbye",
+                "Runtime": "provided",
+                "CodeUri": "./",
+                "Layers": "LAYERS_PLACEHOLDER"
+            }
+        }
+    }
+}
