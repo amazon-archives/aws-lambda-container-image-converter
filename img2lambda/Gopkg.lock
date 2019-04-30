@@ -771,6 +771,7 @@
     "github.com/pkg/errors",
     "github.com/stretchr/testify/assert",
     "github.com/urfave/cli",
+    "gopkg.in/yaml.v2",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

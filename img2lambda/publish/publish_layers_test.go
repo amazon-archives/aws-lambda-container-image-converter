@@ -11,6 +11,8 @@ import (
 	"strconv"
 	"testing"
 
+	yaml "gopkg.in/yaml.v2"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/awslabs/aws-lambda-container-image-converter/img2lambda/internal/testing/mocks"
@@ -19,11 +21,21 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func parseResult(t *testing.T, resultsFilename string) []string {
+func parseJSONResult(t *testing.T, resultsFilename string) []string {
 	resultContents, err := ioutil.ReadFile(resultsFilename)
 	assert.Nil(t, err)
 	var resultArns []string
 	err = json.Unmarshal(resultContents, &resultArns)
+	assert.Nil(t, err)
+	os.Remove(resultsFilename)
+	return resultArns
+}
+
+func parseYAMLResult(t *testing.T, resultsFilename string) []string {
+	resultContents, err := ioutil.ReadFile(resultsFilename)
+	assert.Nil(t, err)
+	var resultArns []string
+	err = yaml.Unmarshal(resultContents, &resultArns)
 	assert.Nil(t, err)
 	os.Remove(resultsFilename)
 	return resultArns
@@ -205,10 +217,13 @@ func TestNoLayers(t *testing.T) {
 
 	layers := []types.LambdaLayer{}
 
-	resultsFilename, err := PublishLambdaLayers(opts, layers)
+	jsonResultsFilename, yamlResultsFilename, err := PublishLambdaLayers(opts, layers)
 	assert.Nil(t, err)
 
-	resultArns := parseResult(t, resultsFilename)
+	resultArns := parseJSONResult(t, jsonResultsFilename)
+	assert.Len(t, resultArns, 0)
+
+	resultArns = parseYAMLResult(t, yamlResultsFilename)
 	assert.Len(t, resultArns, 0)
 
 	os.Remove(dir)
@@ -236,10 +251,16 @@ func TestPublishSuccess(t *testing.T) {
 	mockPublishNoMatchingLayers(t, lambdaClient, 2)
 	mockMatchingLayer(t, lambdaClient, 3)
 
-	resultsFilename, err := PublishLambdaLayers(opts, layers)
+	jsonResultsFilename, yamlResultsFilename, err := PublishLambdaLayers(opts, layers)
 	assert.Nil(t, err)
 
-	resultArns := parseResult(t, resultsFilename)
+	resultArns := parseJSONResult(t, jsonResultsFilename)
+	assert.Len(t, resultArns, 3)
+	assert.Equal(t, "arn:aws:lambda:us-east-2:123456789012:layer:example-layer-1:1", resultArns[0])
+	assert.Equal(t, "arn:aws:lambda:us-east-2:123456789012:layer:example-layer-2:1", resultArns[1])
+	assert.Equal(t, "arn:aws:lambda:us-east-2:123456789012:layer:example-layer-3:1", resultArns[2])
+
+	resultArns = parseYAMLResult(t, yamlResultsFilename)
 	assert.Len(t, resultArns, 3)
 	assert.Equal(t, "arn:aws:lambda:us-east-2:123456789012:layer:example-layer-1:1", resultArns[0])
 	assert.Equal(t, "arn:aws:lambda:us-east-2:123456789012:layer:example-layer-2:1", resultArns[1])
@@ -287,9 +308,10 @@ func TestPublishError(t *testing.T) {
 		PublishLayerVersion(gomock.Eq(expectedInput1)).
 		Return(nil, errors.New("Access denied"))
 
-	resultsFilename, err := PublishLambdaLayers(opts, layers)
+	jsonResultsFilename, yamlResultsFilename, err := PublishLambdaLayers(opts, layers)
 	assert.Error(t, err)
-	assert.Equal(t, "", resultsFilename)
+	assert.Equal(t, "", jsonResultsFilename)
+	assert.Equal(t, "", yamlResultsFilename)
 
 	os.Remove(layers[0].File)
 	os.Remove(layers[1].File)

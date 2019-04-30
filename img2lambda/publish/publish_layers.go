@@ -12,13 +12,15 @@ import (
 	"path/filepath"
 	"strings"
 
+	yaml "gopkg.in/yaml.v2"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/aws/aws-sdk-go/service/lambda/lambdaiface"
 	"github.com/awslabs/aws-lambda-container-image-converter/img2lambda/types"
 )
 
-func PublishLambdaLayers(opts *types.PublishOptions, layers []types.LambdaLayer) (string, error) {
+func PublishLambdaLayers(opts *types.PublishOptions, layers []types.LambdaLayer) (string, string, error) {
 	layerArns := []string{}
 
 	for _, layer := range layers {
@@ -43,12 +45,12 @@ func PublishLambdaLayers(opts *types.PublishOptions, layers []types.LambdaLayer)
 
 		layerContents, err := ioutil.ReadFile(layer.File)
 		if err != nil {
-			return "", err
+			return "", "", err
 		}
 
 		found, existingArn, err := matchExistingLambdaLayer(layerName, layerContents, &opts.LambdaClient)
 		if err != nil {
-			return "", err
+			return "", "", err
 		}
 
 		if found {
@@ -65,7 +67,7 @@ func PublishLambdaLayers(opts *types.PublishOptions, layers []types.LambdaLayer)
 
 			resp, err := opts.LambdaClient.PublishLayerVersion(publishArgs)
 			if err != nil {
-				return "", err
+				return "", "", err
 			}
 
 			layerArns = append(layerArns, *resp.LayerVersionArn)
@@ -74,30 +76,47 @@ func PublishLambdaLayers(opts *types.PublishOptions, layers []types.LambdaLayer)
 
 		err = os.Remove(layer.File)
 		if err != nil {
-			return "", err
+			return "", "", err
 		}
 	}
 
 	jsonArns, err := json.MarshalIndent(layerArns, "", "  ")
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
-	resultsPath := filepath.Join(opts.ResultsDir, "layers.json")
-	jsonFile, err := os.Create(resultsPath)
+	jsonResultsPath := filepath.Join(opts.ResultsDir, "layers.json")
+	jsonFile, err := os.Create(jsonResultsPath)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 	defer jsonFile.Close()
 
 	_, err = jsonFile.Write(jsonArns)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
-	log.Printf("Lambda layer ARNs (%d total) are written to %s", len(layerArns), resultsPath)
+	yamlArns, err := yaml.Marshal(layerArns)
+	if err != nil {
+		return "", "", err
+	}
 
-	return resultsPath, nil
+	yamlResultsPath := filepath.Join(opts.ResultsDir, "layers.yaml")
+	yamlFile, err := os.Create(yamlResultsPath)
+	if err != nil {
+		return "", "", err
+	}
+	defer yamlFile.Close()
+
+	_, err = yamlFile.Write(yamlArns)
+	if err != nil {
+		return "", "", err
+	}
+
+	log.Printf("Lambda layer ARNs (%d total) are written to %s and %s", len(layerArns), jsonResultsPath, yamlResultsPath)
+
+	return jsonResultsPath, yamlResultsPath, nil
 }
 
 func matchExistingLambdaLayer(layerName string, layerContents []byte, lambdaClient *lambdaiface.LambdaAPI) (bool, string, error) {
