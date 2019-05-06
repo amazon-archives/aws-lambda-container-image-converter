@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env sh
 
 set -e
 
@@ -6,7 +6,7 @@ set -e
 # SPDX-License-Identifier: MIT-0
 
 # Normalize to working directory being build root (up one level from ./scripts)
-ROOT=$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )
+ROOT="$GOPATH/src/github.com/awslabs/aws-lambda-container-image-converter/"
 cd "${ROOT}"
 
 # Builds the binary from source in the specified destination paths.
