@@ -1,7 +1,7 @@
 # Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
 
-FROM golang:1.11 AS builder
+FROM golang:1.12 AS builder
 
 WORKDIR /go/src/github.com/awslabs/aws-lambda-container-image-converter
 
