@@ -21,6 +21,7 @@ If a layer is already published to Lambda (same layer name, SHA256 digest, and s
 - [Permissions](#permissions)
 - [Example](#example)
 - [License Summary](#license-summary)
+- [Security Disclosures](#security-disclosures)
 
 <!-- tocstop -->
 
@@ -239,3 +240,7 @@ serverless invoke -f hello -l -d '{"name": "World"}'
 ## License Summary
 
 This sample code is made available under a modified MIT license. See the LICENSE file.
+
+## Security Disclosures
+
+If you would like to report a potential security issue in this project, please do not create a GitHub issue.  Instead, please follow the instructions [here](https://aws.amazon.com/security/vulnerability-reporting/) or [email AWS security directly](mailto:aws-security@amazon.com).
