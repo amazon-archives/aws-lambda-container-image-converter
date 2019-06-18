@@ -19,11 +19,11 @@ PACKAGE_ROOT="github.com/awslabs/aws-lambda-container-image-converter/img2lambda
 BUILDTAGS="containers_image_ostree_stub exclude_graphdriver_devicemapper exclude_graphdriver_overlay exclude_graphdriver_btrfs containers_image_openpgp"
 
 VERSION_LDFLAGS=""
-if [[ -n "${3}" ]]; then
+if [ -n "${3}" ]; then
   VERSION_LDFLAGS="-X ${PACKAGE_ROOT}/version.Version=${3}"
 fi
 
-if [[ -n "${4}" ]]; then
+if [ -n "${4}" ]; then
   VERSION_LDFLAGS="$VERSION_LDFLAGS -X ${PACKAGE_ROOT}/version.GitCommitSHA=${4}"
 fi
 
