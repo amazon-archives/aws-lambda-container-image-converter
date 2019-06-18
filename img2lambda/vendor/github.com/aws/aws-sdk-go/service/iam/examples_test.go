@@ -515,13 +515,14 @@ func ExampleIAM_CreateOpenIDConnectProvider_shared00() {
 // To create an IAM role
 //
 // The following command creates a role named Test-Role and attaches a trust policy
-// to it that is provided as a URL-encoded JSON string.
+// that you must convert from JSON to a string. Upon success, the response includes
+// the same policy as a URL-encoded JSON string.
 func ExampleIAM_CreateRole_shared00() {
 	svc := iam.New(session.New())
 	input := &iam.CreateRoleInput{
-		AssumeRolePolicyDocument: aws.String("<URL-encoded-JSON>"),
-		Path:     aws.String("/"),
-		RoleName: aws.String("Test-Role"),
+		AssumeRolePolicyDocument: aws.String("<Stringified-JSON>"),
+		Path:                     aws.String("/"),
+		RoleName:                 aws.String("Test-Role"),
 	}
 
 	result, err := svc.CreateRole(input)
@@ -1792,6 +1793,36 @@ func ExampleIAM_RemoveUserFromGroup_shared00() {
 				fmt.Println(iam.ErrCodeNoSuchEntityException, aerr.Error())
 			case iam.ErrCodeLimitExceededException:
 				fmt.Println(iam.ErrCodeLimitExceededException, aerr.Error())
+			case iam.ErrCodeServiceFailureException:
+				fmt.Println(iam.ErrCodeServiceFailureException, aerr.Error())
+			default:
+				fmt.Println(aerr.Error())
+			}
+		} else {
+			// Print the error, cast err to awserr.Error to get the Code and
+			// Message from an error.
+			fmt.Println(err.Error())
+		}
+		return
+	}
+
+	fmt.Println(result)
+}
+
+// To delete an access key for an IAM user
+//
+// The following command sets the STS global endpoint token to version 2. Version 2
+// tokens are valid in all Regions.
+func ExampleIAM_SetSecurityTokenServicePreferences_shared00() {
+	svc := iam.New(session.New())
+	input := &iam.SetSecurityTokenServicePreferencesInput{
+		GlobalEndpointTokenVersion: aws.String("v2Token"),
+	}
+
+	result, err := svc.SetSecurityTokenServicePreferences(input)
+	if err != nil {
+		if aerr, ok := err.(awserr.Error); ok {
+			switch aerr.Code() {
 			case iam.ErrCodeServiceFailureException:
 				fmt.Println(iam.ErrCodeServiceFailureException, aerr.Error())
 			default:

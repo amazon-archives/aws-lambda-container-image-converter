@@ -82,6 +82,10 @@ func TestDevmapperCreateSnap(t *testing.T) {
 	graphtest.DriverTestCreateSnap(t, "devicemapper", "test=1")
 }
 
+func TestDevmapperCreateFromTemplate(t *testing.T) {
+	graphtest.DriverTestCreateFromTemplate(t, "devicemapper", "test=1")
+}
+
 func TestDevmapperTeardown(t *testing.T) {
 	graphtest.PutDriver(t)
 }

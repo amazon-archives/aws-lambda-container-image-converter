@@ -8,11 +8,15 @@ load helpers
 	[ "$status" -eq 0 ]
 	[ "$output" != "" ]
 	lowerlayer="$output"
+	lowerwriter=$(cat ${TESTDIR}/root/${STORAGE_DRIVER}-layers/layers.lock)
+	[ "$lowerwriter" != "" ]
 	# Mount the layer.
 	run storage --debug=false mount $lowerlayer
 	[ "$status" -eq 0 ]
 	[ "$output" != "" ]
 	lowermount="$output"
+	lowermwriter=$(cat ${TESTDIR}/runroot/${STORAGE_DRIVER}-layers/mountpoints.lock)
+	[ "$lowermwriter" != "" ]
 	# Put a file in the layer.
 	createrandom "$lowermount"/layer1file1
 
@@ -21,11 +25,15 @@ load helpers
 	[ "$status" -eq 0 ]
 	[ "$output" != "" ]
 	midlayer="$output"
+	midwriter=$(cat ${TESTDIR}/root/${STORAGE_DRIVER}-layers/layers.lock)
+	[ "$midwriter" != "" ]
 	# Mount that layer, too.
 	run storage --debug=false mount $midlayer
 	[ "$status" -eq 0 ]
 	[ "$output" != "" ]
 	midmount="$output"
+	midmwriter=$(cat ${TESTDIR}/runroot/${STORAGE_DRIVER}-layers/mountpoints.lock)
+	[ "$midmwriter" != "" ]
 	# Check that the file from the first layer is there.
 	test -s "$midmount"/layer1file1
 	# Check that we can remove it...
@@ -44,11 +52,15 @@ load helpers
 	[ "$status" -eq 0 ]
 	[ "$output" != "" ]
 	upperlayer="$output"
+	upperwriter=$(cat ${TESTDIR}/root/${STORAGE_DRIVER}-layers/layers.lock)
+	[ "$upperwriter" != "" ]
 	# Mount this layer.
 	run storage --debug=false mount $upperlayer
 	[ "$status" -eq 0 ]
 	[ "$output" != "" ]
 	uppermount="$output"
+	uppermwriter=$(cat ${TESTDIR}/runroot/${STORAGE_DRIVER}-layers/mountpoints.lock)
+	[ "$uppermwriter" != "" ]
 	# Check that the file we removed from the second layer is still gone.
 	run test -s "$uppermount"/layer1file1
 	[ "$status" -ne 0 ]
@@ -68,4 +80,14 @@ load helpers
 	[ "${lines[0]}" = "$lowerlayer" ] || [ "${lines[0]}" = "$midlayer" ] || [ "${lines[0]}" = "$upperlayer" ]
 	[ "${lines[1]}" = "$lowerlayer" ] || [ "${lines[1]}" = "$midlayer" ] || [ "${lines[1]}" = "$upperlayer" ]
 	[ "${lines[2]}" = "$lowerlayer" ] || [ "${lines[2]}" = "$midlayer" ] || [ "${lines[2]}" = "$upperlayer" ]
+
+	# Check that we updated the layers last-writer consistently.
+	[ "${lowerwriter}" != "${midwriter}" ]
+	[ "${lowerwriter}" != "${upperwriter}" ]
+	[ "${midwriter}" != "${upperwriter}" ]
+
+	# Check that we updated the mountpoints last-writer consistently.
+	[ "${lowermwriter}" != "${midmwriter}" ]
+	[ "${lowermwriter}" != "${uppermwriter}" ]
+	[ "${midmwriter}" != "${uppermwriter}" ]
 }

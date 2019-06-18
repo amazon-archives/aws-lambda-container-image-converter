@@ -4,6 +4,8 @@
 
 // +build ignore
 
+//go:generate go run huffman.go
+
 // Generates huffman.txt. This test file heavily favors prefix based encodings
 // since some symbols are heavily favored over others. This leads to compression
 // savings that can be gained by assigning shorter prefix codes to those more

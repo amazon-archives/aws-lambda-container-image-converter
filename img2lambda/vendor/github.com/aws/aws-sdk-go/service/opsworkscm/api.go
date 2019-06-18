@@ -567,8 +567,7 @@ func (c *OpsWorksCM) DescribeAccountAttributesRequest(input *DescribeAccountAttr
 
 // DescribeAccountAttributes API operation for AWS OpsWorks for Chef Automate.
 //
-// Describes your account attributes, and creates requests to increase limits
-// before they are reached or exceeded.
+// Describes your OpsWorks-CM account attributes.
 //
 // This operation is synchronous.
 //
@@ -1474,7 +1473,7 @@ func (c *OpsWorksCM) UpdateServerEngineAttributesRequest(input *UpdateServerEngi
 //
 // Updates engine-specific attributes on a specified server. The server enters
 // the MODIFYING state when this operation is in progress. Only one update can
-// occur at a time. You can use this command to reset a Chef server's private
+// occur at a time. You can use this command to reset a Chef server's public
 // key (CHEF_PIVOTAL_KEY) or a Puppet server's admin password (PUPPET_ADMIN_PASSWORD).
 //
 // This operation is asynchronous.
@@ -2017,31 +2016,37 @@ type CreateServerInput struct {
 	// default value is true.
 	DisableAutomatedBackup *bool `type:"boolean"`
 
-	// The configuration management engine to use. Valid values include Chef and
-	// Puppet.
+	// The configuration management engine to use. Valid values include ChefAutomate
+	// and Puppet.
 	Engine *string `type:"string"`
 
 	// Optional engine attributes on a specified server.
 	//
 	// Attributes accepted in a Chef createServer request:
 	//
-	//    * CHEF_PIVOTAL_KEY: A base64-encoded RSA private key that is not stored
-	//    by AWS OpsWorks for Chef Automate. This private key is required to access
-	//    the Chef API. When no CHEF_PIVOTAL_KEY is set, one is generated and returned
-	//    in the response.
+	//    * CHEF_AUTOMATE_PIVOTAL_KEY: A base64-encoded RSA public key. The corresponding
+	//    private key is required to access the Chef API. When no CHEF_AUTOMATE_PIVOTAL_KEY
+	//    is set, a private key is generated and returned in the response.
 	//
-	//    * CHEF_DELIVERY_ADMIN_PASSWORD: The password for the administrative user
-	//    in the Chef Automate GUI. The password length is a minimum of eight characters,
-	//    and a maximum of 32. The password can contain letters, numbers, and special
-	//    characters (!/@#$%^&+=_). The password must contain at least one lower
-	//    case letter, one upper case letter, one number, and one special character.
-	//    When no CHEF_DELIVERY_ADMIN_PASSWORD is set, one is generated and returned
-	//    in the response.
+	//    * CHEF_AUTOMATE_ADMIN_PASSWORD: The password for the administrative user
+	//    in the Chef Automate web-based dashboard. The password length is a minimum
+	//    of eight characters, and a maximum of 32. The password can contain letters,
+	//    numbers, and special characters (!/@#$%^&+=_). The password must contain
+	//    at least one lower case letter, one upper case letter, one number, and
+	//    one special character. When no CHEF_AUTOMATE_ADMIN_PASSWORD is set, one
+	//    is generated and returned in the response.
 	//
 	// Attributes accepted in a Puppet createServer request:
 	//
 	//    * PUPPET_ADMIN_PASSWORD: To work with the Puppet Enterprise console, a
 	//    password must use ASCII characters.
+	//
+	//    * PUPPET_R10K_REMOTE: The r10k remote is the URL of your control repository
+	//    (for example, ssh://git@your.git-repo.com:user/control-repo.git). Specifying
+	//    an r10k remote opens TCP port 8170.
+	//
+	//    * PUPPET_R10K_PRIVATE_KEY: If you are using a private Git repository,
+	//    add PUPPET_R10K_PRIVATE_KEY to specify a PEM-encoded private SSH key.
 	EngineAttributes []*EngineAttribute `type:"list"`
 
 	// The engine model of the server. Valid values in this release include Monolithic
@@ -2063,8 +2068,7 @@ type CreateServerInput struct {
 	// InstanceProfileArn is a required field
 	InstanceProfileArn *string `type:"string" required:"true"`
 
-	// The Amazon EC2 instance type to use. For example, m4.large. Recommended instance
-	// types include t2.medium and greater, m4.*, or c4.xlarge and greater.
+	// The Amazon EC2 instance type to use. For example, m5.large.
 	//
 	// InstanceType is a required field
 	InstanceType *string `type:"string" required:"true"`
@@ -2085,9 +2089,9 @@ type CreateServerInput struct {
 	// The specified time is in coordinated universal time (UTC). The default value
 	// is a random, daily start time.
 	//
-	// Example:08:00, which represents a daily start time of 08:00 UTC.
+	// Example: 08:00, which represents a daily start time of 08:00 UTC.
 	//
-	// Example:Mon:08:00, which represents a start time of every Monday at 08:00
+	// Example: Mon:08:00, which represents a start time of every Monday at 08:00
 	// UTC. (8:00 a.m.)
 	PreferredBackupWindow *string `type:"string"`
 
@@ -2097,7 +2101,7 @@ type CreateServerInput struct {
 	// time (UTC). The default value is a random one-hour period on Tuesday, Wednesday,
 	// or Friday. See TimeWindowDefinition for more information.
 	//
-	// Example:Mon:08:00, which represents a start time of every Monday at 08:00
+	// Example: Mon:08:00, which represents a start time of every Monday at 08:00
 	// UTC. (8:00 a.m.)
 	PreferredMaintenanceWindow *string `type:"string"`
 
@@ -2137,7 +2141,7 @@ type CreateServerInput struct {
 	// enabled.
 	//
 	// For more information about supported Amazon EC2 platforms, see Supported
-	// Platforms (http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-supported-platforms.html).
+	// Platforms (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-supported-platforms.html).
 	SubnetIds []*string `type:"list"`
 }
 
@@ -2820,7 +2824,7 @@ type DescribeServersOutput struct {
 
 	// Contains the response to a DescribeServers request.
 	//
-	// For Puppet Server:DescribeServersResponse$Servers$EngineAttributes contains
+	// For Puppet Server: DescribeServersResponse$Servers$EngineAttributes contains
 	// PUPPET_API_CA_CERT. This is the PEM-encoded CA certificate that is used by
 	// the Puppet API over TCP port number 8140. The CA certificate is also used
 	// to sign node certificates.
@@ -3101,8 +3105,8 @@ type RestoreServerInput struct {
 	BackupId *string `type:"string" required:"true"`
 
 	// The type of the instance to create. Valid values must be specified in the
-	// following format: ^([cm][34]|t2).* For example, m4.large. Valid values are
-	// t2.medium, m4.large, and m4.2xlarge. If you do not specify this parameter,
+	// following format: ^([cm][34]|t2).* For example, m5.large. Valid values are
+	// m5.large, r5.xlarge, and r5.2xlarge. If you do not specify this parameter,
 	// RestoreServer uses the instance type from the specified backup.
 	InstanceType *string `type:"string"`
 
@@ -3206,7 +3210,7 @@ type Server struct {
 	// A DNS name that can be used to access the engine. Example: myserver-asdfghjkl.us-east-1.opsworks.io
 	Endpoint *string `type:"string"`
 
-	// The engine type of the server. Valid values in this release include Chef
+	// The engine type of the server. Valid values in this release include ChefAutomate
 	// and Puppet.
 	Engine *string `type:"string"`
 
@@ -3216,9 +3220,9 @@ type Server struct {
 	//
 	// Attributes returned in a createServer response for Chef
 	//
-	//    * CHEF_PIVOTAL_KEY: A base64-encoded RSA private key that is generated
-	//    by AWS OpsWorks for Chef Automate. This private key is required to access
-	//    the Chef API.
+	//    * CHEF_AUTOMATE_PIVOTAL_KEY: A base64-encoded RSA private key that is
+	//    generated by AWS OpsWorks for Chef Automate. This private key is required
+	//    to access the Chef API.
 	//
 	//    * CHEF_STARTER_KIT: A base64-encoded ZIP file. The ZIP file contains a
 	//    Chef starter kit, which includes a README, a configuration file, and the

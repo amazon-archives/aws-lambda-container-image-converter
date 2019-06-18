@@ -20,6 +20,7 @@ const (
 	msvm // Microsoft Hyper-V or Windows Virtual PC
 	vmware
 	xenhvm
+	hygon
 )
 
 const (
@@ -466,6 +467,11 @@ func (c cpuInfo) amd() bool {
 	return c.vendorid == amd
 }
 
+// Hygon returns true if vendor is recognized as Hygon
+func (c cpuInfo) hygon() bool {
+	return c.vendorid == hygon
+}
+
 // Transmeta returns true if vendor is recognized as Transmeta
 func (c cpuInfo) transmeta() bool {
 	return c.vendorid == transmeta
@@ -619,7 +625,7 @@ func logicalCores() int {
 		}
 		_, b, _, _ := cpuidex(0xb, 1)
 		return int(b & 0xffff)
-	case amd:
+	case amd, hygon:
 		_, b, _, _ := cpuid(1)
 		return int((b >> 16) & 0xff)
 	default:
@@ -641,7 +647,7 @@ func physicalCores() int {
 	switch vendorID() {
 	case intel:
 		return logicalCores() / threadsPerCore()
-	case amd:
+	case amd, hygon:
 		if maxExtendedFunction() >= 0x80000008 {
 			_, _, c, _ := cpuid(0x80000008)
 			return int(c&0xff) + 1
@@ -664,6 +670,7 @@ var vendorMapping = map[string]vendor{
 	"Microsoft Hv": msvm,
 	"VMwareVMware": vmware,
 	"XenVMMXenVMM": xenhvm,
+	"HygonGenuine": hygon,
 }
 
 func vendorID() vendor {
@@ -736,7 +743,7 @@ func (c *cpuInfo) cacheSize() {
 				c.cache.l3 = size
 			}
 		}
-	case amd:
+	case amd, hygon:
 		// Untested.
 		if maxExtendedFunction() < 0x80000005 {
 			return

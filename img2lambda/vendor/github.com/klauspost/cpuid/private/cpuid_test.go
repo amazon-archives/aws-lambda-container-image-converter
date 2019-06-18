@@ -601,6 +601,16 @@ func TestAMD(t *testing.T) {
 	t.Log("TestAMD:", got)
 }
 
+// Hygon returns true if vendor is recognized as Hygon
+func TestHygon(t *testing.T) {
+	got := cpu.hygon()
+	expected := cpu.vendorid == hygon
+	if got != expected {
+		t.Fatalf("TestHygon: expected %v, got %v", expected, got)
+	}
+	t.Log("TestHygon:", got)
+}
+
 // Transmeta returns true if vendor is recognized as Transmeta
 func TestTransmeta(t *testing.T) {
 	got := cpu.transmeta()

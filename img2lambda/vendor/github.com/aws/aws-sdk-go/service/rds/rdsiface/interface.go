@@ -64,6 +64,10 @@ type RDSAPI interface {
 	AddRoleToDBClusterWithContext(aws.Context, *rds.AddRoleToDBClusterInput, ...request.Option) (*rds.AddRoleToDBClusterOutput, error)
 	AddRoleToDBClusterRequest(*rds.AddRoleToDBClusterInput) (*request.Request, *rds.AddRoleToDBClusterOutput)
 
+	AddRoleToDBInstance(*rds.AddRoleToDBInstanceInput) (*rds.AddRoleToDBInstanceOutput, error)
+	AddRoleToDBInstanceWithContext(aws.Context, *rds.AddRoleToDBInstanceInput, ...request.Option) (*rds.AddRoleToDBInstanceOutput, error)
+	AddRoleToDBInstanceRequest(*rds.AddRoleToDBInstanceInput) (*request.Request, *rds.AddRoleToDBInstanceOutput)
+
 	AddSourceIdentifierToSubscription(*rds.AddSourceIdentifierToSubscriptionInput) (*rds.AddSourceIdentifierToSubscriptionOutput, error)
 	AddSourceIdentifierToSubscriptionWithContext(aws.Context, *rds.AddSourceIdentifierToSubscriptionInput, ...request.Option) (*rds.AddSourceIdentifierToSubscriptionOutput, error)
 	AddSourceIdentifierToSubscriptionRequest(*rds.AddSourceIdentifierToSubscriptionInput) (*request.Request, *rds.AddSourceIdentifierToSubscriptionOutput)
@@ -488,6 +492,10 @@ type RDSAPI interface {
 	RemoveRoleFromDBClusterWithContext(aws.Context, *rds.RemoveRoleFromDBClusterInput, ...request.Option) (*rds.RemoveRoleFromDBClusterOutput, error)
 	RemoveRoleFromDBClusterRequest(*rds.RemoveRoleFromDBClusterInput) (*request.Request, *rds.RemoveRoleFromDBClusterOutput)
 
+	RemoveRoleFromDBInstance(*rds.RemoveRoleFromDBInstanceInput) (*rds.RemoveRoleFromDBInstanceOutput, error)
+	RemoveRoleFromDBInstanceWithContext(aws.Context, *rds.RemoveRoleFromDBInstanceInput, ...request.Option) (*rds.RemoveRoleFromDBInstanceOutput, error)
+	RemoveRoleFromDBInstanceRequest(*rds.RemoveRoleFromDBInstanceInput) (*request.Request, *rds.RemoveRoleFromDBInstanceOutput)
+
 	RemoveSourceIdentifierFromSubscription(*rds.RemoveSourceIdentifierFromSubscriptionInput) (*rds.RemoveSourceIdentifierFromSubscriptionOutput, error)
 	RemoveSourceIdentifierFromSubscriptionWithContext(aws.Context, *rds.RemoveSourceIdentifierFromSubscriptionInput, ...request.Option) (*rds.RemoveSourceIdentifierFromSubscriptionOutput, error)
 	RemoveSourceIdentifierFromSubscriptionRequest(*rds.RemoveSourceIdentifierFromSubscriptionInput) (*request.Request, *rds.RemoveSourceIdentifierFromSubscriptionOutput)
@@ -532,6 +540,10 @@ type RDSAPI interface {
 	RevokeDBSecurityGroupIngressWithContext(aws.Context, *rds.RevokeDBSecurityGroupIngressInput, ...request.Option) (*rds.RevokeDBSecurityGroupIngressOutput, error)
 	RevokeDBSecurityGroupIngressRequest(*rds.RevokeDBSecurityGroupIngressInput) (*request.Request, *rds.RevokeDBSecurityGroupIngressOutput)
 
+	StartActivityStream(*rds.StartActivityStreamInput) (*rds.StartActivityStreamOutput, error)
+	StartActivityStreamWithContext(aws.Context, *rds.StartActivityStreamInput, ...request.Option) (*rds.StartActivityStreamOutput, error)
+	StartActivityStreamRequest(*rds.StartActivityStreamInput) (*request.Request, *rds.StartActivityStreamOutput)
+
 	StartDBCluster(*rds.StartDBClusterInput) (*rds.StartDBClusterOutput, error)
 	StartDBClusterWithContext(aws.Context, *rds.StartDBClusterInput, ...request.Option) (*rds.StartDBClusterOutput, error)
 	StartDBClusterRequest(*rds.StartDBClusterInput) (*request.Request, *rds.StartDBClusterOutput)
@@ -539,6 +551,10 @@ type RDSAPI interface {
 	StartDBInstance(*rds.StartDBInstanceInput) (*rds.StartDBInstanceOutput, error)
 	StartDBInstanceWithContext(aws.Context, *rds.StartDBInstanceInput, ...request.Option) (*rds.StartDBInstanceOutput, error)
 	StartDBInstanceRequest(*rds.StartDBInstanceInput) (*request.Request, *rds.StartDBInstanceOutput)
+
+	StopActivityStream(*rds.StopActivityStreamInput) (*rds.StopActivityStreamOutput, error)
+	StopActivityStreamWithContext(aws.Context, *rds.StopActivityStreamInput, ...request.Option) (*rds.StopActivityStreamOutput, error)
+	StopActivityStreamRequest(*rds.StopActivityStreamInput) (*request.Request, *rds.StopActivityStreamOutput)
 
 	StopDBCluster(*rds.StopDBClusterInput) (*rds.StopDBClusterOutput, error)
 	StopDBClusterWithContext(aws.Context, *rds.StopDBClusterInput, ...request.Option) (*rds.StopDBClusterOutput, error)

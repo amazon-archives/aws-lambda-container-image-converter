@@ -54,7 +54,7 @@ func (c *QuickSight) CreateGroupRequest(input *CreateGroupInput) (req *request.R
 //
 // Creates an Amazon QuickSight group.
 //
-// The permissions resource is arn:aws:quicksight:us-east-1:<relevant-aws-account-id>:group/default/<group-name>.
+// The permissions resource is arn:aws:quicksight:us-east-1:<relevant-aws-account-id>:group/default/<group-name> .
 //
 // The response is a group object.
 //
@@ -169,7 +169,7 @@ func (c *QuickSight) CreateGroupMembershipRequest(input *CreateGroupMembershipIn
 //
 // Adds an Amazon QuickSight user to an Amazon QuickSight group.
 //
-// The permissions resource is arn:aws:quicksight:us-east-1:<aws-account-id>:group/default/<group-name>.
+// The permissions resource is arn:aws:quicksight:us-east-1:<aws-account-id>:group/default/<group-name> .
 //
 // The condition resource is the user name.
 //
@@ -282,7 +282,7 @@ func (c *QuickSight) DeleteGroupRequest(input *DeleteGroupInput) (req *request.R
 //
 // Removes a user group from Amazon QuickSight.
 //
-// The permissions resource is arn:aws:quicksight:us-east-1:<aws-account-id>:group/default/<group-name>.
+// The permissions resource is arn:aws:quicksight:us-east-1:<aws-account-id>:group/default/<group-name> .
 //
 // CLI Sample:
 //
@@ -390,7 +390,7 @@ func (c *QuickSight) DeleteGroupMembershipRequest(input *DeleteGroupMembershipIn
 // Removes a user from a group so that the user is no longer a member of the
 // group.
 //
-// The permissions resource is arn:aws:quicksight:us-east-1:<aws-account-id>:group/default/<group-name>.
+// The permissions resource is arn:aws:quicksight:us-east-1:<aws-account-id>:group/default/<group-name> .
 //
 // The condition resource is the user name.
 //
@@ -503,8 +503,7 @@ func (c *QuickSight) DeleteUserRequest(input *DeleteUserInput) (req *request.Req
 // the AWS Identity and Access Management (IAM) user or role that's making the
 // call. The IAM user isn't deleted as a result of this call.
 //
-// The permission resource is arn:aws:quicksight:us-east-1:<aws-account-id>:user/default/<user-name>
-// .
+// The permission resource is arn:aws:quicksight:us-east-1:<aws-account-id>:user/default/<user-name> .
 //
 // CLI Sample:
 //
@@ -562,6 +561,103 @@ func (c *QuickSight) DeleteUserWithContext(ctx aws.Context, input *DeleteUserInp
 	return out, req.Send()
 }
 
+const opDeleteUserByPrincipalId = "DeleteUserByPrincipalId"
+
+// DeleteUserByPrincipalIdRequest generates a "aws/request.Request" representing the
+// client's request for the DeleteUserByPrincipalId operation. The "output" return
+// value will be populated with the request's response once the request completes
+// successfully.
+//
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
+//
+// See DeleteUserByPrincipalId for more information on using the DeleteUserByPrincipalId
+// API call, and error handling.
+//
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
+//
+//    // Example sending a request using the DeleteUserByPrincipalIdRequest method.
+//    req, resp := client.DeleteUserByPrincipalIdRequest(params)
+//
+//    err := req.Send()
+//    if err == nil { // resp is now filled
+//        fmt.Println(resp)
+//    }
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/quicksight-2018-04-01/DeleteUserByPrincipalId
+func (c *QuickSight) DeleteUserByPrincipalIdRequest(input *DeleteUserByPrincipalIdInput) (req *request.Request, output *DeleteUserByPrincipalIdOutput) {
+	op := &request.Operation{
+		Name:       opDeleteUserByPrincipalId,
+		HTTPMethod: "DELETE",
+		HTTPPath:   "/accounts/{AwsAccountId}/namespaces/{Namespace}/user-principals/{PrincipalId}",
+	}
+
+	if input == nil {
+		input = &DeleteUserByPrincipalIdInput{}
+	}
+
+	output = &DeleteUserByPrincipalIdOutput{}
+	req = c.newRequest(op, input, output)
+	return
+}
+
+// DeleteUserByPrincipalId API operation for Amazon QuickSight.
+//
+// Deletes a user after locating the user by its principal ID.
+//
+// Returns awserr.Error for service API and SDK errors. Use runtime type assertions
+// with awserr.Error's Code and Message methods to get detailed information about
+// the error.
+//
+// See the AWS API reference guide for Amazon QuickSight's
+// API operation DeleteUserByPrincipalId for usage and error information.
+//
+// Returned Error Codes:
+//   * ErrCodeAccessDeniedException "AccessDeniedException"
+//   You don't have access to this. The provided credentials couldn't be validated.
+//   You might not be authorized to carry out the request. Ensure that your account
+//   is authorized to use the Amazon QuickSight service, that your policies have
+//   the correct permissions, and that you are using the correct access keys.
+//
+//   * ErrCodeInvalidParameterValueException "InvalidParameterValueException"
+//   One or more parameters don't have a valid value.
+//
+//   * ErrCodeResourceNotFoundException "ResourceNotFoundException"
+//   One or more resources can't be found.
+//
+//   * ErrCodeThrottlingException "ThrottlingException"
+//   Access is throttled.
+//
+//   * ErrCodeInternalFailureException "InternalFailureException"
+//   An internal failure occurred.
+//
+//   * ErrCodeResourceUnavailableException "ResourceUnavailableException"
+//   This resource is currently unavailable.
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/quicksight-2018-04-01/DeleteUserByPrincipalId
+func (c *QuickSight) DeleteUserByPrincipalId(input *DeleteUserByPrincipalIdInput) (*DeleteUserByPrincipalIdOutput, error) {
+	req, out := c.DeleteUserByPrincipalIdRequest(input)
+	return out, req.Send()
+}
+
+// DeleteUserByPrincipalIdWithContext is the same as DeleteUserByPrincipalId with the addition of
+// the ability to pass a context and additional request options.
+//
+// See DeleteUserByPrincipalId for details on how to use this API operation.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *QuickSight) DeleteUserByPrincipalIdWithContext(ctx aws.Context, input *DeleteUserByPrincipalIdInput, opts ...request.Option) (*DeleteUserByPrincipalIdOutput, error) {
+	req, out := c.DeleteUserByPrincipalIdRequest(input)
+	req.SetContext(ctx)
+	req.ApplyOptions(opts...)
+	return out, req.Send()
+}
+
 const opDescribeGroup = "DescribeGroup"
 
 // DescribeGroupRequest generates a "aws/request.Request" representing the
@@ -609,7 +705,7 @@ func (c *QuickSight) DescribeGroupRequest(input *DescribeGroupInput) (req *reque
 // Returns an Amazon QuickSight group's description and Amazon Resource Name
 // (ARN).
 //
-// The permissions resource is arn:aws:quicksight:us-east-1:<relevant-aws-account-id>:group/default/<group-name>.
+// The permissions resource is arn:aws:quicksight:us-east-1:<relevant-aws-account-id>:group/default/<group-name> .
 //
 // The response is the group object.
 //
@@ -718,7 +814,7 @@ func (c *QuickSight) DescribeUserRequest(input *DescribeUserInput) (req *request
 //
 // Returns information about a user, given the user name.
 //
-// The permission resource is arn:aws:quicksight:us-east-1:<aws-account-id>:user/default/<user-name>.
+// The permission resource is arn:aws:quicksight:us-east-1:<aws-account-id>:user/default/<user-name> .
 //
 // The response is a user object that contains the user's Amazon Resource Name
 // (ARN), AWS Identity and Access Management (IAM) role, and email address.
@@ -825,7 +921,7 @@ func (c *QuickSight) GetDashboardEmbedUrlRequest(input *GetDashboardEmbedUrlInpu
 //
 // Generates a server-side embeddable URL and authorization code. Before this
 // can work properly, first you need to configure the dashboards and user permissions.
-// For more information, see  Embedding Amazon QuickSight Dashboards (https://docs.aws.amazon.com/en_us/quicksight/latest/user/embedding.html).
+// For more information, see Embedding Amazon QuickSight Dashboards (https://docs.aws.amazon.com/en_us/quicksight/latest/user/embedding.html).
 //
 // Currently, you can use GetDashboardEmbedURL only from the server, not from
 // the user’s browser.
@@ -977,7 +1073,7 @@ func (c *QuickSight) ListGroupMembershipsRequest(input *ListGroupMembershipsInpu
 //
 // Lists member users in a group.
 //
-// The permissions resource is arn:aws:quicksight:us-east-1:<aws-account-id>:group/default/<group-name>.
+// The permissions resource is arn:aws:quicksight:us-east-1:<aws-account-id>:group/default/<group-name> .
 //
 // The response is a list of group member objects.
 //
@@ -1200,7 +1296,7 @@ func (c *QuickSight) ListUserGroupsRequest(input *ListUserGroupsInput) (req *req
 // Lists the Amazon QuickSight groups that an Amazon QuickSight user is a member
 // of.
 //
-// The permission resource is arn:aws:quicksight:us-east-1:<aws-account-id>:user/default/<user-name>.
+// The permission resource is arn:aws:quicksight:us-east-1:<aws-account-id>:user/default/<user-name> .
 //
 // The response is a one or more group objects.
 //
@@ -1306,7 +1402,7 @@ func (c *QuickSight) ListUsersRequest(input *ListUsersInput) (req *request.Reque
 //
 // Returns a list of all of the Amazon QuickSight users belonging to this account.
 //
-// The permission resource is arn:aws:quicksight:us-east-1:<aws-account-id>:user/default/*.
+// The permission resource is arn:aws:quicksight:us-east-1:<aws-account-id>:user/default/* .
 //
 // The response is a list of user objects, containing each user's Amazon Resource
 // Name (ARN), AWS Identity and Access Management (IAM) role, and email address.
@@ -1417,7 +1513,7 @@ func (c *QuickSight) RegisterUserRequest(input *RegisterUserInput) (req *request
 // AWS Identity and Access Management (IAM) identity or role specified in the
 // request.
 //
-// The permission resource is arn:aws:quicksight:us-east-1:<aws-account-id>:user/default/<user-name>.
+// The permission resource is arn:aws:quicksight:us-east-1:<aws-account-id>:user/default/<user-name> .
 //
 // The condition resource is the Amazon Resource Name (ARN) for the IAM user
 // or role, and the session name.
@@ -1535,7 +1631,7 @@ func (c *QuickSight) UpdateGroupRequest(input *UpdateGroupInput) (req *request.R
 //
 // Changes a group description.
 //
-// The permissions resource is arn:aws:quicksight:us-east-1:<aws-account-id>:group/default/<group-name>.
+// The permissions resource is arn:aws:quicksight:us-east-1:<aws-account-id>:group/default/<group-name> .
 //
 // The response is a group object.
 //
@@ -1644,7 +1740,7 @@ func (c *QuickSight) UpdateUserRequest(input *UpdateUserInput) (req *request.Req
 //
 // Updates an Amazon QuickSight user.
 //
-// The permission resource is arn:aws:quicksight:us-east-1:<aws-account-id>:user/default/<user-name>.
+// The permission resource is arn:aws:quicksight:us-east-1:<aws-account-id>:user/default/<user-name> .
 //
 // The response is a user object that contains the user's Amazon QuickSight
 // user name, email address, active or inactive status in Amazon QuickSight,
@@ -2204,6 +2300,114 @@ func (s *DeleteGroupOutput) SetStatus(v int64) *DeleteGroupOutput {
 	return s
 }
 
+type DeleteUserByPrincipalIdInput struct {
+	_ struct{} `type:"structure"`
+
+	// The ID for the AWS account that the user is in. Currently, you use the ID
+	// for the AWS account that contains your Amazon QuickSight account.
+	//
+	// AwsAccountId is a required field
+	AwsAccountId *string `location:"uri" locationName:"AwsAccountId" min:"12" type:"string" required:"true"`
+
+	// The namespace. Currently, you should set this to default.
+	//
+	// Namespace is a required field
+	Namespace *string `location:"uri" locationName:"Namespace" type:"string" required:"true"`
+
+	// The principal ID of the user.
+	//
+	// PrincipalId is a required field
+	PrincipalId *string `location:"uri" locationName:"PrincipalId" type:"string" required:"true"`
+}
+
+// String returns the string representation
+func (s DeleteUserByPrincipalIdInput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DeleteUserByPrincipalIdInput) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *DeleteUserByPrincipalIdInput) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "DeleteUserByPrincipalIdInput"}
+	if s.AwsAccountId == nil {
+		invalidParams.Add(request.NewErrParamRequired("AwsAccountId"))
+	}
+	if s.AwsAccountId != nil && len(*s.AwsAccountId) < 12 {
+		invalidParams.Add(request.NewErrParamMinLen("AwsAccountId", 12))
+	}
+	if s.Namespace == nil {
+		invalidParams.Add(request.NewErrParamRequired("Namespace"))
+	}
+	if s.Namespace != nil && len(*s.Namespace) < 1 {
+		invalidParams.Add(request.NewErrParamMinLen("Namespace", 1))
+	}
+	if s.PrincipalId == nil {
+		invalidParams.Add(request.NewErrParamRequired("PrincipalId"))
+	}
+	if s.PrincipalId != nil && len(*s.PrincipalId) < 1 {
+		invalidParams.Add(request.NewErrParamMinLen("PrincipalId", 1))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetAwsAccountId sets the AwsAccountId field's value.
+func (s *DeleteUserByPrincipalIdInput) SetAwsAccountId(v string) *DeleteUserByPrincipalIdInput {
+	s.AwsAccountId = &v
+	return s
+}
+
+// SetNamespace sets the Namespace field's value.
+func (s *DeleteUserByPrincipalIdInput) SetNamespace(v string) *DeleteUserByPrincipalIdInput {
+	s.Namespace = &v
+	return s
+}
+
+// SetPrincipalId sets the PrincipalId field's value.
+func (s *DeleteUserByPrincipalIdInput) SetPrincipalId(v string) *DeleteUserByPrincipalIdInput {
+	s.PrincipalId = &v
+	return s
+}
+
+type DeleteUserByPrincipalIdOutput struct {
+	_ struct{} `type:"structure"`
+
+	// The AWS request ID for this operation.
+	RequestId *string `type:"string"`
+
+	// The http status of the request.
+	Status *int64 `location:"statusCode" type:"integer"`
+}
+
+// String returns the string representation
+func (s DeleteUserByPrincipalIdOutput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DeleteUserByPrincipalIdOutput) GoString() string {
+	return s.String()
+}
+
+// SetRequestId sets the RequestId field's value.
+func (s *DeleteUserByPrincipalIdOutput) SetRequestId(v string) *DeleteUserByPrincipalIdOutput {
+	s.RequestId = &v
+	return s
+}
+
+// SetStatus sets the Status field's value.
+func (s *DeleteUserByPrincipalIdOutput) SetStatus(v int64) *DeleteUserByPrincipalIdOutput {
+	s.Status = &v
+	return s
+}
+
 type DeleteUserInput struct {
 	_ struct{} `type:"structure"`
 
@@ -2709,6 +2913,9 @@ type Group struct {
 
 	// The name of the group.
 	GroupName *string `min:"1" type:"string"`
+
+	// The principal ID of the group.
+	PrincipalId *string `type:"string"`
 }
 
 // String returns the string representation
@@ -2736,6 +2943,12 @@ func (s *Group) SetDescription(v string) *Group {
 // SetGroupName sets the GroupName field's value.
 func (s *Group) SetGroupName(v string) *Group {
 	s.GroupName = &v
+	return s
+}
+
+// SetPrincipalId sets the PrincipalId field's value.
+func (s *Group) SetPrincipalId(v string) *Group {
+	s.PrincipalId = &v
 	return s
 }
 
@@ -3365,7 +3578,7 @@ type RegisterUserInput struct {
 	// has a different session name. For more information on assuming IAM roles,
 	// see assume-role (https://docs.aws.amazon.com/cli/latest/reference/sts/assume-role.html)
 	// in the AWS CLI Reference.
-	SessionName *string `type:"string"`
+	SessionName *string `min:"2" type:"string"`
 
 	// The Amazon QuickSight user name that you want to create for the user you
 	// are registering.
@@ -3415,6 +3628,9 @@ func (s *RegisterUserInput) Validate() error {
 	}
 	if s.Namespace != nil && len(*s.Namespace) < 1 {
 		invalidParams.Add(request.NewErrParamMinLen("Namespace", 1))
+	}
+	if s.SessionName != nil && len(*s.SessionName) < 2 {
+		invalidParams.Add(request.NewErrParamMinLen("SessionName", 2))
 	}
 	if s.UserName != nil && len(*s.UserName) < 1 {
 		invalidParams.Add(request.NewErrParamMinLen("UserName", 1))
@@ -3815,9 +4031,9 @@ func (s *UpdateUserOutput) SetUser(v *User) *UpdateUserOutput {
 type User struct {
 	_ struct{} `type:"structure"`
 
-	// Active status of user. When you create an Amazon QuickSight user that’s not
-	// an IAM user or an AD user, that user is inactive until they sign in and provide
-	// a password
+	// Active status of user. When you create an Amazon QuickSight user that’s
+	// not an IAM user or an AD user, that user is inactive until they sign in and
+	// provide a password
 	Active *bool `type:"boolean"`
 
 	// The Amazon Resource Name (ARN) for the user.
@@ -3828,6 +4044,9 @@ type User struct {
 
 	// The type of identity authentication used by the user.
 	IdentityType *string `type:"string" enum:"IdentityType"`
+
+	// The principal ID of the user.
+	PrincipalId *string `type:"string"`
 
 	// The Amazon QuickSight role for the user.
 	Role *string `type:"string" enum:"UserRole"`
@@ -3867,6 +4086,12 @@ func (s *User) SetEmail(v string) *User {
 // SetIdentityType sets the IdentityType field's value.
 func (s *User) SetIdentityType(v string) *User {
 	s.IdentityType = &v
+	return s
+}
+
+// SetPrincipalId sets the PrincipalId field's value.
+func (s *User) SetPrincipalId(v string) *User {
+	s.PrincipalId = &v
 	return s
 }
 

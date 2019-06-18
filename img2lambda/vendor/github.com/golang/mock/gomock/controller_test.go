@@ -298,7 +298,7 @@ func TestUnexpectedArgValue_FirstArg(t *testing.T) {
 	})
 }
 
-func TestUnexpectedArgValue_SecondtArg(t *testing.T) {
+func TestUnexpectedArgValue_SecondArg(t *testing.T) {
 	reporter, ctrl := createFixtures(t)
 	defer reporter.recoverUnexpectedFatal()
 	subject := new(Subject)
@@ -720,14 +720,14 @@ func TestDuplicateFinishCallFails(t *testing.T) {
 	rep.assertFatal(ctrl.Finish, "Controller.Finish was called more than once. It has to be called exactly once.")
 }
 
-func TestTestNoHelper(t *testing.T) {
+func TestNoHelper(t *testing.T) {
 	ctrlNoHelper := gomock.NewController(NewErrorReporter(t))
 
 	// doesn't panic
 	ctrlNoHelper.T.Helper()
 }
 
-func TestTestWithHelper(t *testing.T) {
+func TestWithHelper(t *testing.T) {
 	withHelper := &HelperReporter{TestReporter: NewErrorReporter(t)}
 	ctrlWithHelper := gomock.NewController(withHelper)
 

@@ -58,7 +58,7 @@ func (a *API) resolveReferences() {
 		// Resolve references for errors also
 		for i := range o.ErrorRefs {
 			resolver.resolveReference(&o.ErrorRefs[i])
-			o.ErrorRefs[i].Shape.IsError = true
+			o.ErrorRefs[i].Shape.Exception = true
 			o.ErrorRefs[i].Shape.ErrorInfo.Type = o.ErrorRefs[i].Shape.ShapeName
 		}
 	}
@@ -378,29 +378,31 @@ func (a *API) setMetadataEndpointsKey() {
 	}
 }
 
-// Suppress event stream must be run before setup event stream
-func (a *API) suppressHTTP2EventStreams() {
-	if a.Metadata.ProtocolSettings.HTTP2 != "eventstream" {
-		return
-	}
-
-	for name, op := range a.Operations {
-		outbound := hasEventStream(op.InputRef.Shape)
-		inbound := hasEventStream(op.OutputRef.Shape)
-
-		if !(outbound || inbound) {
-			continue
-		}
-
-		a.removeOperation(name)
-	}
-}
-
 func (a *API) findEndpointDiscoveryOp() {
 	for _, op := range a.Operations {
 		if op.IsEndpointDiscoveryOp {
 			a.EndpointDiscoveryOp = op
 			return
+		}
+	}
+}
+func (a *API) injectUnboundedOutputStreaming() {
+	for _, op := range a.Operations {
+		if op.AuthType != V4UnsignedBodyAuthType {
+			continue
+		}
+		for _, ref := range op.InputRef.Shape.MemberRefs {
+			if ref.Streaming || ref.Shape.Streaming {
+				if len(ref.Documentation) != 0 {
+					ref.Documentation += `
+//`
+				}
+				ref.Documentation += `
+// To use an non-seekable io.Reader for this request wrap the io.Reader with
+// "aws.ReadSeekCloser". The SDK will not retry request errors for non-seekable
+// readers. This will allow the SDK to send the reader's payload as chunked
+// transfer encoding.`
+			}
 		}
 	}
 }

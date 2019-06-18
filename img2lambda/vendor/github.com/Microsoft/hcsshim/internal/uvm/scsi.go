@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Microsoft/hcsshim/internal/guestrequest"
+	"github.com/Microsoft/hcsshim/internal/logfields"
 	"github.com/Microsoft/hcsshim/internal/requesttype"
 	"github.com/Microsoft/hcsshim/internal/schema2"
 	"github.com/Microsoft/hcsshim/internal/wclayer"
@@ -62,48 +63,83 @@ func (uvm *UtilityVM) findSCSIAttachment(findThisHostPath string) (int, int32, s
 	return -1, -1, "", ErrNotAttached
 }
 
-// AddSCSI adds a SCSI disk to a utility VM at the next available location.
-// This function should be called for a RW/scratch layer. For read-only layers
-// on LCOW as an alternate to PMEM for large layers, use AddSCSILayer instead.
+// AddSCSI adds a SCSI disk to a utility VM at the next available location. This
+// function should be called for a RW/scratch layer or a passthrough vhd/vhdx.
+// For read-only layers on LCOW as an alternate to PMEM for large layers, use
+// AddSCSILayer instead.
 //
-// hostPath is required
-// uvmPath is optional.
-func (uvm *UtilityVM) AddSCSI(hostPath string, uvmPath string) (int, int32, error) {
-	return uvm.addSCSIActual(hostPath, uvmPath, false)
+// `hostPath` is required and must point to a vhd/vhdx path.
+//
+// `uvmPath` is optional.
+//
+// `readOnly` set to `true` if the vhd/vhdx should be attached read only.
+func (uvm *UtilityVM) AddSCSI(hostPath string, uvmPath string, readOnly bool) (int, int32, error) {
+	logrus.WithFields(logrus.Fields{
+		logfields.UVMID: uvm.id,
+		"host-path":     hostPath,
+		"uvm-path":      uvmPath,
+		"readOnly":      readOnly,
+	}).Debug("uvm::AddSCSI")
+
+	return uvm.addSCSIActual(hostPath, uvmPath, "VirtualDisk", false, readOnly)
+}
+
+// AddSCSIPhysicalDisk attaches a physical disk from the host directly to the
+// Utility VM at the next available location.
+//
+// `hostPath` is required and `likely` start's with `\\.\PHYSICALDRIVE`.
+//
+// `uvmPath` is optional if a guest mount is not requested.
+//
+// `readOnly` set to `true` if the physical disk should be attached read only.
+func (uvm *UtilityVM) AddSCSIPhysicalDisk(hostPath, uvmPath string, readOnly bool) (int, int32, error) {
+	logrus.WithFields(logrus.Fields{
+		logfields.UVMID: uvm.id,
+		"host-path":     hostPath,
+		"uvm-path":      uvmPath,
+		"readOnly":      readOnly,
+	}).Debug("uvm::AddSCSIPhysicalDisk")
+
+	return uvm.addSCSIActual(hostPath, uvmPath, "PassThru", false, readOnly)
 }
 
 // AddSCSILayer adds a read-only layer disk to a utility VM at the next available
 // location. This function is used by LCOW as an alternate to PMEM for large layers.
 // The UVMPath will always be /tmp/S<controller>/<lun>.
 func (uvm *UtilityVM) AddSCSILayer(hostPath string) (int, int32, error) {
-	return uvm.addSCSIActual(hostPath, "", true)
+	logrus.WithFields(logrus.Fields{
+		logfields.UVMID: uvm.id,
+		"host-path":     hostPath,
+	}).Debug("uvm::AddSCSILayer")
+
+	if uvm.operatingSystem == "windows" {
+		return -1, -1, ErrSCSILayerWCOWUnsupported
+	}
+
+	return uvm.addSCSIActual(hostPath, "", "VirtualDisk", true, true)
 }
 
 // addSCSIActual is the implementation behind the external functions AddSCSI and
 // AddSCSILayer.
 //
-// We are in control of everything ourselves. Hence we have ref-
-// counting and so-on tracking what SCSI locations are available or used.
+// We are in control of everything ourselves. Hence we have ref- counting and
+// so-on tracking what SCSI locations are available or used.
 //
-// hostPath is required
+// `hostPath` is required and may be a vhd/vhdx or physical disk path.
 //
-// uvmPath is optional, and should be empty for layers.
-//   If non-layer, empty just means it won't be mounted in the guest
-//   For layer, it must be empty. Layer isn't supported for WCOW. Layer for
-//   LCOW will be calculated based on /tmp/S<controller>/<lun>
+// `uvmPath` is optional, and `must` be empty for layers. If `!isLayer` and
+// `uvmPath` is empty no guest modify will take place.
 //
-// isLayer indicates that this is a read-only (LCOW) layer VHD too big to fit on VPMEM,
-// or if there are no remaining VPMEM slots available and we are spilling over to SCSI.
-// Must be false for Windows utility VMs.
+// `attachmentType` is required and `must` be `VirtualDisk` for vhd/vhdx
+// attachments and `PassThru` for physical disk.
+//
+// `isLayer` indicates that this is a read-only (LCOW) layer VHD. This parameter
+// `must not` be used for Windows.
+//
+// `readOnly` indicates the attachment should be added read only.
 //
 // Returns the controller ID (0..3) and LUN (0..63) where the disk is attached.
-func (uvm *UtilityVM) addSCSIActual(hostPath string, uvmPath string, isLayer bool) (int, int32, error) {
-	if uvm.operatingSystem == "windows" && isLayer {
-		return -1, -1, ErrSCSILayerWCOWUnsupported
-	}
-
-	logrus.Debugf("uvm::AddSCSI id:%s hostPath:%s uvmPath:%s", uvm.id, hostPath, uvmPath)
-
+func (uvm *UtilityVM) addSCSIActual(hostPath, uvmPath, attachmentType string, isLayer, readOnly bool) (int, int32, error) {
 	if uvm.scsiControllerCount == 0 {
 		return -1, -1, ErrNoSCSIControllers
 	}
@@ -124,13 +160,13 @@ func (uvm *UtilityVM) addSCSIActual(hostPath string, uvmPath string, isLayer boo
 		if isLayer {
 			// Increment the refcount
 			uvm.scsiLocations[controller][lun].refCount++
-			logrus.Debugf("uvm::AddSCSI id:%s hostPath:%s uvmPath:%s refCount now %d", uvm.id, hostPath, uvmPath, uvm.scsiLocations[controller][lun].refCount)
+			logrus.Debugf("uvm::AddSCSI id:%s hostPath:%s refCount now %d", uvm.id, hostPath, uvm.scsiLocations[controller][lun].refCount)
 			uvm.m.Unlock()
 			return controller, int32(lun), nil
-		} else {
-			uvm.m.Unlock()
-			return -1, -1, ErrAlreadyAttached
 		}
+
+		uvm.m.Unlock()
+		return -1, -1, ErrAlreadyAttached
 	}
 
 	// At this point, we know it's not attached, regardless of whether it's a
@@ -158,8 +194,9 @@ func (uvm *UtilityVM) addSCSIActual(hostPath string, uvmPath string, isLayer boo
 	SCSIModification := &hcsschema.ModifySettingRequest{
 		RequestType: requesttype.Add,
 		Settings: hcsschema.Attachment{
-			Path:  hostPath,
-			Type_: "VirtualDisk",
+			Path:     hostPath,
+			Type_:    attachmentType,
+			ReadOnly: readOnly,
 		},
 		ResourcePath: fmt.Sprintf("VirtualMachine/Devices/Scsi/%d/Attachments/%d", controller, lun),
 	}
@@ -182,7 +219,7 @@ func (uvm *UtilityVM) addSCSIActual(hostPath string, uvmPath string, isLayer boo
 					MountPath:  uvmPath,
 					Lun:        uint8(lun),
 					Controller: uint8(controller),
-					ReadOnly:   isLayer,
+					ReadOnly:   readOnly,
 				},
 			}
 		}
@@ -267,4 +304,15 @@ func (uvm *UtilityVM) removeSCSI(hostPath string, uvmPath string, controller int
 	uvm.scsiLocations[controller][lun] = scsiInfo{}
 	logrus.Debugf("uvm::RemoveSCSI: Success %s removed from %s %d:%d", hostPath, uvm.id, controller, lun)
 	return nil
+}
+
+// GetScsiUvmPath returns the guest mounted path of a SCSI drive.
+//
+// If `hostPath` is not mounted returns `ErrNotAttached`.
+func (uvm *UtilityVM) GetScsiUvmPath(hostPath string) (string, error) {
+	uvm.m.Lock()
+	defer uvm.m.Unlock()
+
+	_, _, uvmPath, err := uvm.findSCSIAttachment(hostPath)
+	return uvmPath, err
 }

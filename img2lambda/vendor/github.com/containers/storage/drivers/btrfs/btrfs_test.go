@@ -29,6 +29,10 @@ func TestBtrfsCreateSnap(t *testing.T) {
 	graphtest.DriverTestCreateSnap(t, "btrfs")
 }
 
+func TestBtrfsCreateFromTemplate(t *testing.T) {
+	graphtest.DriverTestCreateFromTemplate(t, "btrfs")
+}
+
 func TestBtrfsSubvolDelete(t *testing.T) {
 	d := graphtest.GetDriver(t, "btrfs")
 	if err := d.CreateReadWrite("test", "", nil); err != nil {

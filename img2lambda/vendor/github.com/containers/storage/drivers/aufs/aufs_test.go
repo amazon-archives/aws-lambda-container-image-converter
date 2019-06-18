@@ -14,6 +14,7 @@ import (
 	"testing"
 
 	"github.com/containers/storage/drivers"
+	"github.com/containers/storage/drivers/graphtest"
 	"github.com/containers/storage/pkg/archive"
 	"github.com/containers/storage/pkg/reexec"
 	"github.com/containers/storage/pkg/stringid"
@@ -802,4 +803,24 @@ func TestInitStaleCleanup(t *testing.T) {
 			t.Fatal("cleanup failed")
 		}
 	}
+}
+
+func TestAufsCreateEmpty(t *testing.T) {
+	graphtest.DriverTestCreateEmpty(t, "aufs")
+}
+
+func TestAufsCreateBase(t *testing.T) {
+	graphtest.DriverTestCreateBase(t, "aufs")
+}
+
+func TestAufsCreateSnap(t *testing.T) {
+	graphtest.DriverTestCreateSnap(t, "aufs")
+}
+
+func TestAufsCreateFromTemplate(t *testing.T) {
+	graphtest.DriverTestCreateFromTemplate(t, "aufs")
+}
+
+func TestAufsEcho(t *testing.T) {
+	graphtest.DriverTestEcho(t, "aufs")
 }

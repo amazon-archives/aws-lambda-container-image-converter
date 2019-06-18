@@ -751,7 +751,7 @@ func (c *WorkDocs) CreateNotificationSubscriptionRequest(input *CreateNotificati
 // Configure Amazon WorkDocs to use Amazon SNS notifications. The endpoint receives
 // a confirmation message, and must confirm the subscription.
 //
-// For more information, see Subscribe to Notifications (http://docs.aws.amazon.com/workdocs/latest/developerguide/subscribe-notifications.html)
+// For more information, see Subscribe to Notifications (https://docs.aws.amazon.com/workdocs/latest/developerguide/subscribe-notifications.html)
 // in the Amazon WorkDocs Developer Guide.
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
@@ -2074,7 +2074,7 @@ func (c *WorkDocs) DescribeDocumentVersionsWithContext(ctx aws.Context, input *D
 //    // Example iterating over at most 3 pages of a DescribeDocumentVersions operation.
 //    pageNum := 0
 //    err := client.DescribeDocumentVersionsPages(params,
-//        func(page *DescribeDocumentVersionsOutput, lastPage bool) bool {
+//        func(page *workdocs.DescribeDocumentVersionsOutput, lastPage bool) bool {
 //            pageNum++
 //            fmt.Println(page)
 //            return pageNum <= 3
@@ -2232,7 +2232,7 @@ func (c *WorkDocs) DescribeFolderContentsWithContext(ctx aws.Context, input *Des
 //    // Example iterating over at most 3 pages of a DescribeFolderContents operation.
 //    pageNum := 0
 //    err := client.DescribeFolderContentsPages(params,
-//        func(page *DescribeFolderContentsOutput, lastPage bool) bool {
+//        func(page *workdocs.DescribeFolderContentsOutput, lastPage bool) bool {
 //            pageNum++
 //            fmt.Println(page)
 //            return pageNum <= 3
@@ -2588,7 +2588,7 @@ func (c *WorkDocs) DescribeRootFoldersRequest(input *DescribeRootFoldersInput) (
 //
 // This action requires an authentication token. To get an authentication token,
 // register an application with Amazon WorkDocs. For more information, see Authentication
-// and Access Control for User Applications (http://docs.aws.amazon.com/workdocs/latest/developerguide/wd-auth-user.html)
+// and Access Control for User Applications (https://docs.aws.amazon.com/workdocs/latest/developerguide/wd-auth-user.html)
 // in the Amazon WorkDocs Developer Guide.
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
@@ -2760,7 +2760,7 @@ func (c *WorkDocs) DescribeUsersWithContext(ctx aws.Context, input *DescribeUser
 //    // Example iterating over at most 3 pages of a DescribeUsers operation.
 //    pageNum := 0
 //    err := client.DescribeUsersPages(params,
-//        func(page *DescribeUsersOutput, lastPage bool) bool {
+//        func(page *workdocs.DescribeUsersOutput, lastPage bool) bool {
 //            pageNum++
 //            fmt.Println(page)
 //            return pageNum <= 3
@@ -5180,7 +5180,7 @@ type CreateNotificationSubscriptionInput struct {
 	_ struct{} `type:"structure"`
 
 	// The endpoint to receive the notifications. If the protocol is HTTPS, the
-	// endpoint is a URL that begins with "https://".
+	// endpoint is a URL that begins with https.
 	//
 	// Endpoint is a required field
 	Endpoint *string `min:"1" type:"string" required:"true"`

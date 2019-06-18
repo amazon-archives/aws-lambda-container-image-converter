@@ -599,6 +599,16 @@ func TestAMD(t *testing.T) {
 	t.Log("TestAMD:", got)
 }
 
+// Hygon returns true if vendor is recognized as Hygon
+func TestHygon(t *testing.T) {
+	got := CPU.Hygon()
+	expected := CPU.VendorID == Hygon
+	if got != expected {
+		t.Fatalf("TestHygon: expected %v, got %v", expected, got)
+	}
+	t.Log("TestHygon:", got)
+}
+
 // Transmeta returns true if vendor is recognized as Transmeta
 func TestTransmeta(t *testing.T) {
 	got := CPU.Transmeta()
@@ -634,14 +644,14 @@ func TestVM(t *testing.T) {
 	t.Log("Vendor ID:", CPU.VM())
 }
 
-// NSC returns true if vendor is recognized as National Semiconductor
+// TSX returns true if cpu supports transactional sync extensions.
 func TestCPUInfo_TSX(t *testing.T) {
 	got := CPU.TSX()
 	expected := CPU.HLE() && CPU.RTM()
 	if got != expected {
-		t.Fatalf("TestNSC: expected %v, got %v", expected, got)
+		t.Fatalf("TestCPUInfo_TSX: expected %v, got %v", expected, got)
 	}
-	t.Log("TestNSC:", got)
+	t.Log("TestCPUInfo_TSX:", got)
 }
 
 // Test RTCounter function

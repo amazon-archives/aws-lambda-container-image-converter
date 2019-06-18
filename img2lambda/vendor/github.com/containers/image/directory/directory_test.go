@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/containers/image/manifest"
-	"github.com/containers/image/pkg/blobinfocache"
+	"github.com/containers/image/pkg/blobinfocache/memory"
 	"github.com/containers/image/types"
 	"github.com/opencontainers/go-digest"
 	"github.com/pkg/errors"
@@ -58,7 +58,7 @@ func TestGetPutManifest(t *testing.T) {
 func TestGetPutBlob(t *testing.T) {
 	ref, tmpDir := refToTempDir(t)
 	defer os.RemoveAll(tmpDir)
-	cache := blobinfocache.NewMemoryCache()
+	cache := memory.New()
 
 	blob := []byte("test-blob")
 	dest, err := ref.NewImageDestination(context.Background(), nil)
@@ -101,7 +101,7 @@ func TestPutBlobDigestFailure(t *testing.T) {
 	dirRef, ok := ref.(dirReference)
 	require.True(t, ok)
 	blobPath := dirRef.layerPath(blobDigest)
-	cache := blobinfocache.NewMemoryCache()
+	cache := memory.New()
 
 	firstRead := true
 	reader := readerFromFunc(func(p []byte) (int, error) {

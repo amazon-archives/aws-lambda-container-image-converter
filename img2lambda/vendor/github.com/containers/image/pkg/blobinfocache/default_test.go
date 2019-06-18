@@ -9,6 +9,8 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 
+	"github.com/containers/image/pkg/blobinfocache/boltdb"
+	"github.com/containers/image/pkg/blobinfocache/memory"
 	"github.com/containers/image/types"
 	"github.com/stretchr/testify/assert"
 )
@@ -121,7 +123,7 @@ func TestDefaultCache(t *testing.T) {
 	normalDir := filepath.Join(tmpDir, "normal")
 	c := DefaultCache(&types.SystemContext{BlobInfoCacheDir: normalDir})
 	// This is ugly hard-coding internals of boltDBCache:
-	assert.Equal(t, &boltDBCache{path: filepath.Join(normalDir, blobInfoCacheFilename)}, c)
+	assert.Equal(t, boltdb.New(filepath.Join(normalDir, blobInfoCacheFilename)), c)
 
 	// Error running blobInfoCacheDir:
 	// Environment is per-process, so this looks very unsafe; actually it seems fine because tests are not
@@ -146,7 +148,7 @@ func TestDefaultCache(t *testing.T) {
 	os.Unsetenv("HOME")
 	os.Unsetenv("XDG_DATA_HOME")
 	c = DefaultCache(nil)
-	assert.IsType(t, NewMemoryCache(), c)
+	assert.IsType(t, memory.New(), c)
 
 	// Error creating the parent directory:
 	unwritableDir := filepath.Join(tmpDir, "unwritable")
@@ -158,5 +160,5 @@ func TestDefaultCache(t *testing.T) {
 	st, _ := os.Stat(unwritableDir)
 	logrus.Errorf("%s: %#v", unwritableDir, st)
 	c = DefaultCache(&types.SystemContext{BlobInfoCacheDir: filepath.Join(unwritableDir, "subdirectory")})
-	assert.IsType(t, NewMemoryCache(), c)
+	assert.IsType(t, memory.New(), c)
 }

@@ -6,6 +6,8 @@ const (
 
 	// ErrCodeConcurrentDeploymentException for service response error code
 	// "ConcurrentDeploymentException".
+	//
+	// The failure percentage threshold percentage was met.
 	ErrCodeConcurrentDeploymentException = "ConcurrentDeploymentException"
 
 	// ErrCodeIdempotentParameterMismatchException for service response error code
@@ -39,7 +41,7 @@ const (
 	// ErrCodeResourceAlreadyExistsException for service response error code
 	// "ResourceAlreadyExistsException".
 	//
-	// The specified resource already exists
+	// The specified resource already exists.
 	ErrCodeResourceAlreadyExistsException = "ResourceAlreadyExistsException"
 
 	// ErrCodeResourceNotFoundException for service response error code
@@ -47,6 +49,12 @@ const (
 	//
 	// The specified resource does not exist.
 	ErrCodeResourceNotFoundException = "ResourceNotFoundException"
+
+	// ErrCodeServiceUnavailableException for service response error code
+	// "ServiceUnavailableException".
+	//
+	// The request has failed due to a temporary failure of the server.
+	ErrCodeServiceUnavailableException = "ServiceUnavailableException"
 
 	// ErrCodeThrottlingException for service response error code
 	// "ThrottlingException".

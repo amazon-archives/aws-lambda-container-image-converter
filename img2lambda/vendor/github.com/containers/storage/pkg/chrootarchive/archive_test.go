@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"syscall"
 	"testing"
 	"time"
 
@@ -155,6 +156,20 @@ func compareDirectories(src string, dest string) error {
 	return nil
 }
 
+func compareDirectoriesChown(src string, dest string, uid, gid int) error {
+	uidmap := []idtools.IDMap{{ContainerID: 0, HostID: uid, Size: 1}}
+	gidmap := []idtools.IDMap{{ContainerID: 0, HostID: gid, Size: 1}}
+	mappings := idtools.NewIDMappingsFromMaps(uidmap, gidmap)
+	changes, err := archive.ChangesDirs(dest, mappings, src, &idtools.IDMappings{})
+	if err != nil {
+		return err
+	}
+	if len(changes) > 0 {
+		return fmt.Errorf("Unexpected differences after untar: %v", changes)
+	}
+	return nil
+}
+
 func compareFiles(src string, dest string) error {
 	srcHash, err := getHash(src)
 	if err != nil {
@@ -168,6 +183,22 @@ func compareFiles(src string, dest string) error {
 		return fmt.Errorf("%s is different from %s", src, dest)
 	}
 	return nil
+}
+
+func compareFilesChown(src string, dest string, uid, gid int) error {
+	if err := compareFiles(src, dest); err != nil {
+		return err
+	}
+	fi, err := os.Lstat(dest)
+	if err == nil {
+		statuid := fi.Sys().(*syscall.Stat_t).Uid
+		statgid := fi.Sys().(*syscall.Stat_t).Gid
+		if statuid != uint32(uid) || statgid != uint32(gid) {
+			return fmt.Errorf("%d:%d ownership on %s is different expected %d:%d", statuid, statgid, dest, uid, gid)
+		}
+	}
+	return err
+
 }
 
 func TestChrootTarUntarWithSymlink(t *testing.T) {
@@ -246,6 +277,62 @@ func TestChrootCopyWithTar(t *testing.T) {
 	}
 }
 
+func TestChrootCopyWithTarAndChown(t *testing.T) {
+	// TODO Windows: Figure out why this is failing
+	if runtime.GOOS == "windows" || runtime.GOOS == "solaris" {
+		t.Skip("Failing on Windows and Solaris")
+	}
+	tmpdir, err := ioutil.TempDir("", "storage-TestChrootCopyWithTar")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(tmpdir)
+	src := filepath.Join(tmpdir, "src")
+	if err := system.MkdirAll(src, 0700, ""); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := prepareSourceDirectory(10, src, true); err != nil {
+		t.Fatal(err)
+	}
+	uid := 1000
+	gid := 1001
+	owner := idtools.IDPair{UID: uid, GID: gid}
+	idMap := idtools.IDMap{ContainerID: 0, HostID: 0, Size: 65536}
+	uidMap := []idtools.IDMap{idMap}
+	gidMap := []idtools.IDMap{idMap}
+	copyFunc := CopyWithTarAndChown(&owner, nil, uidMap, gidMap)
+	// Copy directory
+	dest := filepath.Join(tmpdir, "dest")
+	if err := copyFunc(src, dest); err != nil {
+		t.Fatal(err)
+	}
+	if err := compareDirectoriesChown(src, dest, uid, gid); err != nil {
+		t.Fatal(err)
+	}
+
+	// Copy file
+	srcfile := filepath.Join(src, "file-1")
+	dest = filepath.Join(tmpdir, "destFile")
+	destfile := filepath.Join(dest, "file-1")
+	if err := copyFunc(srcfile, destfile); err != nil {
+		t.Fatal(err)
+	}
+	if err := compareFilesChown(srcfile, destfile, uid, gid); err != nil {
+		t.Fatal(err)
+	}
+
+	// Copy symbolic link
+	srcLinkfile := filepath.Join(src, "file-1-link")
+	dest = filepath.Join(tmpdir, "destSymlink")
+	destLinkfile := filepath.Join(dest, "file-1-link")
+	if err := copyFunc(srcLinkfile, destLinkfile); err != nil {
+		t.Fatal(err)
+	}
+	if err := compareFilesChown(srcLinkfile, destLinkfile, uid, gid); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestChrootCopyFileWithTar(t *testing.T) {
 	tmpdir, err := ioutil.TempDir("", "storage-TestChrootCopyFileWithTar")
 	if err != nil {
@@ -289,6 +376,56 @@ func TestChrootCopyFileWithTar(t *testing.T) {
 	}
 }
 
+func TestChrootCopyFileWithTarAndChown(t *testing.T) {
+	tmpdir, err := ioutil.TempDir("", "storage-TestChrootCopyFileWithTar")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(tmpdir)
+	src := filepath.Join(tmpdir, "src")
+	if err := system.MkdirAll(src, 0700, ""); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := prepareSourceDirectory(10, src, true); err != nil {
+		t.Fatal(err)
+	}
+
+	uid := 1000
+	gid := 1001
+	owner := idtools.IDPair{UID: uid, GID: gid}
+	idMap := idtools.IDMap{ContainerID: 0, HostID: 0, Size: 65536}
+	uidMap := []idtools.IDMap{idMap}
+	gidMap := []idtools.IDMap{idMap}
+	copyFunc := CopyFileWithTarAndChown(&owner, nil, uidMap, gidMap)
+	// Copy directory
+	dest := filepath.Join(tmpdir, "dest")
+	if err := copyFunc(src, dest); err == nil {
+		t.Fatal("Expected error on copying directory")
+	}
+
+	// Copy file
+	srcfile := filepath.Join(src, "file-1")
+	dest = filepath.Join(tmpdir, "destFile")
+	destfile := filepath.Join(dest, "file-1")
+	if err := copyFunc(srcfile, destfile); err != nil {
+		t.Fatal(err)
+	}
+	if err := compareFilesChown(srcfile, destfile, uid, gid); err != nil {
+		t.Fatal(err)
+	}
+
+	// Copy symbolic link
+	srcLinkfile := filepath.Join(src, "file-1-link")
+	dest = filepath.Join(tmpdir, "destSymlink")
+	destLinkfile := filepath.Join(dest, "file-1-link")
+	if err := copyFunc(srcLinkfile, destLinkfile); err != nil {
+		t.Fatal(err)
+	}
+	if err := compareFilesChown(srcLinkfile, destLinkfile, uid, gid); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestChrootUntarPath(t *testing.T) {
 	// TODO Windows: Figure out why this is failing
 	if runtime.GOOS == "windows" {
@@ -312,8 +449,9 @@ func TestChrootUntarPath(t *testing.T) {
 		t.Fatal("Expected error on untaring a directory")
 	}
 
+	tarFunc := archive.TarPath(nil, nil)
 	// Untar a tar file
-	stream, err := archive.Tar(src, archive.Uncompressed)
+	stream, err := tarFunc(src)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -327,6 +465,59 @@ func TestChrootUntarPath(t *testing.T) {
 		t.Fatal(err)
 	}
 	if err := compareDirectories(src, dest); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestChrootUntarPathAndChown(t *testing.T) {
+	// TODO Windows: Figure out why this is failing
+	if runtime.GOOS == "windows" {
+		t.Skip("Failing on Windows")
+	}
+	tmpdir, err := ioutil.TempDir("", "storage-TestChrootUntarPath")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(tmpdir)
+	src := filepath.Join(tmpdir, "src")
+	if err := system.MkdirAll(src, 0700, ""); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := prepareSourceDirectory(10, src, false); err != nil {
+		t.Fatal(err)
+	}
+	dest := filepath.Join(tmpdir, "dest")
+
+	uid := 1000
+	gid := 1001
+	owner := idtools.IDPair{UID: uid, GID: gid}
+	idMap := idtools.IDMap{ContainerID: 0, HostID: 0, Size: 65536}
+	uidMap := []idtools.IDMap{idMap}
+	gidMap := []idtools.IDMap{idMap}
+	untarFunc := UntarPathAndChown(&owner, nil, uidMap, gidMap)
+	// Untar a directory
+	if err := untarFunc(src, dest); err == nil {
+		t.Fatal("Expected error on untaring a directory")
+	}
+
+	// Untar a tar file
+	tarFunc := archive.TarPath(nil, nil)
+	// Untar a tar file
+	stream, err := tarFunc(src)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(stream)
+	tarfile := filepath.Join(tmpdir, "src.tar")
+	if err := ioutil.WriteFile(tarfile, buf.Bytes(), 0644); err != nil {
+		t.Fatal(err)
+	}
+	if err := untarFunc(tarfile, dest); err != nil {
+		t.Fatal(err)
+	}
+	if err := compareDirectoriesChown(src, dest, uid, gid); err != nil {
 		t.Fatal(err)
 	}
 }

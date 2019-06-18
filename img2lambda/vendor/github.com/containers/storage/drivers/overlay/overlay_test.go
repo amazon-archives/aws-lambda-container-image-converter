@@ -66,6 +66,10 @@ func TestOverlayCreateSnap(t *testing.T) {
 	graphtest.DriverTestCreateSnap(t, driverName)
 }
 
+func TestOverlayCreateFromTemplate(t *testing.T) {
+	graphtest.DriverTestCreateFromTemplate(t, driverName)
+}
+
 func TestOverlay128LayerRead(t *testing.T) {
 	graphtest.DriverTestDeepLayerRead(t, 128, driverName)
 }

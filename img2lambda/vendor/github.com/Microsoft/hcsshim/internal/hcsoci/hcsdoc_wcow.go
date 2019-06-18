@@ -12,6 +12,7 @@ import (
 	"github.com/Microsoft/hcsshim/internal/schema1"
 	"github.com/Microsoft/hcsshim/internal/schema2"
 	"github.com/Microsoft/hcsshim/internal/schemaversion"
+	"github.com/Microsoft/hcsshim/internal/uvm"
 	"github.com/Microsoft/hcsshim/internal/uvmfolder"
 	"github.com/Microsoft/hcsshim/internal/wclayer"
 	"github.com/Microsoft/hcsshim/osversion"
@@ -228,7 +229,15 @@ func createWindowsContainerDocument(coi *createOptionsInternal) (interface{}, er
 			} else {
 				uvmPath, err := coi.HostingSystem.GetVSMBUvmPath(mount.Source)
 				if err != nil {
-					return nil, err
+					if err == uvm.ErrNotAttached {
+						// It could also be a scsi mount.
+						uvmPath, err = coi.HostingSystem.GetScsiUvmPath(mount.Source)
+						if err != nil {
+							return nil, err
+						}
+					} else {
+						return nil, err
+					}
 				}
 				mdv2.HostPath = uvmPath
 			}

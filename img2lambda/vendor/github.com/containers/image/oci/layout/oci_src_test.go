@@ -12,7 +12,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/containers/image/pkg/blobinfocache"
+	"github.com/containers/image/pkg/blobinfocache/memory"
 	"github.com/containers/image/types"
 	digest "github.com/opencontainers/go-digest"
 	"github.com/stretchr/testify/assert"
@@ -41,7 +41,7 @@ func TestGetBlobForRemoteLayers(t *testing.T) {
 		fmt.Fprintln(w, "Hello world")
 	}))
 	defer ts.Close()
-	cache := blobinfocache.NewMemoryCache()
+	cache := memory.New()
 
 	imageSource := createImageSource(t, &types.SystemContext{})
 	layerInfo := types.BlobInfo{
@@ -66,7 +66,7 @@ func TestGetBlobForRemoteLayersWithTLS(t *testing.T) {
 	imageSource := createImageSource(t, &types.SystemContext{
 		OCICertPath: "fixtures/accepted_certs",
 	})
-	cache := blobinfocache.NewMemoryCache()
+	cache := memory.New()
 
 	layer, size, err := imageSource.GetBlob(context.Background(), types.BlobInfo{
 		URLs: []string{httpServerAddr},
@@ -82,7 +82,7 @@ func TestGetBlobForRemoteLayersOnTLSFailure(t *testing.T) {
 	imageSource := createImageSource(t, &types.SystemContext{
 		OCICertPath: "fixtures/rejected_certs",
 	})
-	cache := blobinfocache.NewMemoryCache()
+	cache := memory.New()
 	layer, size, err := imageSource.GetBlob(context.Background(), types.BlobInfo{
 		URLs: []string{httpServerAddr},
 	}, cache)

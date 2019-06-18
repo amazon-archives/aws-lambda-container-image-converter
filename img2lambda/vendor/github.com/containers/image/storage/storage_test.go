@@ -18,7 +18,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/containers/image/pkg/blobinfocache"
+	"github.com/containers/image/pkg/blobinfocache/memory"
 	"github.com/containers/image/types"
 	"github.com/containers/storage"
 	"github.com/containers/storage/pkg/archive"
@@ -354,7 +354,7 @@ func TestWriteRead(t *testing.T) {
 	if ref == nil {
 		t.Fatalf("ParseReference returned nil reference")
 	}
-	cache := blobinfocache.NewMemoryCache()
+	cache := memory.New()
 
 	for _, manifestFmt := range manifests {
 		dest, err := ref.NewImageDestination(context.Background(), systemContext())
@@ -520,7 +520,7 @@ func TestDuplicateName(t *testing.T) {
 	}
 
 	newStore(t)
-	cache := blobinfocache.NewMemoryCache()
+	cache := memory.New()
 
 	ref, err := Transport.ParseReference("test")
 	if err != nil {
@@ -607,7 +607,7 @@ func TestDuplicateID(t *testing.T) {
 	}
 
 	newStore(t)
-	cache := blobinfocache.NewMemoryCache()
+	cache := memory.New()
 
 	ref, err := Transport.ParseReference("@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
 	if err != nil {
@@ -697,7 +697,7 @@ func TestDuplicateNameID(t *testing.T) {
 	}
 
 	newStore(t)
-	cache := blobinfocache.NewMemoryCache()
+	cache := memory.New()
 
 	ref, err := Transport.ParseReference("test@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
 	if err != nil {
@@ -833,7 +833,7 @@ func TestSize(t *testing.T) {
 	}
 
 	newStore(t)
-	cache := blobinfocache.NewMemoryCache()
+	cache := memory.New()
 
 	ref, err := Transport.ParseReference("test")
 	if err != nil {
@@ -925,7 +925,7 @@ func TestDuplicateBlob(t *testing.T) {
 	}
 
 	newStore(t)
-	cache := blobinfocache.NewMemoryCache()
+	cache := memory.New()
 
 	ref, err := Transport.ParseReference("test")
 	if err != nil {

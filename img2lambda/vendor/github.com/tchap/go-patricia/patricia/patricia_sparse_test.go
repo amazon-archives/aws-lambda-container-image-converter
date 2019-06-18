@@ -393,6 +393,44 @@ func TestTrie_VisitPrefixes(t *testing.T) {
 	}
 }
 
+func TestPatriciaTrie_CloneSparse(t *testing.T) {
+	trie := NewTrie()
+
+	data := []testData{
+		{"Pepaneeeeeeeeeeeeee", "Pepan Zdepan", success},
+		{"Honzooooooooooooooo", "Honza Novak", success},
+		{"Jenikuuuuuuuuuuuuuu", "Jenik Poustevnicek", success},
+	}
+
+	for _, v := range data {
+		t.Logf("INSERT prefix=%v, item=%v, success=%v", v.key, v.value, v.retVal)
+		if ok := trie.Insert(Prefix(v.key), v.value); ok != v.retVal {
+			t.Errorf("Unexpected return value, expected=%v, got=%v", v.retVal, ok)
+		}
+	}
+
+	t.Log("CLONE")
+	clone := trie.Clone()
+
+	for _, v := range data {
+		t.Logf("GET prefix=%v, item=%v", v.key, v.value)
+		if item := clone.Get(Prefix(v.key)); item != v.value {
+			t.Errorf("Unexpected return value, expected=%v, got=%v", v.value, item)
+		}
+	}
+
+	prefix := "xxx"
+	item := 666
+	t.Logf("INSERT prefix=%v, item=%v", prefix, item)
+	if ok := trie.Insert(Prefix(prefix), item); !ok {
+		t.Errorf("Unexpected return value, expected=true, got=%v", ok)
+	}
+	t.Logf("GET cloned prefix=%v", prefix)
+	if item := clone.Get(Prefix(prefix)); item != nil {
+		t.Errorf("Unexpected return value, expected=nil, got=%v", item)
+	}
+}
+
 func TestParticiaTrie_Delete(t *testing.T) {
 	trie := NewTrie()
 

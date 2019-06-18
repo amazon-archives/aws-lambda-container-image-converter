@@ -252,7 +252,7 @@ func (vs *varStrings) Set(ss string) error {
 func (ds *varInts) String() string {
 	var ss []string
 	for _, d := range *ds {
-		ss = append(ss, intName(d))
+		ss = append(ss, intName(int64(d)))
 	}
 	return strings.Join(ss, ",")
 }
@@ -272,7 +272,7 @@ func (ds *varInts) Set(ss string) error {
 // It uses scientific notation for exact powers of 10.
 // It uses SI suffixes for powers of 1024.
 // If the number is small enough, it will be printed as is.
-func intName(n int) string {
+func intName(n int64) string {
 	switch n {
 	case 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9, 1e10, 1e11, 1e12:
 		s := fmt.Sprintf("%e", float64(n))

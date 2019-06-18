@@ -1283,33 +1283,25 @@ func (s *ElastiCacheInstanceDetails) SetSizeFlexEligible(v bool) *ElastiCacheIns
 //    * Simple dimension values - You can set the dimension name and values
 //    for the filters that you plan to use. For example, you can filter for
 //    INSTANCE_TYPE==m4.xlarge OR INSTANCE_TYPE==c4.large. The Expression for
-//    that looks like this:
-//
-// { "Dimensions": { "Key": "INSTANCE_TYPE", "Values": [ "m4.xlarge", “c4.large”
-//    ] } }
-//
-// The list of dimension values are OR'd together to retrieve cost or usage
-//    data. You can create Expression and DimensionValues objects using either
-//    with* methods or set* methods in multiple lines.
+//    that looks like this: { "Dimensions": { "Key": "INSTANCE_TYPE", "Values":
+//    [ "m4.xlarge", “c4.large” ] } } The list of dimension values are OR'd
+//    together to retrieve cost or usage data. You can create Expression and
+//    DimensionValues objects using either with* methods or set* methods in
+//    multiple lines.
 //
 //    * Compound dimension values with logical operations - You can use multiple
 //    Expression types and the logical operators AND/OR/NOT to create a list
 //    of one or more Expression objects. This allows you to filter on more advanced
 //    options. For example, you can filter on ((INSTANCE_TYPE == m4.large OR
 //    INSTANCE_TYPE == m3.large) OR (TAG.Type == Type1)) AND (USAGE_TYPE !=
-//    DataTransfer). The Expression for that looks like this:
-//
-// { "And": [ {"Or": [ {"Dimensions": { "Key": "INSTANCE_TYPE", "Values": [
-//    "m4.x.large", "c4.large" ] }}, {"Tags": { "Key": "TagName", "Values":
-//    ["Value1"] } } ]}, {"Not": {"Dimensions": { "Key": "USAGE_TYPE", "Values":
-//    ["DataTransfer"] }}} ] }
-//
-// Because each Expression can have only one operator, the service returns an
-//    error if more than one is specified. The following example shows an Expression
-//    object that creates an error.
-//
-//  { "And": [ ... ], "DimensionValues": { "Dimension": "USAGE_TYPE", "Values":
-//    [ "DataTransfer" ] } }
+//    DataTransfer). The Expression for that looks like this: { "And": [ {"Or":
+//    [ {"Dimensions": { "Key": "INSTANCE_TYPE", "Values": [ "m4.x.large", "c4.large"
+//    ] }}, {"Tags": { "Key": "TagName", "Values": ["Value1"] } } ]}, {"Not":
+//    {"Dimensions": { "Key": "USAGE_TYPE", "Values": ["DataTransfer"] }}} ]
+//    } Because each Expression can have only one operator, the service returns
+//    an error if more than one is specified. The following example shows an
+//    Expression object that creates an error. { "And": [ ... ], "DimensionValues":
+//    { "Dimension": "USAGE_TYPE", "Values": [ "DataTransfer" ] } }
 type Expression struct {
 	_ struct{} `type:"structure"`
 
@@ -1470,7 +1462,9 @@ type GetCostAndUsageInput struct {
 	// inclusive, but the end date is exclusive. For example, if start is 2017-01-01
 	// and end is 2017-05-01, then the cost and usage data is retrieved from 2017-01-01
 	// up to and including 2017-04-30 but not including 2017-05-01.
-	TimePeriod *DateInterval `type:"structure"`
+	//
+	// TimePeriod is a required field
+	TimePeriod *DateInterval `type:"structure" required:"true"`
 }
 
 // String returns the string representation
@@ -1486,6 +1480,9 @@ func (s GetCostAndUsageInput) GoString() string {
 // Validate inspects the fields of the type to determine if they are valid.
 func (s *GetCostAndUsageInput) Validate() error {
 	invalidParams := request.ErrInvalidParams{Context: "GetCostAndUsageInput"}
+	if s.TimePeriod == nil {
+		invalidParams.Add(request.NewErrParamRequired("TimePeriod"))
+	}
 	if s.TimePeriod != nil {
 		if err := s.TimePeriod.Validate(); err != nil {
 			invalidParams.AddNested("TimePeriod", err.(request.ErrInvalidParams))
@@ -2088,11 +2085,12 @@ type GetReservationCoverageInput struct {
 	//
 	//    * REGION
 	//
-	//    * TAG
-	//
 	//    * TENANCY
 	GroupBy []*GroupDefinition `type:"list"`
 
+	// The measurement that you want your reservation coverage reported in.
+	//
+	// Valid values are Hour, Unit, and Cost. You can use multiple values in a request.
 	Metrics []*string `type:"list"`
 
 	// The token to retrieve the next set of results. AWS provides the token when
@@ -3262,6 +3260,7 @@ func (s *ReservationPurchaseRecommendation) SetTermInYears(v string) *Reservatio
 type ReservationPurchaseRecommendationDetail struct {
 	_ struct{} `type:"structure"`
 
+	// The account that this RI recommendation is for.
 	AccountId *string `type:"string"`
 
 	// The average number of normalized units that you used in an hour during the

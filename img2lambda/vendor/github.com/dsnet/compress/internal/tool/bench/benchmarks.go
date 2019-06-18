@@ -164,7 +164,7 @@ func benchmarkSuite(codecs []string, files []file, levels, sizes []int, tick fun
 					b = testutil.ResizeData(b, n)
 				}
 				fname := strings.Replace(f.Rel, string(filepath.Separator), "_", -1)
-				name := fmt.Sprintf("%s:%d:%s", fname, l, intName(len(b)))
+				name := fmt.Sprintf("%s:%d:%s", fname, l, intName(int64(len(b))))
 				for j, c := range codecs {
 					if tick != nil {
 						tick()

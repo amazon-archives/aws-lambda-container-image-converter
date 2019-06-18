@@ -139,7 +139,7 @@ func MountContainerLayers(layerFolders []string, guestRoot string, uvm *uvm.Util
 
 	// BUGBUG Rename guestRoot better.
 	containerScratchPathInUVM := ospath.Join(uvm.OS(), guestRoot, scratchPath)
-	_, _, err := uvm.AddSCSI(hostPath, containerScratchPathInUVM)
+	_, _, err := uvm.AddSCSI(hostPath, containerScratchPathInUVM, false)
 	if err != nil {
 		cleanupOnMountFailure(uvm, wcowLayersAdded, lcowlayersAdded, attachedSCSIHostPath)
 		return nil, err

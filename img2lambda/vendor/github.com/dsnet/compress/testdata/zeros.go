@@ -4,6 +4,8 @@
 
 // +build ignore
 
+//go:generate go run zeros.go
+
 // Generates zeros.bin. This test file contains zeroed data throughout and
 // tests the best case compression scenario.
 package main

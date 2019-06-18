@@ -10,6 +10,12 @@ load helpers
 		skip "not supported by driver $STORAGE_DRIVER"
 		;;
 	esac
+	case "$STORAGE_OPTION" in
+	*mount_program*)
+		skip "test not supported when using mount_program"
+		;;
+	esac
+
 	n=5
 	host=2
 	# Create some temporary files.
@@ -97,6 +103,11 @@ load helpers
 		skip "not supported by driver $STORAGE_DRIVER"
 		;;
 	esac
+	case "$STORAGE_OPTION" in
+	*mount_program*)
+		skip "test not supported when using mount_program"
+		;;
+	esac
 	n=5
 	host=2
 	# Create some temporary files.
@@ -181,6 +192,11 @@ load helpers
 		;;
 	*)
 		skip "not supported by driver $STORAGE_DRIVER"
+		;;
+	esac
+	case "$STORAGE_OPTION" in
+	*mount_program*)
+		skip "test not supported when using mount_program"
 		;;
 	esac
 	n=5
@@ -309,6 +325,11 @@ load helpers
 		skip "not supported by driver $STORAGE_DRIVER"
 		;;
 	esac
+	case "$STORAGE_OPTION" in
+	*mount_program*)
+		skip "test not supported when using mount_program"
+		;;
+	esac
 	n=5
 	# Create some temporary files.
 	for i in $(seq $n) ; do
@@ -368,6 +389,11 @@ load helpers
 		;;
 	*)
 		skip "not supported by driver $STORAGE_DRIVER"
+		;;
+	esac
+	case "$STORAGE_OPTION" in
+	*mount_program*)
+		skip "test not supported when using mount_program"
 		;;
 	esac
 	n=5
@@ -531,6 +557,11 @@ load helpers
 		skip "not supported by driver $STORAGE_DRIVER"
 		;;
 	esac
+	case "$STORAGE_OPTION" in
+	*mount_program*)
+		skip "test not supported when using mount_program"
+		;;
+	esac
 	n=5
 	host=2
 	# Create some temporary files.
@@ -663,6 +694,11 @@ load helpers
 		;;
 	*)
 		skip "not supported by driver $STORAGE_DRIVER"
+		;;
+	esac
+	case "$STORAGE_OPTION" in
+	*mount_program*)
+		skip "test not supported when using mount_program"
 		;;
 	esac
 	n=5
@@ -802,6 +838,11 @@ load helpers
 		;;
 	*)
 		skip "not supported by driver $STORAGE_DRIVER"
+		;;
+	esac
+	case "$STORAGE_OPTION" in
+	*mount_program*)
+		skip "test not supported when using mount_program"
 		;;
 	esac
 

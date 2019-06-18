@@ -3,6 +3,7 @@
 package label
 
 import (
+	"io/ioutil"
 	"os"
 	"testing"
 )
@@ -37,8 +38,8 @@ func TestInit(t *testing.T) {
 }
 
 func TestRelabel(t *testing.T) {
-	testdir := "/tmp/test"
-	if err := os.Mkdir(testdir, 0755); err != nil {
+	testdir, err := ioutil.TempDir("/tmp", "")
+	if err != nil {
 		t.Fatal(err)
 	}
 	defer os.RemoveAll(testdir)
@@ -54,6 +55,16 @@ func TestSocketLabel(t *testing.T) {
 		t.Fatal(err)
 	}
 	if _, err := SocketLabel(); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestKeyLabel(t *testing.T) {
+	label := "system_u:object_r:container_t:s0:c1,c2"
+	if err := SetKeyLabel(label); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := KeyLabel(); err != nil {
 		t.Fatal(err)
 	}
 }

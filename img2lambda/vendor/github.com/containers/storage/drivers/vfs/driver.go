@@ -99,6 +99,14 @@ func (d *Driver) Cleanup() error {
 	return nil
 }
 
+// CreateFromTemplate creates a layer with the same contents and parent as another layer.
+func (d *Driver) CreateFromTemplate(id, template string, templateIDMappings *idtools.IDMappings, parent string, parentIDMappings *idtools.IDMappings, opts *graphdriver.CreateOpts, readWrite bool) error {
+	if readWrite {
+		return d.CreateReadWrite(id, template, opts)
+	}
+	return d.Create(id, template, opts)
+}
+
 // CreateReadWrite creates a layer that is writable for use as a container
 // file system.
 func (d *Driver) CreateReadWrite(id, parent string, opts *graphdriver.CreateOpts) error {
@@ -115,8 +123,13 @@ func (d *Driver) create(id, parent string, opts *graphdriver.CreateOpts, ro bool
 		return fmt.Errorf("--storage-opt is not supported for vfs")
 	}
 
+	idMappings := d.idMappings
+	if opts != nil && opts.IDMappings != nil {
+		idMappings = opts.IDMappings
+	}
+
 	dir := d.dir(id)
-	rootIDs := d.idMappings.RootPair()
+	rootIDs := idMappings.RootPair()
 	if err := idtools.MkdirAllAndChown(filepath.Dir(dir), 0700, rootIDs); err != nil {
 		return err
 	}

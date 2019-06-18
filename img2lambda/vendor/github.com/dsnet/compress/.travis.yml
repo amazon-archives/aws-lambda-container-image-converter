@@ -8,17 +8,29 @@ before_install:
   - (cd zstd-1.3.2 && sudo make install)
   - rm -rf zstd-1.3.2
   - sudo ldconfig
-before_script:
-  - go get github.com/golang/lint/golint
-  - go get honnef.co/go/tools/cmd/staticcheck
+  - mkdir /tmp/go1.12
+  - curl -L -s https://dl.google.com/go/go1.12.linux-amd64.tar.gz | tar -zxf - -C /tmp/go1.12 --strip-components 1
+  - unset GOROOT
+  - (GO111MODULE=on /tmp/go1.12/bin/go mod vendor)
+  - (cd /tmp && GO111MODULE=on /tmp/go1.12/bin/go get golang.org/x/lint/golint@8f45f776aaf18cebc8d65861cc70c33c60471952)
+  - (cd /tmp && GO111MODULE=on /tmp/go1.12/bin/go get honnef.co/go/tools/cmd/staticcheck@2019.1)
 matrix:
   include:
-    - go: 1.7.x
-      script: go test -v -race ./...
-    - go: 1.x
-      script: ./ztest.sh
+    - go: 1.9.x
+      script:
+        - go test -v -race ./...
+    - go: 1.10.x
+      script:
+        - go test -v -race ./...
+    - go: 1.11.x
+      script:
+        - go test -v -race ./...
+    - go: 1.12.x
+      script:
+        - ./ztest.sh
     - go: master
-      script: go test -v -race ./...
+      script:
+        - go test -v -race ./...
   allow_failures:
     - go: master
   fast_finish: true

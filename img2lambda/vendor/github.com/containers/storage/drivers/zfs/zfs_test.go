@@ -26,6 +26,10 @@ func TestZfsCreateSnap(t *testing.T) {
 	graphtest.DriverTestCreateSnap(t, "zfs")
 }
 
+func TestZfsCreateFromTemplate(t *testing.T) {
+	graphtest.DriverTestCreateFromTemplate(t, "zfs")
+}
+
 func TestZfsSetQuota(t *testing.T) {
 	graphtest.DriverTestSetQuota(t, "zfs")
 }

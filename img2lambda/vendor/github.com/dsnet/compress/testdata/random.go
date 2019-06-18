@@ -4,6 +4,8 @@
 
 // +build ignore
 
+//go:generate go run random.go
+
 // Generates random.bin. This test file contains random data throughout and
 // tests the worst case compression scenario.
 package main

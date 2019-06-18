@@ -87,6 +87,9 @@ func (c *PinpointEmail) CreateConfigurationSetRequest(input *CreateConfiguration
 //   * ErrCodeBadRequestException "BadRequestException"
 //   The input you provided is invalid.
 //
+//   * ErrCodeConcurrentModificationException "ConcurrentModificationException"
+//   The resource is being modified by another operation or thread.
+//
 // See also, https://docs.aws.amazon.com/goto/WebAPI/pinpoint-email-2018-07-26/CreateConfigurationSet
 func (c *PinpointEmail) CreateConfigurationSet(input *CreateConfigurationSetInput) (*CreateConfigurationSetOutput, error) {
 	req, out := c.CreateConfigurationSetRequest(input)
@@ -279,6 +282,9 @@ func (c *PinpointEmail) CreateDedicatedIpPoolRequest(input *CreateDedicatedIpPoo
 //   * ErrCodeBadRequestException "BadRequestException"
 //   The input you provided is invalid.
 //
+//   * ErrCodeConcurrentModificationException "ConcurrentModificationException"
+//   The resource is being modified by another operation or thread.
+//
 // See also, https://docs.aws.amazon.com/goto/WebAPI/pinpoint-email-2018-07-26/CreateDedicatedIpPool
 func (c *PinpointEmail) CreateDedicatedIpPool(input *CreateDedicatedIpPoolInput) (*CreateDedicatedIpPoolOutput, error) {
 	req, out := c.CreateDedicatedIpPoolRequest(input)
@@ -388,6 +394,9 @@ func (c *PinpointEmail) CreateDeliverabilityTestReportRequest(input *CreateDeliv
 //   * ErrCodeBadRequestException "BadRequestException"
 //   The input you provided is invalid.
 //
+//   * ErrCodeConcurrentModificationException "ConcurrentModificationException"
+//   The resource is being modified by another operation or thread.
+//
 // See also, https://docs.aws.amazon.com/goto/WebAPI/pinpoint-email-2018-07-26/CreateDeliverabilityTestReport
 func (c *PinpointEmail) CreateDeliverabilityTestReport(input *CreateDeliverabilityTestReportInput) (*CreateDeliverabilityTestReportOutput, error) {
 	req, out := c.CreateDeliverabilityTestReportRequest(input)
@@ -488,6 +497,9 @@ func (c *PinpointEmail) CreateEmailIdentityRequest(input *CreateEmailIdentityInp
 //   * ErrCodeBadRequestException "BadRequestException"
 //   The input you provided is invalid.
 //
+//   * ErrCodeConcurrentModificationException "ConcurrentModificationException"
+//   The resource is being modified by another operation or thread.
+//
 // See also, https://docs.aws.amazon.com/goto/WebAPI/pinpoint-email-2018-07-26/CreateEmailIdentity
 func (c *PinpointEmail) CreateEmailIdentity(input *CreateEmailIdentityInput) (*CreateEmailIdentityOutput, error) {
 	req, out := c.CreateEmailIdentityRequest(input)
@@ -579,6 +591,9 @@ func (c *PinpointEmail) DeleteConfigurationSetRequest(input *DeleteConfiguration
 //
 //   * ErrCodeBadRequestException "BadRequestException"
 //   The input you provided is invalid.
+//
+//   * ErrCodeConcurrentModificationException "ConcurrentModificationException"
+//   The resource is being modified by another operation or thread.
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/pinpoint-email-2018-07-26/DeleteConfigurationSet
 func (c *PinpointEmail) DeleteConfigurationSet(input *DeleteConfigurationSetInput) (*DeleteConfigurationSetOutput, error) {
@@ -759,6 +774,9 @@ func (c *PinpointEmail) DeleteDedicatedIpPoolRequest(input *DeleteDedicatedIpPoo
 //   * ErrCodeBadRequestException "BadRequestException"
 //   The input you provided is invalid.
 //
+//   * ErrCodeConcurrentModificationException "ConcurrentModificationException"
+//   The resource is being modified by another operation or thread.
+//
 // See also, https://docs.aws.amazon.com/goto/WebAPI/pinpoint-email-2018-07-26/DeleteDedicatedIpPool
 func (c *PinpointEmail) DeleteDedicatedIpPool(input *DeleteDedicatedIpPoolInput) (*DeleteDedicatedIpPoolOutput, error) {
 	req, out := c.DeleteDedicatedIpPoolRequest(input)
@@ -845,6 +863,9 @@ func (c *PinpointEmail) DeleteEmailIdentityRequest(input *DeleteEmailIdentityInp
 //
 //   * ErrCodeBadRequestException "BadRequestException"
 //   The input you provided is invalid.
+//
+//   * ErrCodeConcurrentModificationException "ConcurrentModificationException"
+//   The resource is being modified by another operation or thread.
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/pinpoint-email-2018-07-26/DeleteEmailIdentity
 func (c *PinpointEmail) DeleteEmailIdentity(input *DeleteEmailIdentityInput) (*DeleteEmailIdentityOutput, error) {
@@ -1413,7 +1434,7 @@ func (c *PinpointEmail) GetDedicatedIpsWithContext(ctx aws.Context, input *GetDe
 //    // Example iterating over at most 3 pages of a GetDedicatedIps operation.
 //    pageNum := 0
 //    err := client.GetDedicatedIpsPages(params,
-//        func(page *GetDedicatedIpsOutput, lastPage bool) bool {
+//        func(page *pinpointemail.GetDedicatedIpsOutput, lastPage bool) bool {
 //            pageNum++
 //            fmt.Println(page)
 //            return pageNum <= 3
@@ -1496,16 +1517,16 @@ func (c *PinpointEmail) GetDeliverabilityDashboardOptionsRequest(input *GetDeliv
 
 // GetDeliverabilityDashboardOptions API operation for Amazon Pinpoint Email Service.
 //
-// Show the status of the Deliverability dashboard. When the Deliverability
-// dashboard is enabled, you gain access to reputation metrics for the domains
-// that you use to send email using Amazon Pinpoint. You also gain the ability
-// to perform predictive inbox placement tests.
+// Retrieve information about the status of the Deliverability dashboard for
+// your Amazon Pinpoint account. When the Deliverability dashboard is enabled,
+// you gain access to reputation, deliverability, and other metrics for the
+// domains that you use to send email using Amazon Pinpoint. You also gain the
+// ability to perform predictive inbox placement tests.
 //
-// When you use the Deliverability dashboard, you pay a monthly charge of USD$1,250.00,
-// in addition to any other fees that you accrue by using Amazon Pinpoint. If
-// you enable the Deliverability dashboard after the first day of a calendar
-// month, AWS prorates the monthly charge based on how many days have elapsed
-// in the current calendar month.
+// When you use the Deliverability dashboard, you pay a monthly subscription
+// charge, in addition to any other fees that you accrue by using Amazon Pinpoint.
+// For more information about the features and cost of a Deliverability dashboard
+// subscription, see Amazon Pinpoint Pricing (http://aws.amazon.com/pinpoint/pricing/).
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -1626,6 +1647,94 @@ func (c *PinpointEmail) GetDeliverabilityTestReport(input *GetDeliverabilityTest
 // for more information on using Contexts.
 func (c *PinpointEmail) GetDeliverabilityTestReportWithContext(ctx aws.Context, input *GetDeliverabilityTestReportInput, opts ...request.Option) (*GetDeliverabilityTestReportOutput, error) {
 	req, out := c.GetDeliverabilityTestReportRequest(input)
+	req.SetContext(ctx)
+	req.ApplyOptions(opts...)
+	return out, req.Send()
+}
+
+const opGetDomainDeliverabilityCampaign = "GetDomainDeliverabilityCampaign"
+
+// GetDomainDeliverabilityCampaignRequest generates a "aws/request.Request" representing the
+// client's request for the GetDomainDeliverabilityCampaign operation. The "output" return
+// value will be populated with the request's response once the request completes
+// successfully.
+//
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
+//
+// See GetDomainDeliverabilityCampaign for more information on using the GetDomainDeliverabilityCampaign
+// API call, and error handling.
+//
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
+//
+//    // Example sending a request using the GetDomainDeliverabilityCampaignRequest method.
+//    req, resp := client.GetDomainDeliverabilityCampaignRequest(params)
+//
+//    err := req.Send()
+//    if err == nil { // resp is now filled
+//        fmt.Println(resp)
+//    }
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/pinpoint-email-2018-07-26/GetDomainDeliverabilityCampaign
+func (c *PinpointEmail) GetDomainDeliverabilityCampaignRequest(input *GetDomainDeliverabilityCampaignInput) (req *request.Request, output *GetDomainDeliverabilityCampaignOutput) {
+	op := &request.Operation{
+		Name:       opGetDomainDeliverabilityCampaign,
+		HTTPMethod: "GET",
+		HTTPPath:   "/v1/email/deliverability-dashboard/campaigns/{CampaignId}",
+	}
+
+	if input == nil {
+		input = &GetDomainDeliverabilityCampaignInput{}
+	}
+
+	output = &GetDomainDeliverabilityCampaignOutput{}
+	req = c.newRequest(op, input, output)
+	return
+}
+
+// GetDomainDeliverabilityCampaign API operation for Amazon Pinpoint Email Service.
+//
+// Retrieve all the deliverability data for a specific campaign. This data is
+// available for a campaign only if the campaign sent email by using a domain
+// that the Deliverability dashboard is enabled for (PutDeliverabilityDashboardOption
+// operation).
+//
+// Returns awserr.Error for service API and SDK errors. Use runtime type assertions
+// with awserr.Error's Code and Message methods to get detailed information about
+// the error.
+//
+// See the AWS API reference guide for Amazon Pinpoint Email Service's
+// API operation GetDomainDeliverabilityCampaign for usage and error information.
+//
+// Returned Error Codes:
+//   * ErrCodeTooManyRequestsException "TooManyRequestsException"
+//   Too many requests have been made to the operation.
+//
+//   * ErrCodeBadRequestException "BadRequestException"
+//   The input you provided is invalid.
+//
+//   * ErrCodeNotFoundException "NotFoundException"
+//   The resource you attempted to access doesn't exist.
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/pinpoint-email-2018-07-26/GetDomainDeliverabilityCampaign
+func (c *PinpointEmail) GetDomainDeliverabilityCampaign(input *GetDomainDeliverabilityCampaignInput) (*GetDomainDeliverabilityCampaignOutput, error) {
+	req, out := c.GetDomainDeliverabilityCampaignRequest(input)
+	return out, req.Send()
+}
+
+// GetDomainDeliverabilityCampaignWithContext is the same as GetDomainDeliverabilityCampaign with the addition of
+// the ability to pass a context and additional request options.
+//
+// See GetDomainDeliverabilityCampaign for details on how to use this API operation.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *PinpointEmail) GetDomainDeliverabilityCampaignWithContext(ctx aws.Context, input *GetDomainDeliverabilityCampaignInput, opts ...request.Option) (*GetDomainDeliverabilityCampaignOutput, error) {
+	req, out := c.GetDomainDeliverabilityCampaignRequest(input)
 	req.SetContext(ctx)
 	req.ApplyOptions(opts...)
 	return out, req.Send()
@@ -1910,7 +2019,7 @@ func (c *PinpointEmail) ListConfigurationSetsWithContext(ctx aws.Context, input 
 //    // Example iterating over at most 3 pages of a ListConfigurationSets operation.
 //    pageNum := 0
 //    err := client.ListConfigurationSetsPages(params,
-//        func(page *ListConfigurationSetsOutput, lastPage bool) bool {
+//        func(page *pinpointemail.ListConfigurationSetsOutput, lastPage bool) bool {
 //            pageNum++
 //            fmt.Println(page)
 //            return pageNum <= 3
@@ -2049,7 +2158,7 @@ func (c *PinpointEmail) ListDedicatedIpPoolsWithContext(ctx aws.Context, input *
 //    // Example iterating over at most 3 pages of a ListDedicatedIpPools operation.
 //    pageNum := 0
 //    err := client.ListDedicatedIpPoolsPages(params,
-//        func(page *ListDedicatedIpPoolsOutput, lastPage bool) bool {
+//        func(page *pinpointemail.ListDedicatedIpPoolsOutput, lastPage bool) bool {
 //            pageNum++
 //            fmt.Println(page)
 //            return pageNum <= 3
@@ -2193,7 +2302,7 @@ func (c *PinpointEmail) ListDeliverabilityTestReportsWithContext(ctx aws.Context
 //    // Example iterating over at most 3 pages of a ListDeliverabilityTestReports operation.
 //    pageNum := 0
 //    err := client.ListDeliverabilityTestReportsPages(params,
-//        func(page *ListDeliverabilityTestReportsOutput, lastPage bool) bool {
+//        func(page *pinpointemail.ListDeliverabilityTestReportsOutput, lastPage bool) bool {
 //            pageNum++
 //            fmt.Println(page)
 //            return pageNum <= 3
@@ -2228,6 +2337,150 @@ func (c *PinpointEmail) ListDeliverabilityTestReportsPagesWithContext(ctx aws.Co
 	cont := true
 	for p.Next() && cont {
 		cont = fn(p.Page().(*ListDeliverabilityTestReportsOutput), !p.HasNextPage())
+	}
+	return p.Err()
+}
+
+const opListDomainDeliverabilityCampaigns = "ListDomainDeliverabilityCampaigns"
+
+// ListDomainDeliverabilityCampaignsRequest generates a "aws/request.Request" representing the
+// client's request for the ListDomainDeliverabilityCampaigns operation. The "output" return
+// value will be populated with the request's response once the request completes
+// successfully.
+//
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
+//
+// See ListDomainDeliverabilityCampaigns for more information on using the ListDomainDeliverabilityCampaigns
+// API call, and error handling.
+//
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
+//
+//    // Example sending a request using the ListDomainDeliverabilityCampaignsRequest method.
+//    req, resp := client.ListDomainDeliverabilityCampaignsRequest(params)
+//
+//    err := req.Send()
+//    if err == nil { // resp is now filled
+//        fmt.Println(resp)
+//    }
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/pinpoint-email-2018-07-26/ListDomainDeliverabilityCampaigns
+func (c *PinpointEmail) ListDomainDeliverabilityCampaignsRequest(input *ListDomainDeliverabilityCampaignsInput) (req *request.Request, output *ListDomainDeliverabilityCampaignsOutput) {
+	op := &request.Operation{
+		Name:       opListDomainDeliverabilityCampaigns,
+		HTTPMethod: "GET",
+		HTTPPath:   "/v1/email/deliverability-dashboard/domains/{SubscribedDomain}/campaigns",
+		Paginator: &request.Paginator{
+			InputTokens:     []string{"NextToken"},
+			OutputTokens:    []string{"NextToken"},
+			LimitToken:      "PageSize",
+			TruncationToken: "",
+		},
+	}
+
+	if input == nil {
+		input = &ListDomainDeliverabilityCampaignsInput{}
+	}
+
+	output = &ListDomainDeliverabilityCampaignsOutput{}
+	req = c.newRequest(op, input, output)
+	return
+}
+
+// ListDomainDeliverabilityCampaigns API operation for Amazon Pinpoint Email Service.
+//
+// Retrieve deliverability data for all the campaigns that used a specific domain
+// to send email during a specified time range. This data is available for a
+// domain only if you enabled the Deliverability dashboard (PutDeliverabilityDashboardOption
+// operation) for the domain.
+//
+// Returns awserr.Error for service API and SDK errors. Use runtime type assertions
+// with awserr.Error's Code and Message methods to get detailed information about
+// the error.
+//
+// See the AWS API reference guide for Amazon Pinpoint Email Service's
+// API operation ListDomainDeliverabilityCampaigns for usage and error information.
+//
+// Returned Error Codes:
+//   * ErrCodeTooManyRequestsException "TooManyRequestsException"
+//   Too many requests have been made to the operation.
+//
+//   * ErrCodeBadRequestException "BadRequestException"
+//   The input you provided is invalid.
+//
+//   * ErrCodeNotFoundException "NotFoundException"
+//   The resource you attempted to access doesn't exist.
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/pinpoint-email-2018-07-26/ListDomainDeliverabilityCampaigns
+func (c *PinpointEmail) ListDomainDeliverabilityCampaigns(input *ListDomainDeliverabilityCampaignsInput) (*ListDomainDeliverabilityCampaignsOutput, error) {
+	req, out := c.ListDomainDeliverabilityCampaignsRequest(input)
+	return out, req.Send()
+}
+
+// ListDomainDeliverabilityCampaignsWithContext is the same as ListDomainDeliverabilityCampaigns with the addition of
+// the ability to pass a context and additional request options.
+//
+// See ListDomainDeliverabilityCampaigns for details on how to use this API operation.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *PinpointEmail) ListDomainDeliverabilityCampaignsWithContext(ctx aws.Context, input *ListDomainDeliverabilityCampaignsInput, opts ...request.Option) (*ListDomainDeliverabilityCampaignsOutput, error) {
+	req, out := c.ListDomainDeliverabilityCampaignsRequest(input)
+	req.SetContext(ctx)
+	req.ApplyOptions(opts...)
+	return out, req.Send()
+}
+
+// ListDomainDeliverabilityCampaignsPages iterates over the pages of a ListDomainDeliverabilityCampaigns operation,
+// calling the "fn" function with the response data for each page. To stop
+// iterating, return false from the fn function.
+//
+// See ListDomainDeliverabilityCampaigns method for more information on how to use this operation.
+//
+// Note: This operation can generate multiple requests to a service.
+//
+//    // Example iterating over at most 3 pages of a ListDomainDeliverabilityCampaigns operation.
+//    pageNum := 0
+//    err := client.ListDomainDeliverabilityCampaignsPages(params,
+//        func(page *pinpointemail.ListDomainDeliverabilityCampaignsOutput, lastPage bool) bool {
+//            pageNum++
+//            fmt.Println(page)
+//            return pageNum <= 3
+//        })
+//
+func (c *PinpointEmail) ListDomainDeliverabilityCampaignsPages(input *ListDomainDeliverabilityCampaignsInput, fn func(*ListDomainDeliverabilityCampaignsOutput, bool) bool) error {
+	return c.ListDomainDeliverabilityCampaignsPagesWithContext(aws.BackgroundContext(), input, fn)
+}
+
+// ListDomainDeliverabilityCampaignsPagesWithContext same as ListDomainDeliverabilityCampaignsPages except
+// it takes a Context and allows setting request options on the pages.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *PinpointEmail) ListDomainDeliverabilityCampaignsPagesWithContext(ctx aws.Context, input *ListDomainDeliverabilityCampaignsInput, fn func(*ListDomainDeliverabilityCampaignsOutput, bool) bool, opts ...request.Option) error {
+	p := request.Pagination{
+		NewRequest: func() (*request.Request, error) {
+			var inCpy *ListDomainDeliverabilityCampaignsInput
+			if input != nil {
+				tmp := *input
+				inCpy = &tmp
+			}
+			req, _ := c.ListDomainDeliverabilityCampaignsRequest(inCpy)
+			req.SetContext(ctx)
+			req.ApplyOptions(opts...)
+			return req, nil
+		},
+	}
+
+	cont := true
+	for p.Next() && cont {
+		cont = fn(p.Page().(*ListDomainDeliverabilityCampaignsOutput), !p.HasNextPage())
 	}
 	return p.Err()
 }
@@ -2334,7 +2587,7 @@ func (c *PinpointEmail) ListEmailIdentitiesWithContext(ctx aws.Context, input *L
 //    // Example iterating over at most 3 pages of a ListEmailIdentities operation.
 //    pageNum := 0
 //    err := client.ListEmailIdentitiesPages(params,
-//        func(page *ListEmailIdentitiesOutput, lastPage bool) bool {
+//        func(page *pinpointemail.ListEmailIdentitiesOutput, lastPage bool) bool {
 //            pageNum++
 //            fmt.Println(page)
 //            return pageNum <= 3
@@ -2371,6 +2624,96 @@ func (c *PinpointEmail) ListEmailIdentitiesPagesWithContext(ctx aws.Context, inp
 		cont = fn(p.Page().(*ListEmailIdentitiesOutput), !p.HasNextPage())
 	}
 	return p.Err()
+}
+
+const opListTagsForResource = "ListTagsForResource"
+
+// ListTagsForResourceRequest generates a "aws/request.Request" representing the
+// client's request for the ListTagsForResource operation. The "output" return
+// value will be populated with the request's response once the request completes
+// successfully.
+//
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
+//
+// See ListTagsForResource for more information on using the ListTagsForResource
+// API call, and error handling.
+//
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
+//
+//    // Example sending a request using the ListTagsForResourceRequest method.
+//    req, resp := client.ListTagsForResourceRequest(params)
+//
+//    err := req.Send()
+//    if err == nil { // resp is now filled
+//        fmt.Println(resp)
+//    }
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/pinpoint-email-2018-07-26/ListTagsForResource
+func (c *PinpointEmail) ListTagsForResourceRequest(input *ListTagsForResourceInput) (req *request.Request, output *ListTagsForResourceOutput) {
+	op := &request.Operation{
+		Name:       opListTagsForResource,
+		HTTPMethod: "GET",
+		HTTPPath:   "/v1/email/tags",
+	}
+
+	if input == nil {
+		input = &ListTagsForResourceInput{}
+	}
+
+	output = &ListTagsForResourceOutput{}
+	req = c.newRequest(op, input, output)
+	return
+}
+
+// ListTagsForResource API operation for Amazon Pinpoint Email Service.
+//
+// Retrieve a list of the tags (keys and values) that are associated with a
+// specified resource. A tag is a label that you optionally define and associate
+// with a resource in Amazon Pinpoint. Each tag consists of a required tag key
+// and an optional associated tag value. A tag key is a general label that acts
+// as a category for more specific tag values. A tag value acts as a descriptor
+// within a tag key.
+//
+// Returns awserr.Error for service API and SDK errors. Use runtime type assertions
+// with awserr.Error's Code and Message methods to get detailed information about
+// the error.
+//
+// See the AWS API reference guide for Amazon Pinpoint Email Service's
+// API operation ListTagsForResource for usage and error information.
+//
+// Returned Error Codes:
+//   * ErrCodeBadRequestException "BadRequestException"
+//   The input you provided is invalid.
+//
+//   * ErrCodeNotFoundException "NotFoundException"
+//   The resource you attempted to access doesn't exist.
+//
+//   * ErrCodeTooManyRequestsException "TooManyRequestsException"
+//   Too many requests have been made to the operation.
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/pinpoint-email-2018-07-26/ListTagsForResource
+func (c *PinpointEmail) ListTagsForResource(input *ListTagsForResourceInput) (*ListTagsForResourceOutput, error) {
+	req, out := c.ListTagsForResourceRequest(input)
+	return out, req.Send()
+}
+
+// ListTagsForResourceWithContext is the same as ListTagsForResource with the addition of
+// the ability to pass a context and additional request options.
+//
+// See ListTagsForResource for details on how to use this API operation.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *PinpointEmail) ListTagsForResourceWithContext(ctx aws.Context, input *ListTagsForResourceInput, opts ...request.Option) (*ListTagsForResourceOutput, error) {
+	req, out := c.ListTagsForResourceRequest(input)
+	req.SetContext(ctx)
+	req.ApplyOptions(opts...)
+	return out, req.Send()
 }
 
 const opPutAccountDedicatedIpWarmupAttributes = "PutAccountDedicatedIpWarmupAttributes"
@@ -3109,16 +3452,16 @@ func (c *PinpointEmail) PutDeliverabilityDashboardOptionRequest(input *PutDelive
 
 // PutDeliverabilityDashboardOption API operation for Amazon Pinpoint Email Service.
 //
-// Enable or disable the Deliverability dashboard. When you enable the Deliverability
-// dashboard, you gain access to reputation metrics for the domains that you
-// use to send email using Amazon Pinpoint. You also gain the ability to perform
-// predictive inbox placement tests.
+// Enable or disable the Deliverability dashboard for your Amazon Pinpoint account.
+// When you enable the Deliverability dashboard, you gain access to reputation,
+// deliverability, and other metrics for the domains that you use to send email
+// using Amazon Pinpoint. You also gain the ability to perform predictive inbox
+// placement tests.
 //
-// When you use the Deliverability dashboard, you pay a monthly charge of USD$1,250.00,
-// in addition to any other fees that you accrue by using Amazon Pinpoint. If
-// you enable the Deliverability dashboard after the first day of a calendar
-// month, we prorate the monthly charge based on how many days have elapsed
-// in the current calendar month.
+// When you use the Deliverability dashboard, you pay a monthly subscription
+// charge, in addition to any other fees that you accrue by using Amazon Pinpoint.
+// For more information about the features and cost of a Deliverability dashboard
+// subscription, see Amazon Pinpoint Pricing (http://aws.amazon.com/pinpoint/pricing/).
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -3489,8 +3832,8 @@ func (c *PinpointEmail) SendEmailRequest(input *SendEmailInput) (req *request.Re
 //    you specify the sender, the recipient, and the message body, and Amazon
 //    Pinpoint assembles the message for you.
 //
-//    * Raw – A raw, MIME-formatted email message. When you send this type of
-//    email, you have to specify all of the message headers, as well as the
+//    * Raw – A raw, MIME-formatted email message. When you send this type
+//    of email, you have to specify all of the message headers, as well as the
 //    message body. You can use this message type to send messages that contain
 //    attachments. The message that you specify has to be a valid MIME message.
 //
@@ -3545,6 +3888,193 @@ func (c *PinpointEmail) SendEmail(input *SendEmailInput) (*SendEmailOutput, erro
 // for more information on using Contexts.
 func (c *PinpointEmail) SendEmailWithContext(ctx aws.Context, input *SendEmailInput, opts ...request.Option) (*SendEmailOutput, error) {
 	req, out := c.SendEmailRequest(input)
+	req.SetContext(ctx)
+	req.ApplyOptions(opts...)
+	return out, req.Send()
+}
+
+const opTagResource = "TagResource"
+
+// TagResourceRequest generates a "aws/request.Request" representing the
+// client's request for the TagResource operation. The "output" return
+// value will be populated with the request's response once the request completes
+// successfully.
+//
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
+//
+// See TagResource for more information on using the TagResource
+// API call, and error handling.
+//
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
+//
+//    // Example sending a request using the TagResourceRequest method.
+//    req, resp := client.TagResourceRequest(params)
+//
+//    err := req.Send()
+//    if err == nil { // resp is now filled
+//        fmt.Println(resp)
+//    }
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/pinpoint-email-2018-07-26/TagResource
+func (c *PinpointEmail) TagResourceRequest(input *TagResourceInput) (req *request.Request, output *TagResourceOutput) {
+	op := &request.Operation{
+		Name:       opTagResource,
+		HTTPMethod: "POST",
+		HTTPPath:   "/v1/email/tags",
+	}
+
+	if input == nil {
+		input = &TagResourceInput{}
+	}
+
+	output = &TagResourceOutput{}
+	req = c.newRequest(op, input, output)
+	req.Handlers.Unmarshal.Swap(restjson.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
+	return
+}
+
+// TagResource API operation for Amazon Pinpoint Email Service.
+//
+// Add one or more tags (keys and values) to a specified resource. A tag is
+// a label that you optionally define and associate with a resource in Amazon
+// Pinpoint. Tags can help you categorize and manage resources in different
+// ways, such as by purpose, owner, environment, or other criteria. A resource
+// can have as many as 50 tags.
+//
+// Each tag consists of a required tag key and an associated tag value, both
+// of which you define. A tag key is a general label that acts as a category
+// for more specific tag values. A tag value acts as a descriptor within a tag
+// key.
+//
+// Returns awserr.Error for service API and SDK errors. Use runtime type assertions
+// with awserr.Error's Code and Message methods to get detailed information about
+// the error.
+//
+// See the AWS API reference guide for Amazon Pinpoint Email Service's
+// API operation TagResource for usage and error information.
+//
+// Returned Error Codes:
+//   * ErrCodeBadRequestException "BadRequestException"
+//   The input you provided is invalid.
+//
+//   * ErrCodeConcurrentModificationException "ConcurrentModificationException"
+//   The resource is being modified by another operation or thread.
+//
+//   * ErrCodeNotFoundException "NotFoundException"
+//   The resource you attempted to access doesn't exist.
+//
+//   * ErrCodeTooManyRequestsException "TooManyRequestsException"
+//   Too many requests have been made to the operation.
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/pinpoint-email-2018-07-26/TagResource
+func (c *PinpointEmail) TagResource(input *TagResourceInput) (*TagResourceOutput, error) {
+	req, out := c.TagResourceRequest(input)
+	return out, req.Send()
+}
+
+// TagResourceWithContext is the same as TagResource with the addition of
+// the ability to pass a context and additional request options.
+//
+// See TagResource for details on how to use this API operation.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *PinpointEmail) TagResourceWithContext(ctx aws.Context, input *TagResourceInput, opts ...request.Option) (*TagResourceOutput, error) {
+	req, out := c.TagResourceRequest(input)
+	req.SetContext(ctx)
+	req.ApplyOptions(opts...)
+	return out, req.Send()
+}
+
+const opUntagResource = "UntagResource"
+
+// UntagResourceRequest generates a "aws/request.Request" representing the
+// client's request for the UntagResource operation. The "output" return
+// value will be populated with the request's response once the request completes
+// successfully.
+//
+// Use "Send" method on the returned Request to send the API call to the service.
+// the "output" return value is not valid until after Send returns without error.
+//
+// See UntagResource for more information on using the UntagResource
+// API call, and error handling.
+//
+// This method is useful when you want to inject custom logic or configuration
+// into the SDK's request lifecycle. Such as custom headers, or retry logic.
+//
+//
+//    // Example sending a request using the UntagResourceRequest method.
+//    req, resp := client.UntagResourceRequest(params)
+//
+//    err := req.Send()
+//    if err == nil { // resp is now filled
+//        fmt.Println(resp)
+//    }
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/pinpoint-email-2018-07-26/UntagResource
+func (c *PinpointEmail) UntagResourceRequest(input *UntagResourceInput) (req *request.Request, output *UntagResourceOutput) {
+	op := &request.Operation{
+		Name:       opUntagResource,
+		HTTPMethod: "DELETE",
+		HTTPPath:   "/v1/email/tags",
+	}
+
+	if input == nil {
+		input = &UntagResourceInput{}
+	}
+
+	output = &UntagResourceOutput{}
+	req = c.newRequest(op, input, output)
+	req.Handlers.Unmarshal.Swap(restjson.UnmarshalHandler.Name, protocol.UnmarshalDiscardBodyHandler)
+	return
+}
+
+// UntagResource API operation for Amazon Pinpoint Email Service.
+//
+// Remove one or more tags (keys and values) from a specified resource.
+//
+// Returns awserr.Error for service API and SDK errors. Use runtime type assertions
+// with awserr.Error's Code and Message methods to get detailed information about
+// the error.
+//
+// See the AWS API reference guide for Amazon Pinpoint Email Service's
+// API operation UntagResource for usage and error information.
+//
+// Returned Error Codes:
+//   * ErrCodeBadRequestException "BadRequestException"
+//   The input you provided is invalid.
+//
+//   * ErrCodeConcurrentModificationException "ConcurrentModificationException"
+//   The resource is being modified by another operation or thread.
+//
+//   * ErrCodeNotFoundException "NotFoundException"
+//   The resource you attempted to access doesn't exist.
+//
+//   * ErrCodeTooManyRequestsException "TooManyRequestsException"
+//   Too many requests have been made to the operation.
+//
+// See also, https://docs.aws.amazon.com/goto/WebAPI/pinpoint-email-2018-07-26/UntagResource
+func (c *PinpointEmail) UntagResource(input *UntagResourceInput) (*UntagResourceOutput, error) {
+	req, out := c.UntagResourceRequest(input)
+	return out, req.Send()
+}
+
+// UntagResourceWithContext is the same as UntagResource with the addition of
+// the ability to pass a context and additional request options.
+//
+// See UntagResource for details on how to use this API operation.
+//
+// The context must be non-nil and will be used for request cancellation. If
+// the context is nil a panic will occur. In the future the SDK may create
+// sub-contexts for http.Requests. See https://golang.org/pkg/context/
+// for more information on using Contexts.
+func (c *PinpointEmail) UntagResourceWithContext(ctx aws.Context, input *UntagResourceInput, opts ...request.Option) (*UntagResourceOutput, error) {
+	req, out := c.UntagResourceRequest(input)
 	req.SetContext(ctx)
 	req.ApplyOptions(opts...)
 	return out, req.Send()
@@ -4031,7 +4561,9 @@ type CreateConfigurationSetInput struct {
 	_ struct{} `type:"structure"`
 
 	// The name of the configuration set.
-	ConfigurationSetName *string `type:"string"`
+	//
+	// ConfigurationSetName is a required field
+	ConfigurationSetName *string `type:"string" required:"true"`
 
 	// An object that defines the dedicated IP pool that is used to send emails
 	// that you send using the configuration set.
@@ -4044,6 +4576,10 @@ type CreateConfigurationSetInput struct {
 	// An object that defines whether or not Amazon Pinpoint can send email that
 	// you send using the configuration set.
 	SendingOptions *SendingOptions `type:"structure"`
+
+	// An array of objects that define the tags (keys and values) that you want
+	// to associate with the configuration set.
+	Tags []*Tag `type:"list"`
 
 	// An object that defines the open and click tracking options for emails that
 	// you send using the configuration set.
@@ -4063,6 +4599,19 @@ func (s CreateConfigurationSetInput) GoString() string {
 // Validate inspects the fields of the type to determine if they are valid.
 func (s *CreateConfigurationSetInput) Validate() error {
 	invalidParams := request.ErrInvalidParams{Context: "CreateConfigurationSetInput"}
+	if s.ConfigurationSetName == nil {
+		invalidParams.Add(request.NewErrParamRequired("ConfigurationSetName"))
+	}
+	if s.Tags != nil {
+		for i, v := range s.Tags {
+			if v == nil {
+				continue
+			}
+			if err := v.Validate(); err != nil {
+				invalidParams.AddNested(fmt.Sprintf("%s[%v]", "Tags", i), err.(request.ErrInvalidParams))
+			}
+		}
+	}
 	if s.TrackingOptions != nil {
 		if err := s.TrackingOptions.Validate(); err != nil {
 			invalidParams.AddNested("TrackingOptions", err.(request.ErrInvalidParams))
@@ -4099,6 +4648,12 @@ func (s *CreateConfigurationSetInput) SetSendingOptions(v *SendingOptions) *Crea
 	return s
 }
 
+// SetTags sets the Tags field's value.
+func (s *CreateConfigurationSetInput) SetTags(v []*Tag) *CreateConfigurationSetInput {
+	s.Tags = v
+	return s
+}
+
 // SetTrackingOptions sets the TrackingOptions field's value.
 func (s *CreateConfigurationSetInput) SetTrackingOptions(v *TrackingOptions) *CreateConfigurationSetInput {
 	s.TrackingOptions = v
@@ -4129,6 +4684,10 @@ type CreateDedicatedIpPoolInput struct {
 	//
 	// PoolName is a required field
 	PoolName *string `type:"string" required:"true"`
+
+	// An object that defines the tags (keys and values) that you want to associate
+	// with the pool.
+	Tags []*Tag `type:"list"`
 }
 
 // String returns the string representation
@@ -4147,6 +4706,16 @@ func (s *CreateDedicatedIpPoolInput) Validate() error {
 	if s.PoolName == nil {
 		invalidParams.Add(request.NewErrParamRequired("PoolName"))
 	}
+	if s.Tags != nil {
+		for i, v := range s.Tags {
+			if v == nil {
+				continue
+			}
+			if err := v.Validate(); err != nil {
+				invalidParams.AddNested(fmt.Sprintf("%s[%v]", "Tags", i), err.(request.ErrInvalidParams))
+			}
+		}
+	}
 
 	if invalidParams.Len() > 0 {
 		return invalidParams
@@ -4157,6 +4726,12 @@ func (s *CreateDedicatedIpPoolInput) Validate() error {
 // SetPoolName sets the PoolName field's value.
 func (s *CreateDedicatedIpPoolInput) SetPoolName(v string) *CreateDedicatedIpPoolInput {
 	s.PoolName = &v
+	return s
+}
+
+// SetTags sets the Tags field's value.
+func (s *CreateDedicatedIpPoolInput) SetTags(v []*Tag) *CreateDedicatedIpPoolInput {
+	s.Tags = v
 	return s
 }
 
@@ -4202,6 +4777,10 @@ type CreateDeliverabilityTestReportInput struct {
 	// A unique name that helps you to identify the predictive inbox placement test
 	// when you retrieve the results.
 	ReportName *string `type:"string"`
+
+	// An array of objects that define the tags (keys and values) that you want
+	// to associate with the predictive inbox placement test.
+	Tags []*Tag `type:"list"`
 }
 
 // String returns the string representation
@@ -4228,6 +4807,16 @@ func (s *CreateDeliverabilityTestReportInput) Validate() error {
 			invalidParams.AddNested("Content", err.(request.ErrInvalidParams))
 		}
 	}
+	if s.Tags != nil {
+		for i, v := range s.Tags {
+			if v == nil {
+				continue
+			}
+			if err := v.Validate(); err != nil {
+				invalidParams.AddNested(fmt.Sprintf("%s[%v]", "Tags", i), err.(request.ErrInvalidParams))
+			}
+		}
+	}
 
 	if invalidParams.Len() > 0 {
 		return invalidParams
@@ -4250,6 +4839,12 @@ func (s *CreateDeliverabilityTestReportInput) SetFromEmailAddress(v string) *Cre
 // SetReportName sets the ReportName field's value.
 func (s *CreateDeliverabilityTestReportInput) SetReportName(v string) *CreateDeliverabilityTestReportInput {
 	s.ReportName = &v
+	return s
+}
+
+// SetTags sets the Tags field's value.
+func (s *CreateDeliverabilityTestReportInput) SetTags(v []*Tag) *CreateDeliverabilityTestReportInput {
+	s.Tags = v
 	return s
 }
 
@@ -4303,6 +4898,10 @@ type CreateEmailIdentityInput struct {
 	//
 	// EmailIdentity is a required field
 	EmailIdentity *string `type:"string" required:"true"`
+
+	// An array of objects that define the tags (keys and values) that you want
+	// to associate with the email identity.
+	Tags []*Tag `type:"list"`
 }
 
 // String returns the string representation
@@ -4321,6 +4920,16 @@ func (s *CreateEmailIdentityInput) Validate() error {
 	if s.EmailIdentity == nil {
 		invalidParams.Add(request.NewErrParamRequired("EmailIdentity"))
 	}
+	if s.Tags != nil {
+		for i, v := range s.Tags {
+			if v == nil {
+				continue
+			}
+			if err := v.Validate(); err != nil {
+				invalidParams.AddNested(fmt.Sprintf("%s[%v]", "Tags", i), err.(request.ErrInvalidParams))
+			}
+		}
+	}
 
 	if invalidParams.Len() > 0 {
 		return invalidParams
@@ -4331,6 +4940,12 @@ func (s *CreateEmailIdentityInput) Validate() error {
 // SetEmailIdentity sets the EmailIdentity field's value.
 func (s *CreateEmailIdentityInput) SetEmailIdentity(v string) *CreateEmailIdentityInput {
 	s.EmailIdentity = &v
+	return s
+}
+
+// SetTags sets the Tags field's value.
+func (s *CreateEmailIdentityInput) SetTags(v []*Tag) *CreateEmailIdentityInput {
+	s.Tags = v
 	return s
 }
 
@@ -4352,7 +4967,7 @@ type CreateEmailIdentityOutput struct {
 
 	// Specifies whether or not the identity is verified. In Amazon Pinpoint, you
 	// can only send email from verified email addresses or domains. For more information
-	// about verifying identities, see the Amazon Pinpoint User Guide (http://docs.aws.amazon.com/pinpoint/latest/userguide/channels-email-manage-verify.html).
+	// about verifying identities, see the Amazon Pinpoint User Guide (https://docs.aws.amazon.com/pinpoint/latest/userguide/channels-email-manage-verify.html).
 	VerifiedForSendingStatus *bool `type:"boolean"`
 }
 
@@ -4389,7 +5004,7 @@ func (s *CreateEmailIdentityOutput) SetVerifiedForSendingStatus(v bool) *CreateE
 type DailyVolume struct {
 	_ struct{} `type:"structure"`
 
-	// An object that contains inbox placement metrics for a specifid day in the
+	// An object that contains inbox placement metrics for a specified day in the
 	// analysis period, broken out by the recipient's email provider.
 	DomainIspPlacements []*DomainIspPlacement `type:"list"`
 
@@ -4834,6 +5449,12 @@ type DeliveryOptions struct {
 	// The name of the dedicated IP pool that you want to associate with the configuration
 	// set.
 	SendingPoolName *string `type:"string"`
+
+	// Specifies whether Amazon Pinpoint should require that incoming email is delivered
+	// over a connection that’s encrypted by using Transport Layer Security (TLS).
+	// If this value is set to Require, Amazon Pinpoint will bounce email messages
+	// that cannot be delivered over TLS. The default value is Optional.
+	TlsPolicy *string `type:"string" enum:"TlsPolicy"`
 }
 
 // String returns the string representation
@@ -4849,6 +5470,12 @@ func (s DeliveryOptions) GoString() string {
 // SetSendingPoolName sets the SendingPoolName field's value.
 func (s *DeliveryOptions) SetSendingPoolName(v string) *DeliveryOptions {
 	s.SendingPoolName = &v
+	return s
+}
+
+// SetTlsPolicy sets the TlsPolicy field's value.
+func (s *DeliveryOptions) SetTlsPolicy(v string) *DeliveryOptions {
+	s.TlsPolicy = &v
 	return s
 }
 
@@ -4918,14 +5545,14 @@ type DkimAttributes struct {
 	//    for the domain and determined that they're correct. Amazon Pinpoint can
 	//    now send DKIM-signed email from the identity.
 	//
-	//    * FAILED – Amazon Pinpoint was unable to locate the DKIM records in the
-	//    DNS settings for the domain, and won't continue to search for them.
+	//    * FAILED – Amazon Pinpoint was unable to locate the DKIM records in
+	//    the DNS settings for the domain, and won't continue to search for them.
 	//
 	//    * TEMPORARY_FAILURE – A temporary issue occurred, which prevented Amazon
 	//    Pinpoint from determining the DKIM status for the domain.
 	//
-	//    * NOT_STARTED – Amazon Pinpoint hasn't yet started searching for the DKIM
-	//    records in the DKIM records for the domain.
+	//    * NOT_STARTED – Amazon Pinpoint hasn't yet started searching for the
+	//    DKIM records in the DKIM records for the domain.
 	Status *string `type:"string" enum:"DkimStatus"`
 
 	// A set of unique strings that you use to create a set of CNAME records that
@@ -4961,6 +5588,216 @@ func (s *DkimAttributes) SetStatus(v string) *DkimAttributes {
 // SetTokens sets the Tokens field's value.
 func (s *DkimAttributes) SetTokens(v []*string) *DkimAttributes {
 	s.Tokens = v
+	return s
+}
+
+// An object that contains the deliverability data for a specific campaign.
+// This data is available for a campaign only if the campaign sent email by
+// using a domain that the Deliverability dashboard is enabled for (PutDeliverabilityDashboardOption
+// operation).
+type DomainDeliverabilityCampaign struct {
+	_ struct{} `type:"structure"`
+
+	// The unique identifier for the campaign. Amazon Pinpoint automatically generates
+	// and assigns this identifier to a campaign. This value is not the same as
+	// the campaign identifier that Amazon Pinpoint assigns to campaigns that you
+	// create and manage by using the Amazon Pinpoint API or the Amazon Pinpoint
+	// console.
+	CampaignId *string `type:"string"`
+
+	// The percentage of email messages that were deleted by recipients, without
+	// being opened first. Due to technical limitations, this value only includes
+	// recipients who opened the message by using an email client that supports
+	// images.
+	DeleteRate *float64 `type:"double"`
+
+	// The major email providers who handled the email message.
+	Esps []*string `type:"list"`
+
+	// The first time, in Unix time format, when the email message was delivered
+	// to any recipient's inbox. This value can help you determine how long it took
+	// for a campaign to deliver an email message.
+	FirstSeenDateTime *time.Time `type:"timestamp"`
+
+	// The verified email address that the email message was sent from.
+	FromAddress *string `type:"string"`
+
+	// The URL of an image that contains a snapshot of the email message that was
+	// sent.
+	ImageUrl *string `type:"string"`
+
+	// The number of email messages that were delivered to recipients’ inboxes.
+	InboxCount *int64 `type:"long"`
+
+	// The last time, in Unix time format, when the email message was delivered
+	// to any recipient's inbox. This value can help you determine how long it took
+	// for a campaign to deliver an email message.
+	LastSeenDateTime *time.Time `type:"timestamp"`
+
+	// The projected number of recipients that the email message was sent to.
+	ProjectedVolume *int64 `type:"long"`
+
+	// The percentage of email messages that were opened and then deleted by recipients.
+	// Due to technical limitations, this value only includes recipients who opened
+	// the message by using an email client that supports images.
+	ReadDeleteRate *float64 `type:"double"`
+
+	// The percentage of email messages that were opened by recipients. Due to technical
+	// limitations, this value only includes recipients who opened the message by
+	// using an email client that supports images.
+	ReadRate *float64 `type:"double"`
+
+	// The IP addresses that were used to send the email message.
+	SendingIps []*string `type:"list"`
+
+	// The number of email messages that were delivered to recipients' spam or junk
+	// mail folders.
+	SpamCount *int64 `type:"long"`
+
+	// The subject line, or title, of the email message.
+	Subject *string `type:"string"`
+}
+
+// String returns the string representation
+func (s DomainDeliverabilityCampaign) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DomainDeliverabilityCampaign) GoString() string {
+	return s.String()
+}
+
+// SetCampaignId sets the CampaignId field's value.
+func (s *DomainDeliverabilityCampaign) SetCampaignId(v string) *DomainDeliverabilityCampaign {
+	s.CampaignId = &v
+	return s
+}
+
+// SetDeleteRate sets the DeleteRate field's value.
+func (s *DomainDeliverabilityCampaign) SetDeleteRate(v float64) *DomainDeliverabilityCampaign {
+	s.DeleteRate = &v
+	return s
+}
+
+// SetEsps sets the Esps field's value.
+func (s *DomainDeliverabilityCampaign) SetEsps(v []*string) *DomainDeliverabilityCampaign {
+	s.Esps = v
+	return s
+}
+
+// SetFirstSeenDateTime sets the FirstSeenDateTime field's value.
+func (s *DomainDeliverabilityCampaign) SetFirstSeenDateTime(v time.Time) *DomainDeliverabilityCampaign {
+	s.FirstSeenDateTime = &v
+	return s
+}
+
+// SetFromAddress sets the FromAddress field's value.
+func (s *DomainDeliverabilityCampaign) SetFromAddress(v string) *DomainDeliverabilityCampaign {
+	s.FromAddress = &v
+	return s
+}
+
+// SetImageUrl sets the ImageUrl field's value.
+func (s *DomainDeliverabilityCampaign) SetImageUrl(v string) *DomainDeliverabilityCampaign {
+	s.ImageUrl = &v
+	return s
+}
+
+// SetInboxCount sets the InboxCount field's value.
+func (s *DomainDeliverabilityCampaign) SetInboxCount(v int64) *DomainDeliverabilityCampaign {
+	s.InboxCount = &v
+	return s
+}
+
+// SetLastSeenDateTime sets the LastSeenDateTime field's value.
+func (s *DomainDeliverabilityCampaign) SetLastSeenDateTime(v time.Time) *DomainDeliverabilityCampaign {
+	s.LastSeenDateTime = &v
+	return s
+}
+
+// SetProjectedVolume sets the ProjectedVolume field's value.
+func (s *DomainDeliverabilityCampaign) SetProjectedVolume(v int64) *DomainDeliverabilityCampaign {
+	s.ProjectedVolume = &v
+	return s
+}
+
+// SetReadDeleteRate sets the ReadDeleteRate field's value.
+func (s *DomainDeliverabilityCampaign) SetReadDeleteRate(v float64) *DomainDeliverabilityCampaign {
+	s.ReadDeleteRate = &v
+	return s
+}
+
+// SetReadRate sets the ReadRate field's value.
+func (s *DomainDeliverabilityCampaign) SetReadRate(v float64) *DomainDeliverabilityCampaign {
+	s.ReadRate = &v
+	return s
+}
+
+// SetSendingIps sets the SendingIps field's value.
+func (s *DomainDeliverabilityCampaign) SetSendingIps(v []*string) *DomainDeliverabilityCampaign {
+	s.SendingIps = v
+	return s
+}
+
+// SetSpamCount sets the SpamCount field's value.
+func (s *DomainDeliverabilityCampaign) SetSpamCount(v int64) *DomainDeliverabilityCampaign {
+	s.SpamCount = &v
+	return s
+}
+
+// SetSubject sets the Subject field's value.
+func (s *DomainDeliverabilityCampaign) SetSubject(v string) *DomainDeliverabilityCampaign {
+	s.Subject = &v
+	return s
+}
+
+// An object that contains information about the Deliverability dashboard subscription
+// for a verified domain that you use to send email and currently has an active
+// Deliverability dashboard subscription. If a Deliverability dashboard subscription
+// is active for a domain, you gain access to reputation, inbox placement, and
+// other metrics for the domain.
+type DomainDeliverabilityTrackingOption struct {
+	_ struct{} `type:"structure"`
+
+	// A verified domain that’s associated with your AWS account and currently
+	// has an active Deliverability dashboard subscription.
+	Domain *string `type:"string"`
+
+	// An object that contains information about the inbox placement data settings
+	// for the domain.
+	InboxPlacementTrackingOption *InboxPlacementTrackingOption `type:"structure"`
+
+	// The date, in Unix time format, when you enabled the Deliverability dashboard
+	// for the domain.
+	SubscriptionStartDate *time.Time `type:"timestamp"`
+}
+
+// String returns the string representation
+func (s DomainDeliverabilityTrackingOption) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DomainDeliverabilityTrackingOption) GoString() string {
+	return s.String()
+}
+
+// SetDomain sets the Domain field's value.
+func (s *DomainDeliverabilityTrackingOption) SetDomain(v string) *DomainDeliverabilityTrackingOption {
+	s.Domain = &v
+	return s
+}
+
+// SetInboxPlacementTrackingOption sets the InboxPlacementTrackingOption field's value.
+func (s *DomainDeliverabilityTrackingOption) SetInboxPlacementTrackingOption(v *InboxPlacementTrackingOption) *DomainDeliverabilityTrackingOption {
+	s.InboxPlacementTrackingOption = v
+	return s
+}
+
+// SetSubscriptionStartDate sets the SubscriptionStartDate field's value.
+func (s *DomainDeliverabilityTrackingOption) SetSubscriptionStartDate(v time.Time) *DomainDeliverabilityTrackingOption {
+	s.SubscriptionStartDate = &v
 	return s
 }
 
@@ -5344,9 +6181,9 @@ type GetAccountOutput struct {
 	//    * HEALTHY – There are no reputation-related issues that currently impact
 	//    your account.
 	//
-	//    * PROBATION – We've identified some issues with your Amazon Pinpoint account.
-	//    We're placing your account under review while you work on correcting these
-	//    issues.
+	//    * PROBATION – We've identified some issues with your Amazon Pinpoint
+	//    account. We're placing your account under review while you work on correcting
+	//    these issues.
 	//
 	//    * SHUTDOWN – Your account's ability to send email is currently paused
 	//    because of an issue with the email sent from your account. When you correct
@@ -5428,7 +6265,7 @@ type GetBlacklistReportsInput struct {
 	// using Amazon Pinpoint or Amazon SES.
 	//
 	// BlacklistItemNames is a required field
-	BlacklistItemNames []*string `type:"list" required:"true"`
+	BlacklistItemNames []*string `location:"querystring" locationName:"BlacklistItemNames" type:"list" required:"true"`
 }
 
 // String returns the string representation
@@ -5617,6 +6454,10 @@ type GetConfigurationSetOutput struct {
 	// you send using the configuration set.
 	SendingOptions *SendingOptions `type:"structure"`
 
+	// An array of objects that define the tags (keys and values) that are associated
+	// with the configuration set.
+	Tags []*Tag `type:"list"`
+
 	// An object that defines the open and click tracking options for emails that
 	// you send using the configuration set.
 	TrackingOptions *TrackingOptions `type:"structure"`
@@ -5653,6 +6494,12 @@ func (s *GetConfigurationSetOutput) SetReputationOptions(v *ReputationOptions) *
 // SetSendingOptions sets the SendingOptions field's value.
 func (s *GetConfigurationSetOutput) SetSendingOptions(v *SendingOptions) *GetConfigurationSetOutput {
 	s.SendingOptions = v
+	return s
+}
+
+// SetTags sets the Tags field's value.
+func (s *GetConfigurationSetOutput) SetTags(v []*Tag) *GetConfigurationSetOutput {
+	s.Tags = v
 	return s
 }
 
@@ -5736,16 +6583,16 @@ type GetDedicatedIpsInput struct {
 
 	// A token returned from a previous call to GetDedicatedIps to indicate the
 	// position of the dedicated IP pool in the list of IP pools.
-	NextToken *string `type:"string"`
+	NextToken *string `location:"querystring" locationName:"NextToken" type:"string"`
 
 	// The number of results to show in a single call to GetDedicatedIpsRequest.
 	// If the number of results is larger than the number you specified in this
 	// parameter, then the response includes a NextToken element, which you can
 	// use to obtain additional results.
-	PageSize *int64 `type:"integer"`
+	PageSize *int64 `location:"querystring" locationName:"PageSize" type:"integer"`
 
 	// The name of the IP pool that the dedicated IP address is associated with.
-	PoolName *string `type:"string"`
+	PoolName *string `location:"querystring" locationName:"PoolName" type:"string"`
 }
 
 // String returns the string representation
@@ -5813,17 +6660,16 @@ func (s *GetDedicatedIpsOutput) SetNextToken(v string) *GetDedicatedIpsOutput {
 	return s
 }
 
-// A request to retrieve the status of the Deliverability dashboard for your
-// account. When the Deliverability dashboard is enabled, you gain access to
-// reputation metrics for the domains that you use to send email using Amazon
-// Pinpoint. You also gain the ability to perform predictive inbox placement
-// tests.
+// Retrieve information about the status of the Deliverability dashboard for
+// your Amazon Pinpoint account. When the Deliverability dashboard is enabled,
+// you gain access to reputation, deliverability, and other metrics for the
+// domains that you use to send email using Amazon Pinpoint. You also gain the
+// ability to perform predictive inbox placement tests.
 //
-// When you use the Deliverability dashboard, you pay a monthly charge of USD$1,250.00,
-// in addition to any other fees that you accrue by using Amazon Pinpoint. If
-// you enable the Deliverability dashboard after the first day of a calendar
-// month, AWS prorates the monthly charge based on how many days have elapsed
-// in the current calendar month.
+// When you use the Deliverability dashboard, you pay a monthly subscription
+// charge, in addition to any other fees that you accrue by using Amazon Pinpoint.
+// For more information about the features and cost of a Deliverability dashboard
+// subscription, see Amazon Pinpoint Pricing (http://aws.amazon.com/pinpoint/pricing/).
 type GetDeliverabilityDashboardOptionsInput struct {
 	_ struct{} `type:"structure"`
 }
@@ -5843,11 +6689,32 @@ func (s GetDeliverabilityDashboardOptionsInput) GoString() string {
 type GetDeliverabilityDashboardOptionsOutput struct {
 	_ struct{} `type:"structure"`
 
-	// Indicates whether the Deliverability dashboard is enabled. If the value is
-	// true, then the dashboard is enabled.
+	// The current status of your Deliverability dashboard subscription. If this
+	// value is PENDING_EXPIRATION, your subscription is scheduled to expire at
+	// the end of the current calendar month.
+	AccountStatus *string `type:"string" enum:"DeliverabilityDashboardAccountStatus"`
+
+	// An array of objects, one for each verified domain that you use to send email
+	// and currently has an active Deliverability dashboard subscription that isn’t
+	// scheduled to expire at the end of the current calendar month.
+	ActiveSubscribedDomains []*DomainDeliverabilityTrackingOption `type:"list"`
+
+	// Specifies whether the Deliverability dashboard is enabled for your Amazon
+	// Pinpoint account. If this value is true, the dashboard is enabled.
 	//
 	// DashboardEnabled is a required field
 	DashboardEnabled *bool `type:"boolean" required:"true"`
+
+	// An array of objects, one for each verified domain that you use to send email
+	// and currently has an active Deliverability dashboard subscription that's
+	// scheduled to expire at the end of the current calendar month.
+	PendingExpirationSubscribedDomains []*DomainDeliverabilityTrackingOption `type:"list"`
+
+	// The date, in Unix time format, when your current subscription to the Deliverability
+	// dashboard is scheduled to expire, if your subscription is scheduled to expire
+	// at the end of the current calendar month. This value is null if you have
+	// an active subscription that isn’t due to expire at the end of the month.
+	SubscriptionExpiryDate *time.Time `type:"timestamp"`
 }
 
 // String returns the string representation
@@ -5860,9 +6727,33 @@ func (s GetDeliverabilityDashboardOptionsOutput) GoString() string {
 	return s.String()
 }
 
+// SetAccountStatus sets the AccountStatus field's value.
+func (s *GetDeliverabilityDashboardOptionsOutput) SetAccountStatus(v string) *GetDeliverabilityDashboardOptionsOutput {
+	s.AccountStatus = &v
+	return s
+}
+
+// SetActiveSubscribedDomains sets the ActiveSubscribedDomains field's value.
+func (s *GetDeliverabilityDashboardOptionsOutput) SetActiveSubscribedDomains(v []*DomainDeliverabilityTrackingOption) *GetDeliverabilityDashboardOptionsOutput {
+	s.ActiveSubscribedDomains = v
+	return s
+}
+
 // SetDashboardEnabled sets the DashboardEnabled field's value.
 func (s *GetDeliverabilityDashboardOptionsOutput) SetDashboardEnabled(v bool) *GetDeliverabilityDashboardOptionsOutput {
 	s.DashboardEnabled = &v
+	return s
+}
+
+// SetPendingExpirationSubscribedDomains sets the PendingExpirationSubscribedDomains field's value.
+func (s *GetDeliverabilityDashboardOptionsOutput) SetPendingExpirationSubscribedDomains(v []*DomainDeliverabilityTrackingOption) *GetDeliverabilityDashboardOptionsOutput {
+	s.PendingExpirationSubscribedDomains = v
+	return s
+}
+
+// SetSubscriptionExpiryDate sets the SubscriptionExpiryDate field's value.
+func (s *GetDeliverabilityDashboardOptionsOutput) SetSubscriptionExpiryDate(v time.Time) *GetDeliverabilityDashboardOptionsOutput {
+	s.SubscriptionExpiryDate = &v
 	return s
 }
 
@@ -5933,6 +6824,10 @@ type GetDeliverabilityTestReportOutput struct {
 	//
 	// OverallPlacement is a required field
 	OverallPlacement *PlacementStatistics `type:"structure" required:"true"`
+
+	// An array of objects that define the tags (keys and values) that are associated
+	// with the predictive inbox placement test.
+	Tags []*Tag `type:"list"`
 }
 
 // String returns the string representation
@@ -5969,6 +6864,90 @@ func (s *GetDeliverabilityTestReportOutput) SetOverallPlacement(v *PlacementStat
 	return s
 }
 
+// SetTags sets the Tags field's value.
+func (s *GetDeliverabilityTestReportOutput) SetTags(v []*Tag) *GetDeliverabilityTestReportOutput {
+	s.Tags = v
+	return s
+}
+
+// Retrieve all the deliverability data for a specific campaign. This data is
+// available for a campaign only if the campaign sent email by using a domain
+// that the Deliverability dashboard is enabled for (PutDeliverabilityDashboardOption
+// operation).
+type GetDomainDeliverabilityCampaignInput struct {
+	_ struct{} `type:"structure"`
+
+	// The unique identifier for the campaign. Amazon Pinpoint automatically generates
+	// and assigns this identifier to a campaign. This value is not the same as
+	// the campaign identifier that Amazon Pinpoint assigns to campaigns that you
+	// create and manage by using the Amazon Pinpoint API or the Amazon Pinpoint
+	// console.
+	//
+	// CampaignId is a required field
+	CampaignId *string `location:"uri" locationName:"CampaignId" type:"string" required:"true"`
+}
+
+// String returns the string representation
+func (s GetDomainDeliverabilityCampaignInput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s GetDomainDeliverabilityCampaignInput) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *GetDomainDeliverabilityCampaignInput) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "GetDomainDeliverabilityCampaignInput"}
+	if s.CampaignId == nil {
+		invalidParams.Add(request.NewErrParamRequired("CampaignId"))
+	}
+	if s.CampaignId != nil && len(*s.CampaignId) < 1 {
+		invalidParams.Add(request.NewErrParamMinLen("CampaignId", 1))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetCampaignId sets the CampaignId field's value.
+func (s *GetDomainDeliverabilityCampaignInput) SetCampaignId(v string) *GetDomainDeliverabilityCampaignInput {
+	s.CampaignId = &v
+	return s
+}
+
+// An object that contains all the deliverability data for a specific campaign.
+// This data is available for a campaign only if the campaign sent email by
+// using a domain that the Deliverability dashboard is enabled for (PutDeliverabilityDashboardOption
+// operation).
+type GetDomainDeliverabilityCampaignOutput struct {
+	_ struct{} `type:"structure"`
+
+	// An object that contains the deliverability data for the campaign.
+	//
+	// DomainDeliverabilityCampaign is a required field
+	DomainDeliverabilityCampaign *DomainDeliverabilityCampaign `type:"structure" required:"true"`
+}
+
+// String returns the string representation
+func (s GetDomainDeliverabilityCampaignOutput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s GetDomainDeliverabilityCampaignOutput) GoString() string {
+	return s.String()
+}
+
+// SetDomainDeliverabilityCampaign sets the DomainDeliverabilityCampaign field's value.
+func (s *GetDomainDeliverabilityCampaignOutput) SetDomainDeliverabilityCampaign(v *DomainDeliverabilityCampaign) *GetDomainDeliverabilityCampaignOutput {
+	s.DomainDeliverabilityCampaign = v
+	return s
+}
+
 // A request to obtain deliverability metrics for a domain.
 type GetDomainStatisticsReportInput struct {
 	_ struct{} `type:"structure"`
@@ -5983,13 +6962,13 @@ type GetDomainStatisticsReportInput struct {
 	// 30 days after the StartDate.
 	//
 	// EndDate is a required field
-	EndDate *time.Time `type:"timestamp" required:"true"`
+	EndDate *time.Time `location:"querystring" locationName:"EndDate" type:"timestamp" required:"true"`
 
 	// The first day (in Unix time) that you want to obtain domain deliverability
 	// metrics for.
 	//
 	// StartDate is a required field
-	StartDate *time.Time `type:"timestamp" required:"true"`
+	StartDate *time.Time `location:"querystring" locationName:"StartDate" type:"timestamp" required:"true"`
 }
 
 // String returns the string representation
@@ -6157,9 +7136,13 @@ type GetEmailIdentityOutput struct {
 	// email identity.
 	MailFromAttributes *MailFromAttributes `type:"structure"`
 
+	// An array of objects that define the tags (keys and values) that are associated
+	// with the email identity.
+	Tags []*Tag `type:"list"`
+
 	// Specifies whether or not the identity is verified. In Amazon Pinpoint, you
 	// can only send email from verified email addresses or domains. For more information
-	// about verifying identities, see the Amazon Pinpoint User Guide (http://docs.aws.amazon.com/pinpoint/latest/userguide/channels-email-manage-verify.html).
+	// about verifying identities, see the Amazon Pinpoint User Guide (https://docs.aws.amazon.com/pinpoint/latest/userguide/channels-email-manage-verify.html).
 	VerifiedForSendingStatus *bool `type:"boolean"`
 }
 
@@ -6194,6 +7177,12 @@ func (s *GetEmailIdentityOutput) SetIdentityType(v string) *GetEmailIdentityOutp
 // SetMailFromAttributes sets the MailFromAttributes field's value.
 func (s *GetEmailIdentityOutput) SetMailFromAttributes(v *MailFromAttributes) *GetEmailIdentityOutput {
 	s.MailFromAttributes = v
+	return s
+}
+
+// SetTags sets the Tags field's value.
+func (s *GetEmailIdentityOutput) SetTags(v []*Tag) *GetEmailIdentityOutput {
+	s.Tags = v
 	return s
 }
 
@@ -6253,6 +7242,43 @@ func (s *IdentityInfo) SetIdentityType(v string) *IdentityInfo {
 // SetSendingEnabled sets the SendingEnabled field's value.
 func (s *IdentityInfo) SetSendingEnabled(v bool) *IdentityInfo {
 	s.SendingEnabled = &v
+	return s
+}
+
+// An object that contains information about the inbox placement data settings
+// for a verified domain that’s associated with your AWS account. This data
+// is available only if you enabled the Deliverability dashboard for the domain
+// (PutDeliverabilityDashboardOption operation).
+type InboxPlacementTrackingOption struct {
+	_ struct{} `type:"structure"`
+
+	// Specifies whether inbox placement data is being tracked for the domain.
+	Global *bool `type:"boolean"`
+
+	// An array of strings, one for each major email provider that the inbox placement
+	// data applies to.
+	TrackedIsps []*string `type:"list"`
+}
+
+// String returns the string representation
+func (s InboxPlacementTrackingOption) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s InboxPlacementTrackingOption) GoString() string {
+	return s.String()
+}
+
+// SetGlobal sets the Global field's value.
+func (s *InboxPlacementTrackingOption) SetGlobal(v bool) *InboxPlacementTrackingOption {
+	s.Global = &v
+	return s
+}
+
+// SetTrackedIsps sets the TrackedIsps field's value.
+func (s *InboxPlacementTrackingOption) SetTrackedIsps(v []*string) *InboxPlacementTrackingOption {
+	s.TrackedIsps = v
 	return s
 }
 
@@ -6354,13 +7380,13 @@ type ListConfigurationSetsInput struct {
 
 	// A token returned from a previous call to ListConfigurationSets to indicate
 	// the position in the list of configuration sets.
-	NextToken *string `type:"string"`
+	NextToken *string `location:"querystring" locationName:"NextToken" type:"string"`
 
 	// The number of results to show in a single call to ListConfigurationSets.
 	// If the number of results is larger than the number you specified in this
 	// parameter, then the response includes a NextToken element, which you can
 	// use to obtain additional results.
-	PageSize *int64 `type:"integer"`
+	PageSize *int64 `location:"querystring" locationName:"PageSize" type:"integer"`
 }
 
 // String returns the string representation
@@ -6428,13 +7454,13 @@ type ListDedicatedIpPoolsInput struct {
 
 	// A token returned from a previous call to ListDedicatedIpPools to indicate
 	// the position in the list of dedicated IP pools.
-	NextToken *string `type:"string"`
+	NextToken *string `location:"querystring" locationName:"NextToken" type:"string"`
 
 	// The number of results to show in a single call to ListDedicatedIpPools. If
 	// the number of results is larger than the number you specified in this parameter,
 	// then the response includes a NextToken element, which you can use to obtain
 	// additional results.
-	PageSize *int64 `type:"integer"`
+	PageSize *int64 `location:"querystring" locationName:"PageSize" type:"integer"`
 }
 
 // String returns the string representation
@@ -6502,7 +7528,7 @@ type ListDeliverabilityTestReportsInput struct {
 
 	// A token returned from a previous call to ListDeliverabilityTestReports to
 	// indicate the position in the list of predictive inbox placement tests.
-	NextToken *string `type:"string"`
+	NextToken *string `location:"querystring" locationName:"NextToken" type:"string"`
 
 	// The number of results to show in a single call to ListDeliverabilityTestReports.
 	// If the number of results is larger than the number you specified in this
@@ -6510,7 +7536,7 @@ type ListDeliverabilityTestReportsInput struct {
 	// use to obtain additional results.
 	//
 	// The value you specify has to be at least 0, and can be no more than 1000.
-	PageSize *int64 `type:"integer"`
+	PageSize *int64 `location:"querystring" locationName:"PageSize" type:"integer"`
 }
 
 // String returns the string representation
@@ -6575,6 +7601,146 @@ func (s *ListDeliverabilityTestReportsOutput) SetNextToken(v string) *ListDelive
 	return s
 }
 
+// Retrieve deliverability data for all the campaigns that used a specific domain
+// to send email during a specified time range. This data is available for a
+// domain only if you enabled the Deliverability dashboard (PutDeliverabilityDashboardOption
+// operation) for the domain.
+type ListDomainDeliverabilityCampaignsInput struct {
+	_ struct{} `type:"structure"`
+
+	// The last day, in Unix time format, that you want to obtain deliverability
+	// data for. This value has to be less than or equal to 30 days after the value
+	// of the StartDate parameter.
+	//
+	// EndDate is a required field
+	EndDate *time.Time `location:"querystring" locationName:"EndDate" type:"timestamp" required:"true"`
+
+	// A token that’s returned from a previous call to the ListDomainDeliverabilityCampaigns
+	// operation. This token indicates the position of a campaign in the list of
+	// campaigns.
+	NextToken *string `location:"querystring" locationName:"NextToken" type:"string"`
+
+	// The maximum number of results to include in response to a single call to
+	// the ListDomainDeliverabilityCampaigns operation. If the number of results
+	// is larger than the number that you specify in this parameter, the response
+	// includes a NextToken element, which you can use to obtain additional results.
+	PageSize *int64 `location:"querystring" locationName:"PageSize" type:"integer"`
+
+	// The first day, in Unix time format, that you want to obtain deliverability
+	// data for.
+	//
+	// StartDate is a required field
+	StartDate *time.Time `location:"querystring" locationName:"StartDate" type:"timestamp" required:"true"`
+
+	// The domain to obtain deliverability data for.
+	//
+	// SubscribedDomain is a required field
+	SubscribedDomain *string `location:"uri" locationName:"SubscribedDomain" type:"string" required:"true"`
+}
+
+// String returns the string representation
+func (s ListDomainDeliverabilityCampaignsInput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s ListDomainDeliverabilityCampaignsInput) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *ListDomainDeliverabilityCampaignsInput) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "ListDomainDeliverabilityCampaignsInput"}
+	if s.EndDate == nil {
+		invalidParams.Add(request.NewErrParamRequired("EndDate"))
+	}
+	if s.StartDate == nil {
+		invalidParams.Add(request.NewErrParamRequired("StartDate"))
+	}
+	if s.SubscribedDomain == nil {
+		invalidParams.Add(request.NewErrParamRequired("SubscribedDomain"))
+	}
+	if s.SubscribedDomain != nil && len(*s.SubscribedDomain) < 1 {
+		invalidParams.Add(request.NewErrParamMinLen("SubscribedDomain", 1))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetEndDate sets the EndDate field's value.
+func (s *ListDomainDeliverabilityCampaignsInput) SetEndDate(v time.Time) *ListDomainDeliverabilityCampaignsInput {
+	s.EndDate = &v
+	return s
+}
+
+// SetNextToken sets the NextToken field's value.
+func (s *ListDomainDeliverabilityCampaignsInput) SetNextToken(v string) *ListDomainDeliverabilityCampaignsInput {
+	s.NextToken = &v
+	return s
+}
+
+// SetPageSize sets the PageSize field's value.
+func (s *ListDomainDeliverabilityCampaignsInput) SetPageSize(v int64) *ListDomainDeliverabilityCampaignsInput {
+	s.PageSize = &v
+	return s
+}
+
+// SetStartDate sets the StartDate field's value.
+func (s *ListDomainDeliverabilityCampaignsInput) SetStartDate(v time.Time) *ListDomainDeliverabilityCampaignsInput {
+	s.StartDate = &v
+	return s
+}
+
+// SetSubscribedDomain sets the SubscribedDomain field's value.
+func (s *ListDomainDeliverabilityCampaignsInput) SetSubscribedDomain(v string) *ListDomainDeliverabilityCampaignsInput {
+	s.SubscribedDomain = &v
+	return s
+}
+
+// An array of objects that provide deliverability data for all the campaigns
+// that used a specific domain to send email during a specified time range.
+// This data is available for a domain only if you enabled the Deliverability
+// dashboard (PutDeliverabilityDashboardOption operation) for the domain.
+type ListDomainDeliverabilityCampaignsOutput struct {
+	_ struct{} `type:"structure"`
+
+	// An array of responses, one for each campaign that used the domain to send
+	// email during the specified time range.
+	//
+	// DomainDeliverabilityCampaigns is a required field
+	DomainDeliverabilityCampaigns []*DomainDeliverabilityCampaign `type:"list" required:"true"`
+
+	// A token that’s returned from a previous call to the ListDomainDeliverabilityCampaigns
+	// operation. This token indicates the position of the campaign in the list
+	// of campaigns.
+	NextToken *string `type:"string"`
+}
+
+// String returns the string representation
+func (s ListDomainDeliverabilityCampaignsOutput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s ListDomainDeliverabilityCampaignsOutput) GoString() string {
+	return s.String()
+}
+
+// SetDomainDeliverabilityCampaigns sets the DomainDeliverabilityCampaigns field's value.
+func (s *ListDomainDeliverabilityCampaignsOutput) SetDomainDeliverabilityCampaigns(v []*DomainDeliverabilityCampaign) *ListDomainDeliverabilityCampaignsOutput {
+	s.DomainDeliverabilityCampaigns = v
+	return s
+}
+
+// SetNextToken sets the NextToken field's value.
+func (s *ListDomainDeliverabilityCampaignsOutput) SetNextToken(v string) *ListDomainDeliverabilityCampaignsOutput {
+	s.NextToken = &v
+	return s
+}
+
 // A request to list all of the email identities associated with your Amazon
 // Pinpoint account. This list includes identities that you've already verified,
 // identities that are unverified, and identities that were verified in the
@@ -6584,7 +7750,7 @@ type ListEmailIdentitiesInput struct {
 
 	// A token returned from a previous call to ListEmailIdentities to indicate
 	// the position in the list of identities.
-	NextToken *string `type:"string"`
+	NextToken *string `location:"querystring" locationName:"NextToken" type:"string"`
 
 	// The number of results to show in a single call to ListEmailIdentities. If
 	// the number of results is larger than the number you specified in this parameter,
@@ -6592,7 +7758,7 @@ type ListEmailIdentitiesInput struct {
 	// additional results.
 	//
 	// The value you specify has to be at least 0, and can be no more than 1000.
-	PageSize *int64 `type:"integer"`
+	PageSize *int64 `location:"querystring" locationName:"PageSize" type:"integer"`
 }
 
 // String returns the string representation
@@ -6655,6 +7821,71 @@ func (s *ListEmailIdentitiesOutput) SetNextToken(v string) *ListEmailIdentitiesO
 	return s
 }
 
+type ListTagsForResourceInput struct {
+	_ struct{} `type:"structure"`
+
+	// The Amazon Resource Name (ARN) of the resource that you want to retrieve
+	// tag information for.
+	//
+	// ResourceArn is a required field
+	ResourceArn *string `location:"querystring" locationName:"ResourceArn" type:"string" required:"true"`
+}
+
+// String returns the string representation
+func (s ListTagsForResourceInput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s ListTagsForResourceInput) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *ListTagsForResourceInput) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "ListTagsForResourceInput"}
+	if s.ResourceArn == nil {
+		invalidParams.Add(request.NewErrParamRequired("ResourceArn"))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetResourceArn sets the ResourceArn field's value.
+func (s *ListTagsForResourceInput) SetResourceArn(v string) *ListTagsForResourceInput {
+	s.ResourceArn = &v
+	return s
+}
+
+type ListTagsForResourceOutput struct {
+	_ struct{} `type:"structure"`
+
+	// An array that lists all the tags that are associated with the resource. Each
+	// tag consists of a required tag key (Key) and an associated tag value (Value)
+	//
+	// Tags is a required field
+	Tags []*Tag `type:"list" required:"true"`
+}
+
+// String returns the string representation
+func (s ListTagsForResourceOutput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s ListTagsForResourceOutput) GoString() string {
+	return s.String()
+}
+
+// SetTags sets the Tags field's value.
+func (s *ListTagsForResourceOutput) SetTags(v []*Tag) *ListTagsForResourceOutput {
+	s.Tags = v
+	return s
+}
+
 // A list of attributes that are associated with a MAIL FROM domain.
 type MailFromAttributes struct {
 	_ struct{} `type:"structure"`
@@ -6681,11 +7912,11 @@ type MailFromAttributes struct {
 	//    * PENDING – Amazon Pinpoint hasn't started searching for the MX record
 	//    yet.
 	//
-	//    * SUCCESS – Amazon Pinpoint detected the required MX record for the MAIL
-	//    FROM domain.
+	//    * SUCCESS – Amazon Pinpoint detected the required MX record for the
+	//    MAIL FROM domain.
 	//
-	//    * FAILED – Amazon Pinpoint can't find the required MX record, or the record
-	//    no longer exists.
+	//    * FAILED – Amazon Pinpoint can't find the required MX record, or the
+	//    record no longer exists.
 	//
 	//    * TEMPORARY_FAILURE – A temporary issue occurred, which prevented Amazon
 	//    Pinpoint from determining the status of the MAIL FROM domain.
@@ -7093,6 +8324,10 @@ type PutConfigurationSetDeliveryOptionsInput struct {
 	// The name of the dedicated IP pool that you want to associate with the configuration
 	// set.
 	SendingPoolName *string `type:"string"`
+
+	// Whether Amazon Pinpoint should require that incoming email is delivered over
+	// a connection encrypted with Transport Layer Security (TLS).
+	TlsPolicy *string `type:"string" enum:"TlsPolicy"`
 }
 
 // String returns the string representation
@@ -7130,6 +8365,12 @@ func (s *PutConfigurationSetDeliveryOptionsInput) SetConfigurationSetName(v stri
 // SetSendingPoolName sets the SendingPoolName field's value.
 func (s *PutConfigurationSetDeliveryOptionsInput) SetSendingPoolName(v string) *PutConfigurationSetDeliveryOptionsInput {
 	s.SendingPoolName = &v
+	return s
+}
+
+// SetTlsPolicy sets the TlsPolicy field's value.
+func (s *PutConfigurationSetDeliveryOptionsInput) SetTlsPolicy(v string) *PutConfigurationSetDeliveryOptionsInput {
+	s.TlsPolicy = &v
 	return s
 }
 
@@ -7508,24 +8749,28 @@ func (s PutDedicatedIpWarmupAttributesOutput) GoString() string {
 	return s.String()
 }
 
-// A request to enable or disable the Deliverability dashboard. When you enable
-// the Deliverability dashboard, you gain access to reputation metrics for the
-// domains that you use to send email using Amazon Pinpoint. You also gain the
-// ability to perform predictive inbox placement tests.
+// Enable or disable the Deliverability dashboard for your Amazon Pinpoint account.
+// When you enable the Deliverability dashboard, you gain access to reputation,
+// deliverability, and other metrics for the domains that you use to send email
+// using Amazon Pinpoint. You also gain the ability to perform predictive inbox
+// placement tests.
 //
-// When you use the Deliverability dashboard, you pay a monthly charge of USD$1,250.00,
-// in addition to any other fees that you accrue by using Amazon Pinpoint. If
-// you enable the Deliverability dashboard after the first day of a calendar
-// month, we prorate the monthly charge based on how many days have elapsed
-// in the current calendar month.
+// When you use the Deliverability dashboard, you pay a monthly subscription
+// charge, in addition to any other fees that you accrue by using Amazon Pinpoint.
+// For more information about the features and cost of a Deliverability dashboard
+// subscription, see Amazon Pinpoint Pricing (http://aws.amazon.com/pinpoint/pricing/).
 type PutDeliverabilityDashboardOptionInput struct {
 	_ struct{} `type:"structure"`
 
-	// Indicates whether the Deliverability dashboard is enabled. If the value is
-	// true, then the dashboard is enabled.
+	// Specifies whether to enable the Deliverability dashboard for your Amazon
+	// Pinpoint account. To enable the dashboard, set this value to true.
 	//
 	// DashboardEnabled is a required field
 	DashboardEnabled *bool `type:"boolean" required:"true"`
+
+	// An array of objects, one for each verified domain that you use to send email
+	// and enabled the Deliverability dashboard for.
+	SubscribedDomains []*DomainDeliverabilityTrackingOption `type:"list"`
 }
 
 // String returns the string representation
@@ -7554,6 +8799,12 @@ func (s *PutDeliverabilityDashboardOptionInput) Validate() error {
 // SetDashboardEnabled sets the DashboardEnabled field's value.
 func (s *PutDeliverabilityDashboardOptionInput) SetDashboardEnabled(v bool) *PutDeliverabilityDashboardOptionInput {
 	s.DashboardEnabled = &v
+	return s
+}
+
+// SetSubscribedDomains sets the SubscribedDomains field's value.
+func (s *PutDeliverabilityDashboardOptionInput) SetSubscribedDomains(v []*DomainDeliverabilityTrackingOption) *PutDeliverabilityDashboardOptionInput {
+	s.SubscribedDomains = v
 	return s
 }
 
@@ -7832,7 +9083,6 @@ type RawMessage struct {
 	//    * Each part of a multipart MIME message must be formatted properly.
 	//
 	//    * Attachments must be in a file format that Amazon Pinpoint supports.
-	//
 	//
 	//    * The entire message must be Base64 encoded.
 	//
@@ -8146,7 +9396,7 @@ type SnsDestination struct {
 
 	// The Amazon Resource Name (ARN) of the Amazon SNS topic that you want to publish
 	// email events to. For more information about Amazon SNS topics, see the Amazon
-	// SNS Developer Guide (http://docs.aws.amazon.com/sns/latest/dg/CreateTopic.html).
+	// SNS Developer Guide (https://docs.aws.amazon.com/sns/latest/dg/CreateTopic.html).
 	//
 	// TopicArn is a required field
 	TopicArn *string `type:"string" required:"true"`
@@ -8179,6 +9429,171 @@ func (s *SnsDestination) Validate() error {
 func (s *SnsDestination) SetTopicArn(v string) *SnsDestination {
 	s.TopicArn = &v
 	return s
+}
+
+// An object that defines the tags that are associated with a resource. A tag
+// is a label that you optionally define and associate with a resource in Amazon
+// Pinpoint. Tags can help you categorize and manage resources in different
+// ways, such as by purpose, owner, environment, or other criteria. A resource
+// can have as many as 50 tags.
+//
+// Each tag consists of a required tag key and an associated tag value, both
+// of which you define. A tag key is a general label that acts as a category
+// for a more specific tag value. A tag value acts as a descriptor within a
+// tag key. A tag key can contain as many as 128 characters. A tag value can
+// contain as many as 256 characters. The characters can be Unicode letters,
+// digits, white space, or one of the following symbols: _ . : / = + -. The
+// following additional restrictions apply to tags:
+//
+//    * Tag keys and values are case sensitive.
+//
+//    * For each associated resource, each tag key must be unique and it can
+//    have only one value.
+//
+//    * The aws: prefix is reserved for use by AWS; you can’t use it in any
+//    tag keys or values that you define. In addition, you can't edit or remove
+//    tag keys or values that use this prefix. Tags that use this prefix don’t
+//    count against the limit of 50 tags per resource.
+//
+//    * You can associate tags with public or shared resources, but the tags
+//    are available only for your AWS account, not any other accounts that share
+//    the resource. In addition, the tags are available only for resources that
+//    are located in the specified AWS Region for your AWS account.
+type Tag struct {
+	_ struct{} `type:"structure"`
+
+	// One part of a key-value pair that defines a tag. The maximum length of a
+	// tag key is 128 characters. The minimum length is 1 character.
+	//
+	// Key is a required field
+	Key *string `type:"string" required:"true"`
+
+	// The optional part of a key-value pair that defines a tag. The maximum length
+	// of a tag value is 256 characters. The minimum length is 0 characters. If
+	// you don’t want a resource to have a specific tag value, don’t specify
+	// a value for this parameter. Amazon Pinpoint will set the value to an empty
+	// string.
+	//
+	// Value is a required field
+	Value *string `type:"string" required:"true"`
+}
+
+// String returns the string representation
+func (s Tag) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s Tag) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *Tag) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "Tag"}
+	if s.Key == nil {
+		invalidParams.Add(request.NewErrParamRequired("Key"))
+	}
+	if s.Value == nil {
+		invalidParams.Add(request.NewErrParamRequired("Value"))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetKey sets the Key field's value.
+func (s *Tag) SetKey(v string) *Tag {
+	s.Key = &v
+	return s
+}
+
+// SetValue sets the Value field's value.
+func (s *Tag) SetValue(v string) *Tag {
+	s.Value = &v
+	return s
+}
+
+type TagResourceInput struct {
+	_ struct{} `type:"structure"`
+
+	// The Amazon Resource Name (ARN) of the resource that you want to add one or
+	// more tags to.
+	//
+	// ResourceArn is a required field
+	ResourceArn *string `type:"string" required:"true"`
+
+	// A list of the tags that you want to add to the resource. A tag consists of
+	// a required tag key (Key) and an associated tag value (Value). The maximum
+	// length of a tag key is 128 characters. The maximum length of a tag value
+	// is 256 characters.
+	//
+	// Tags is a required field
+	Tags []*Tag `type:"list" required:"true"`
+}
+
+// String returns the string representation
+func (s TagResourceInput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s TagResourceInput) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *TagResourceInput) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "TagResourceInput"}
+	if s.ResourceArn == nil {
+		invalidParams.Add(request.NewErrParamRequired("ResourceArn"))
+	}
+	if s.Tags == nil {
+		invalidParams.Add(request.NewErrParamRequired("Tags"))
+	}
+	if s.Tags != nil {
+		for i, v := range s.Tags {
+			if v == nil {
+				continue
+			}
+			if err := v.Validate(); err != nil {
+				invalidParams.AddNested(fmt.Sprintf("%s[%v]", "Tags", i), err.(request.ErrInvalidParams))
+			}
+		}
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetResourceArn sets the ResourceArn field's value.
+func (s *TagResourceInput) SetResourceArn(v string) *TagResourceInput {
+	s.ResourceArn = &v
+	return s
+}
+
+// SetTags sets the Tags field's value.
+func (s *TagResourceInput) SetTags(v []*Tag) *TagResourceInput {
+	s.Tags = v
+	return s
+}
+
+type TagResourceOutput struct {
+	_ struct{} `type:"structure"`
+}
+
+// String returns the string representation
+func (s TagResourceOutput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s TagResourceOutput) GoString() string {
+	return s.String()
 }
 
 // An object that defines the tracking options for a configuration set. When
@@ -8226,6 +9641,78 @@ func (s *TrackingOptions) Validate() error {
 func (s *TrackingOptions) SetCustomRedirectDomain(v string) *TrackingOptions {
 	s.CustomRedirectDomain = &v
 	return s
+}
+
+type UntagResourceInput struct {
+	_ struct{} `type:"structure"`
+
+	// The Amazon Resource Name (ARN) of the resource that you want to remove one
+	// or more tags from.
+	//
+	// ResourceArn is a required field
+	ResourceArn *string `location:"querystring" locationName:"ResourceArn" type:"string" required:"true"`
+
+	// The tags (tag keys) that you want to remove from the resource. When you specify
+	// a tag key, the action removes both that key and its associated tag value.
+	//
+	// To remove more than one tag from the resource, append the TagKeys parameter
+	// and argument for each additional tag to remove, separated by an ampersand.
+	// For example: /v1/email/tags?ResourceArn=ResourceArn&TagKeys=Key1&TagKeys=Key2
+	//
+	// TagKeys is a required field
+	TagKeys []*string `location:"querystring" locationName:"TagKeys" type:"list" required:"true"`
+}
+
+// String returns the string representation
+func (s UntagResourceInput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s UntagResourceInput) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *UntagResourceInput) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "UntagResourceInput"}
+	if s.ResourceArn == nil {
+		invalidParams.Add(request.NewErrParamRequired("ResourceArn"))
+	}
+	if s.TagKeys == nil {
+		invalidParams.Add(request.NewErrParamRequired("TagKeys"))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetResourceArn sets the ResourceArn field's value.
+func (s *UntagResourceInput) SetResourceArn(v string) *UntagResourceInput {
+	s.ResourceArn = &v
+	return s
+}
+
+// SetTagKeys sets the TagKeys field's value.
+func (s *UntagResourceInput) SetTagKeys(v []*string) *UntagResourceInput {
+	s.TagKeys = v
+	return s
+}
+
+type UntagResourceOutput struct {
+	_ struct{} `type:"structure"`
+}
+
+// String returns the string representation
+func (s UntagResourceOutput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s UntagResourceOutput) GoString() string {
+	return s.String()
 }
 
 // A request to change the settings for an event destination for a configuration
@@ -8395,6 +9882,20 @@ const (
 	BehaviorOnMxFailureRejectMessage = "REJECT_MESSAGE"
 )
 
+// The current status of your Deliverability dashboard subscription. If this
+// value is PENDING_EXPIRATION, your subscription is scheduled to expire at
+// the end of the current calendar month.
+const (
+	// DeliverabilityDashboardAccountStatusActive is a DeliverabilityDashboardAccountStatus enum value
+	DeliverabilityDashboardAccountStatusActive = "ACTIVE"
+
+	// DeliverabilityDashboardAccountStatusPendingExpiration is a DeliverabilityDashboardAccountStatus enum value
+	DeliverabilityDashboardAccountStatusPendingExpiration = "PENDING_EXPIRATION"
+
+	// DeliverabilityDashboardAccountStatusDisabled is a DeliverabilityDashboardAccountStatus enum value
+	DeliverabilityDashboardAccountStatusDisabled = "DISABLED"
+)
+
 // The status of a predictive inbox placement test. If the status is IN_PROGRESS,
 // then the predictive inbox placement test is currently running. Predictive
 // inbox placement tests are usually complete within 24 hours of creating the
@@ -8428,9 +9929,9 @@ const (
 // The DKIM authentication status of the identity. The status can be one of
 // the following:
 //
-//    * PENDING – The DKIM verification process was initiated, and Amazon Pinpoint
-//    is still waiting for the required CNAME records to appear in the DNS configuration
-//    for the domain.
+//    * PENDING – The DKIM verification process was initiated, and Amazon
+//    Pinpoint is still waiting for the required CNAME records to appear in
+//    the DNS configuration for the domain.
 //
 //    * SUCCESS – The DKIM authentication process completed successfully.
 //
@@ -8441,8 +9942,8 @@ const (
 //    * TEMPORARY_FAILURE – A temporary issue is preventing Amazon Pinpoint
 //    from determining the DKIM authentication status of the domain.
 //
-//    * NOT_STARTED – The DKIM verification process hasn't been initiated for
-//    the domain.
+//    * NOT_STARTED – The DKIM verification process hasn't been initiated
+//    for the domain.
 const (
 	// DkimStatusPending is a DkimStatus enum value
 	DkimStatusPending = "PENDING"
@@ -8509,11 +10010,11 @@ const (
 //    * PENDING – Amazon Pinpoint hasn't started searching for the MX record
 //    yet.
 //
-//    * SUCCESS – Amazon Pinpoint detected the required MX record for the MAIL
-//    FROM domain.
+//    * SUCCESS – Amazon Pinpoint detected the required MX record for the
+//    MAIL FROM domain.
 //
-//    * FAILED – Amazon Pinpoint can't find the required MX record, or the record
-//    no longer exists.
+//    * FAILED – Amazon Pinpoint can't find the required MX record, or the
+//    record no longer exists.
 //
 //    * TEMPORARY_FAILURE – A temporary issue occurred, which prevented Amazon
 //    Pinpoint from determining the status of the MAIL FROM domain.
@@ -8529,6 +10030,19 @@ const (
 
 	// MailFromDomainStatusTemporaryFailure is a MailFromDomainStatus enum value
 	MailFromDomainStatusTemporaryFailure = "TEMPORARY_FAILURE"
+)
+
+// Specifies whether Amazon Pinpoint should require that incoming email is delivered
+// over a connection encrypted with Transport Layer Security (TLS). If this
+// parameter is set to Require, Amazon Pinpoint rejects emails that weren't
+// received over TLS. If the parameter is set to Optional, then Amazon Pinpoint
+// accepts emails that weren't received over TLS. The default value is Optional.
+const (
+	// TlsPolicyRequire is a TlsPolicy enum value
+	TlsPolicyRequire = "REQUIRE"
+
+	// TlsPolicyOptional is a TlsPolicy enum value
+	TlsPolicyOptional = "OPTIONAL"
 )
 
 // The warmup status of a dedicated IP.

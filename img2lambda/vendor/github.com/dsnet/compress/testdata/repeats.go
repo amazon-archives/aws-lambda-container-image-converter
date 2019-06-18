@@ -4,6 +4,8 @@
 
 // +build ignore
 
+//go:generate go run repeats.go
+
 // Generates repeats.bin. This test file heavily favors LZ77 based compression
 // since a large bulk of its data is a copy from some distance ago. Also, since
 // the source data is mostly random, prefix encoding does not benefit as much.

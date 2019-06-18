@@ -50,6 +50,9 @@ configuration data which is recommended for use in *containers* which derive
 from the *image*.  It is also expected that a *container*'s run-time
 configuration will be stored as data items.
 
+Files belonging to a *readonly* *layer* will become deduplicated with *OSTree* if the configuration option *storage.ostree_repo* for saving the corresponding OSTree repository is provided.
+This option won't work if *containers-storage* gets built without support for OSTree.
+
 ## SUB-COMMANDS
 The *containers-storage* command's features are broken down into several subcommands:
  **containers-storage add-names(1)**           Add layer, image, or container name or names

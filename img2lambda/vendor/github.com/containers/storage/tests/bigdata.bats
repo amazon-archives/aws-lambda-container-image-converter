@@ -131,6 +131,7 @@ load helpers
 	run storage get-container-data-size $container no-such-item
 	[ "$status" -ne 0 ]
 	run storage --debug=false get-container-data-size $container big-item-1
+	echo "$output"
 	[ "$status" -eq 0 ]
 	[ "$output" -eq 1234 ]
 	run storage --debug=false get-container-data-size $container big-item-2

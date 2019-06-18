@@ -13,7 +13,7 @@ const (
 	// ErrCodeConcurrentModificationException for service response error code
 	// "ConcurrentModificationException".
 	//
-	// Concurrent modification of resources. HTTP Status Code: 400.
+	// There is a concurrent modification of resources.
 	ErrCodeConcurrentModificationException = "ConcurrentModificationException"
 
 	// ErrCodeDeviceNotRegisteredException for service response error code
@@ -34,6 +34,18 @@ const (
 	//
 	// The device is in an invalid state.
 	ErrCodeInvalidDeviceException = "InvalidDeviceException"
+
+	// ErrCodeInvalidSecretsManagerResourceException for service response error code
+	// "InvalidSecretsManagerResourceException".
+	//
+	// A password in SecretsManager is in an invalid state.
+	ErrCodeInvalidSecretsManagerResourceException = "InvalidSecretsManagerResourceException"
+
+	// ErrCodeInvalidServiceLinkedRoleStateException for service response error code
+	// "InvalidServiceLinkedRoleStateException".
+	//
+	// The service linked role is locked for deletion.
+	ErrCodeInvalidServiceLinkedRoleStateException = "InvalidServiceLinkedRoleStateException"
 
 	// ErrCodeInvalidUserStatusException for service response error code
 	// "InvalidUserStatusException".
@@ -58,6 +70,12 @@ const (
 	//
 	// The resource is not found.
 	ErrCodeNotFoundException = "NotFoundException"
+
+	// ErrCodeResourceAssociatedException for service response error code
+	// "ResourceAssociatedException".
+	//
+	// Another resource is associated with the resource in the request.
+	ErrCodeResourceAssociatedException = "ResourceAssociatedException"
 
 	// ErrCodeResourceInUseException for service response error code
 	// "ResourceInUseException".

@@ -124,6 +124,10 @@ type LambdaAPI interface {
 	GetLayerVersionWithContext(aws.Context, *lambda.GetLayerVersionInput, ...request.Option) (*lambda.GetLayerVersionOutput, error)
 	GetLayerVersionRequest(*lambda.GetLayerVersionInput) (*request.Request, *lambda.GetLayerVersionOutput)
 
+	GetLayerVersionByArn(*lambda.GetLayerVersionByArnInput) (*lambda.GetLayerVersionByArnOutput, error)
+	GetLayerVersionByArnWithContext(aws.Context, *lambda.GetLayerVersionByArnInput, ...request.Option) (*lambda.GetLayerVersionByArnOutput, error)
+	GetLayerVersionByArnRequest(*lambda.GetLayerVersionByArnInput) (*request.Request, *lambda.GetLayerVersionByArnOutput)
+
 	GetLayerVersionPolicy(*lambda.GetLayerVersionPolicyInput) (*lambda.GetLayerVersionPolicyOutput, error)
 	GetLayerVersionPolicyWithContext(aws.Context, *lambda.GetLayerVersionPolicyInput, ...request.Option) (*lambda.GetLayerVersionPolicyOutput, error)
 	GetLayerVersionPolicyRequest(*lambda.GetLayerVersionPolicyInput) (*request.Request, *lambda.GetLayerVersionPolicyOutput)
@@ -217,6 +221,9 @@ type LambdaAPI interface {
 	UpdateFunctionConfiguration(*lambda.UpdateFunctionConfigurationInput) (*lambda.FunctionConfiguration, error)
 	UpdateFunctionConfigurationWithContext(aws.Context, *lambda.UpdateFunctionConfigurationInput, ...request.Option) (*lambda.FunctionConfiguration, error)
 	UpdateFunctionConfigurationRequest(*lambda.UpdateFunctionConfigurationInput) (*request.Request, *lambda.FunctionConfiguration)
+
+	WaitUntilFunctionExists(*lambda.GetFunctionInput) error
+	WaitUntilFunctionExistsWithContext(aws.Context, *lambda.GetFunctionInput, ...request.WaiterOption) error
 }
 
 var _ LambdaAPI = (*lambda.Lambda)(nil)

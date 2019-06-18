@@ -143,6 +143,100 @@ func DriverTestCreateSnap(t testing.TB, drivername string, driverOptions ...stri
 	verifyBase(t, driver, "Snap")
 }
 
+// DriverTestCreateFromTemplate Create a driver and template of a snap and verifies its
+// contents.
+func DriverTestCreateFromTemplate(t testing.TB, drivername string, driverOptions ...string) {
+	driver := GetDriver(t, drivername, driverOptions...)
+	defer PutDriver(t)
+
+	createBase(t, driver, "Base")
+	defer func() {
+		require.NoError(t, driver.Remove("Base"))
+	}()
+
+	err := driver.Create("Snap", "Base", nil)
+	require.NoError(t, err)
+	defer func() {
+		require.NoError(t, driver.Remove("Snap"))
+	}()
+
+	content := []byte("test content")
+	if err := addFile(driver, "Snap", "testfile.txt", content); err != nil {
+		t.Fatal(err)
+	}
+
+	err = driver.CreateFromTemplate("FromTemplate", "Snap", nil, "Base", nil, nil, true)
+	require.NoError(t, err)
+	defer func() {
+		require.NoError(t, driver.Remove("FromTemplate"))
+	}()
+
+	err = driver.CreateFromTemplate("ROFromTemplate", "Snap", nil, "Base", nil, nil, false)
+	require.NoError(t, err)
+	defer func() {
+		require.NoError(t, driver.Remove("ROFromTemplate"))
+	}()
+
+	noChanges := []archive.Change{}
+
+	changes, err := driver.Changes("FromTemplate", nil, "Snap", nil, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = checkChanges(noChanges, changes); err != nil {
+		t.Fatal(err)
+	}
+
+	changes, err = driver.Changes("ROFromTemplate", nil, "Snap", nil, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = checkChanges(noChanges, changes); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := checkFile(driver, "FromTemplate", "testfile.txt", content); err != nil {
+		t.Fatal(err)
+	}
+	if err := checkFile(driver, "ROFromTemplate", "testfile.txt", content); err != nil {
+		t.Fatal(err)
+	}
+	if err := checkFile(driver, "Snap", "testfile.txt", content); err != nil {
+		t.Fatal(err)
+	}
+
+	expectedChanges := []archive.Change{{
+		Path: "/testfile.txt",
+		Kind: archive.ChangeAdd,
+	}}
+
+	changes, err = driver.Changes("Snap", nil, "Base", nil, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = checkChanges(expectedChanges, changes); err != nil {
+		t.Fatal(err)
+	}
+
+	changes, err = driver.Changes("FromTemplate", nil, "Base", nil, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = checkChanges(expectedChanges, changes); err != nil {
+		t.Fatal(err)
+	}
+
+	changes, err = driver.Changes("ROFromTemplate", nil, "Base", nil, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = checkChanges(expectedChanges, changes); err != nil {
+		t.Fatal(err)
+	}
+
+	verifyBase(t, driver, "Base")
+}
+
 // DriverTestDeepLayerRead reads a file from a lower layer under a given number of layers
 func DriverTestDeepLayerRead(t testing.TB, layerCount int, drivername string, driverOptions ...string) {
 	driver := GetDriver(t, drivername, driverOptions...)
@@ -443,6 +537,19 @@ func DriverTestEcho(t testing.TB, drivername string, driverOptions ...string) {
 		}
 
 		if err = checkChanges(expectedChanges, changes); err != nil {
+			t.Fatal(err)
+		}
+
+		err = driver.Put(third)
+		if err != nil {
+			t.Fatal(err)
+		}
+		err = driver.Put(second)
+		if err != nil {
+			t.Fatal(err)
+		}
+		err = driver.Put(base)
+		if err != nil {
 			t.Fatal(err)
 		}
 	}

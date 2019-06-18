@@ -14,7 +14,7 @@ RUNINVM := vagrant/runinvm.sh
 default all: local-binary docs local-validate local-cross local-gccgo test-unit test-integration ## validate all checks, build and cross-build\nbinaries and docs, run tests in a VM
 
 clean: ## remove all built files
-	$(RM) -f containers-storage containers-storage.* docs/*.1
+	$(RM) -f containers-storage containers-storage.* docs/*.1 docs/*.5
 
 sources := $(wildcard *.go cmd/containers-storage/*.go drivers/*.go drivers/*/*.go pkg/*/*.go pkg/*/*/*.go) layers_ffjson.go images_ffjson.go containers_ffjson.go pkg/archive/archive_ffjson.go
 
@@ -47,7 +47,7 @@ local-cross: ## cross build the binaries for arm, darwin, and\nfreebsd
 		os=`echo $${target} | cut -f1 -d/` ; \
 		arch=`echo $${target} | cut -f2 -d/` ; \
 		suffix=$${os}.$${arch} ; \
-		$(MAKE) GOOS=$${os} GOARCH=$${arch} FLAGS="-o containers-storage.$${suffix}" AUTOTAGS="$(NATIVETAGS)" local-binary; \
+		$(MAKE) GOOS=$${os} GOARCH=$${arch} FLAGS="-o containers-storage.$${suffix}" AUTOTAGS="$(NATIVETAGS)" local-binary || exit 1; \
 	done
 
 cross: ## cross build the binaries for arm, darwin, and\nfreebsd using VMs

@@ -212,14 +212,14 @@ untyped_name{name_1="value 1"} -1.23e-45
 # TYPE summary_name summary
 summary_name{quantile="0.5"} -1.23
 summary_name{quantile="0.9"} 0.2342354
-summary_name{quantile="0.99"} 0.0
+summary_name{quantile="0.99"} 0
 summary_name_sum -3.4567
-summary_name_count 42.0
-summary_name{name_1="value 1",name_2="value 2",quantile="0.5"} 1.0
-summary_name{name_1="value 1",name_2="value 2",quantile="0.9"} 2.0
-summary_name{name_1="value 1",name_2="value 2",quantile="0.99"} 3.0
+summary_name_count 42
+summary_name{name_1="value 1",name_2="value 2",quantile="0.5"} 1
+summary_name{name_1="value 1",name_2="value 2",quantile="0.9"} 2
+summary_name{name_1="value 1",name_2="value 2",quantile="0.99"} 3
 summary_name_sum{name_1="value 1",name_2="value 2"} 2010.1971
-summary_name_count{name_1="value 1",name_2="value 2"} 4711.0
+summary_name_count{name_1="value 1",name_2="value 2"} 4711
 `,
 		},
 		// 4: Histogram
@@ -261,13 +261,13 @@ summary_name_count{name_1="value 1",name_2="value 2"} 4711.0
 			},
 			out: `# HELP request_duration_microseconds The response latency.
 # TYPE request_duration_microseconds histogram
-request_duration_microseconds_bucket{le="100.0"} 123.0
-request_duration_microseconds_bucket{le="120.0"} 412.0
-request_duration_microseconds_bucket{le="144.0"} 592.0
-request_duration_microseconds_bucket{le="172.8"} 1524.0
-request_duration_microseconds_bucket{le="+Inf"} 2693.0
+request_duration_microseconds_bucket{le="100"} 123
+request_duration_microseconds_bucket{le="120"} 412
+request_duration_microseconds_bucket{le="144"} 592
+request_duration_microseconds_bucket{le="172.8"} 1524
+request_duration_microseconds_bucket{le="+Inf"} 2693
 request_duration_microseconds_sum 1.7560473e+06
-request_duration_microseconds_count 2693.0
+request_duration_microseconds_count 2693
 `,
 		},
 		// 5: Histogram with missing +Inf bucket.
@@ -282,26 +282,6 @@ request_duration_microseconds_count 2693.0
 							SampleCount: proto.Uint64(2693),
 							SampleSum:   proto.Float64(1756047.3),
 							Bucket: []*dto.Bucket{
-								&dto.Bucket{
-									UpperBound:      proto.Float64(0),
-									CumulativeCount: proto.Uint64(123),
-								},
-								&dto.Bucket{
-									UpperBound:      proto.Float64(1e-5),
-									CumulativeCount: proto.Uint64(123),
-								},
-								&dto.Bucket{
-									UpperBound:      proto.Float64(1e-4),
-									CumulativeCount: proto.Uint64(123),
-								},
-								&dto.Bucket{
-									UpperBound:      proto.Float64(1e-1),
-									CumulativeCount: proto.Uint64(123),
-								},
-								&dto.Bucket{
-									UpperBound:      proto.Float64(1),
-									CumulativeCount: proto.Uint64(123),
-								},
 								&dto.Bucket{
 									UpperBound:      proto.Float64(100),
 									CumulativeCount: proto.Uint64(123),
@@ -318,18 +298,6 @@ request_duration_microseconds_count 2693.0
 									UpperBound:      proto.Float64(172.8),
 									CumulativeCount: proto.Uint64(1524),
 								},
-								&dto.Bucket{
-									UpperBound:      proto.Float64(1e5),
-									CumulativeCount: proto.Uint64(1543),
-								},
-								&dto.Bucket{
-									UpperBound:      proto.Float64(1e6),
-									CumulativeCount: proto.Uint64(1544),
-								},
-								&dto.Bucket{
-									UpperBound:      proto.Float64(1e23),
-									CumulativeCount: proto.Uint64(1545),
-								},
 							},
 						},
 					},
@@ -337,21 +305,13 @@ request_duration_microseconds_count 2693.0
 			},
 			out: `# HELP request_duration_microseconds The response latency.
 # TYPE request_duration_microseconds histogram
-request_duration_microseconds_bucket{le="0.0"} 123.0
-request_duration_microseconds_bucket{le="1e-05"} 123.0
-request_duration_microseconds_bucket{le="0.0001"} 123.0
-request_duration_microseconds_bucket{le="0.1"} 123.0
-request_duration_microseconds_bucket{le="1.0"} 123.0
-request_duration_microseconds_bucket{le="100.0"} 123.0
-request_duration_microseconds_bucket{le="120.0"} 412.0
-request_duration_microseconds_bucket{le="144.0"} 592.0
-request_duration_microseconds_bucket{le="172.8"} 1524.0
-request_duration_microseconds_bucket{le="100000.0"} 1543.0
-request_duration_microseconds_bucket{le="1e+06"} 1544.0
-request_duration_microseconds_bucket{le="1e+23"} 1545.0
-request_duration_microseconds_bucket{le="+Inf"} 2693.0
+request_duration_microseconds_bucket{le="100"} 123
+request_duration_microseconds_bucket{le="120"} 412
+request_duration_microseconds_bucket{le="144"} 592
+request_duration_microseconds_bucket{le="172.8"} 1524
+request_duration_microseconds_bucket{le="+Inf"} 2693
 request_duration_microseconds_sum 1.7560473e+06
-request_duration_microseconds_count 2693.0
+request_duration_microseconds_count 2693
 `,
 		},
 		// 6: No metric type, should result in default type Counter.

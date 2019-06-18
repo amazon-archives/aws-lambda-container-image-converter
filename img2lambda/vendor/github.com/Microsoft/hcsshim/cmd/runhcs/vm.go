@@ -28,6 +28,7 @@ var vmshimCommand = cli.Command{
 	Hidden: true,
 	Flags: []cli.Flag{
 		cli.StringFlag{Name: "log-pipe", Hidden: true},
+		cli.StringFlag{Name: "os", Hidden: true},
 	},
 	Before: appargs.Validate(argID),
 	Action: func(context *cli.Context) error {
@@ -52,7 +53,14 @@ var vmshimCommand = cli.Command{
 		}
 		os.Stdin.Close()
 
-		opts := &uvm.UVMOptions{}
+		var opts interface{}
+		isLCOW := context.String("os") == "linux"
+		if isLCOW {
+			opts = &uvm.OptionsLCOW{}
+		} else {
+			opts = &uvm.OptionsWCOW{}
+		}
+
 		err = json.Unmarshal(optsj, opts)
 		if err != nil {
 			return err
@@ -64,8 +72,17 @@ var vmshimCommand = cli.Command{
 			return err
 		}
 
-		vm, err := startVM(opts)
+		var vm *uvm.UtilityVM
+		if isLCOW {
+			vm, err = uvm.CreateLCOW(opts.(*uvm.OptionsLCOW))
+		} else {
+			vm, err = uvm.CreateWCOW(opts.(*uvm.OptionsWCOW))
+		}
 		if err != nil {
+			return err
+		}
+		defer vm.Close()
+		if err = vm.Start(); err != nil {
 			return err
 		}
 
@@ -121,19 +138,6 @@ var vmshimCommand = cli.Command{
 			}
 		}
 	},
-}
-
-func startVM(opts *uvm.UVMOptions) (*uvm.UtilityVM, error) {
-	vm, err := uvm.Create(opts)
-	if err != nil {
-		return nil, err
-	}
-	err = vm.Start()
-	if err != nil {
-		vm.Close()
-		return nil, err
-	}
-	return vm, nil
 }
 
 func processRequest(vm *uvm.UtilityVM, pipe net.Conn) error {

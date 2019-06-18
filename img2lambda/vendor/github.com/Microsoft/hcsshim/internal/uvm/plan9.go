@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Microsoft/hcsshim/internal/guestrequest"
+	"github.com/Microsoft/hcsshim/internal/logfields"
 	"github.com/Microsoft/hcsshim/internal/requesttype"
 	"github.com/Microsoft/hcsshim/internal/schema2"
 	"github.com/sirupsen/logrus"
@@ -12,6 +13,13 @@ import (
 // AddPlan9 adds a Plan9 share to a utility VM. Each Plan9 share is ref-counted and
 // only added if it isn't already.
 func (uvm *UtilityVM) AddPlan9(hostPath string, uvmPath string, readOnly bool) error {
+	logrus.WithFields(logrus.Fields{
+		logfields.UVMID: uvm.id,
+		"host-path":     hostPath,
+		"uvm-path":      uvmPath,
+		"readOnly":      readOnly,
+	}).Debug("uvm::AddPlan9")
+
 	if uvm.operatingSystem != "linux" {
 		return errNotSupported
 	}
@@ -19,7 +27,22 @@ func (uvm *UtilityVM) AddPlan9(hostPath string, uvmPath string, readOnly bool) e
 		return fmt.Errorf("uvmPath must be passed to AddPlan9")
 	}
 
-	logrus.Debugf("uvm::AddPlan9 %s %s %t id:%s", hostPath, uvmPath, readOnly, uvm.id)
+	// TODO: JTERRY75 - These are marked private in the schema. For now use them
+	// but when there are public variants we need to switch to them.
+	const (
+		shareFlagsReadOnly      int32 = 0x00000001
+		shareFlagsLinuxMetadata int32 = 0x00000004
+		shareFlagsCaseSensitive int32 = 0x00000008
+	)
+
+	// TODO: JTERRY75 - `shareFlagsCaseSensitive` only works if the Windows
+	// `hostPath` supports case sensitivity. We need to detect this case before
+	// forwarding this flag in all cases.
+	flags := shareFlagsLinuxMetadata // | shareFlagsCaseSensitive
+	if readOnly {
+		flags |= shareFlagsReadOnly
+	}
+
 	uvm.m.Lock()
 	defer uvm.m.Unlock()
 	if uvm.plan9Shares == nil {
@@ -31,9 +54,10 @@ func (uvm *UtilityVM) AddPlan9(hostPath string, uvmPath string, readOnly bool) e
 		modification := &hcsschema.ModifySettingRequest{
 			RequestType: requesttype.Add,
 			Settings: hcsschema.Plan9Share{
-				Name: fmt.Sprintf("%d", uvm.plan9Counter),
-				Path: hostPath,
-				Port: int32(uvm.plan9Counter), // TODO: Temporary. Will all use a single port (9999)
+				Name:  fmt.Sprintf("%d", uvm.plan9Counter),
+				Path:  hostPath,
+				Port:  int32(uvm.plan9Counter), // TODO: Temporary. Will all use a single port (9999)
+				Flags: flags,
 			},
 			ResourcePath: fmt.Sprintf("VirtualMachine/Devices/Plan9/Shares"),
 			GuestRequest: guestrequest.GuestRequest{

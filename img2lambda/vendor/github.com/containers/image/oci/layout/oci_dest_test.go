@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/containers/image/pkg/blobinfocache"
+	"github.com/containers/image/pkg/blobinfocache/memory"
 	"github.com/containers/image/types"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
@@ -31,7 +31,7 @@ func TestPutBlobDigestFailure(t *testing.T) {
 	require.True(t, ok)
 	blobPath, err := dirRef.blobPath(blobDigest, "")
 	assert.NoError(t, err)
-	cache := blobinfocache.NewMemoryCache()
+	cache := memory.New()
 
 	firstRead := true
 	reader := readerFromFunc(func(p []byte) (int, error) {

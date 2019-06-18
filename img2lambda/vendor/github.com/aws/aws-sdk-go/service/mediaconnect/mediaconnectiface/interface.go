@@ -84,12 +84,19 @@ type MediaConnectAPI interface {
 	ListEntitlementsWithContext(aws.Context, *mediaconnect.ListEntitlementsInput, ...request.Option) (*mediaconnect.ListEntitlementsOutput, error)
 	ListEntitlementsRequest(*mediaconnect.ListEntitlementsInput) (*request.Request, *mediaconnect.ListEntitlementsOutput)
 
+	ListEntitlementsPages(*mediaconnect.ListEntitlementsInput, func(*mediaconnect.ListEntitlementsOutput, bool) bool) error
+	ListEntitlementsPagesWithContext(aws.Context, *mediaconnect.ListEntitlementsInput, func(*mediaconnect.ListEntitlementsOutput, bool) bool, ...request.Option) error
+
 	ListFlows(*mediaconnect.ListFlowsInput) (*mediaconnect.ListFlowsOutput, error)
 	ListFlowsWithContext(aws.Context, *mediaconnect.ListFlowsInput, ...request.Option) (*mediaconnect.ListFlowsOutput, error)
 	ListFlowsRequest(*mediaconnect.ListFlowsInput) (*request.Request, *mediaconnect.ListFlowsOutput)
 
 	ListFlowsPages(*mediaconnect.ListFlowsInput, func(*mediaconnect.ListFlowsOutput, bool) bool) error
 	ListFlowsPagesWithContext(aws.Context, *mediaconnect.ListFlowsInput, func(*mediaconnect.ListFlowsOutput, bool) bool, ...request.Option) error
+
+	ListTagsForResource(*mediaconnect.ListTagsForResourceInput) (*mediaconnect.ListTagsForResourceOutput, error)
+	ListTagsForResourceWithContext(aws.Context, *mediaconnect.ListTagsForResourceInput, ...request.Option) (*mediaconnect.ListTagsForResourceOutput, error)
+	ListTagsForResourceRequest(*mediaconnect.ListTagsForResourceInput) (*request.Request, *mediaconnect.ListTagsForResourceOutput)
 
 	RemoveFlowOutput(*mediaconnect.RemoveFlowOutputInput) (*mediaconnect.RemoveFlowOutputOutput, error)
 	RemoveFlowOutputWithContext(aws.Context, *mediaconnect.RemoveFlowOutputInput, ...request.Option) (*mediaconnect.RemoveFlowOutputOutput, error)
@@ -106,6 +113,14 @@ type MediaConnectAPI interface {
 	StopFlow(*mediaconnect.StopFlowInput) (*mediaconnect.StopFlowOutput, error)
 	StopFlowWithContext(aws.Context, *mediaconnect.StopFlowInput, ...request.Option) (*mediaconnect.StopFlowOutput, error)
 	StopFlowRequest(*mediaconnect.StopFlowInput) (*request.Request, *mediaconnect.StopFlowOutput)
+
+	TagResource(*mediaconnect.TagResourceInput) (*mediaconnect.TagResourceOutput, error)
+	TagResourceWithContext(aws.Context, *mediaconnect.TagResourceInput, ...request.Option) (*mediaconnect.TagResourceOutput, error)
+	TagResourceRequest(*mediaconnect.TagResourceInput) (*request.Request, *mediaconnect.TagResourceOutput)
+
+	UntagResource(*mediaconnect.UntagResourceInput) (*mediaconnect.UntagResourceOutput, error)
+	UntagResourceWithContext(aws.Context, *mediaconnect.UntagResourceInput, ...request.Option) (*mediaconnect.UntagResourceOutput, error)
+	UntagResourceRequest(*mediaconnect.UntagResourceInput) (*request.Request, *mediaconnect.UntagResourceOutput)
 
 	UpdateFlowEntitlement(*mediaconnect.UpdateFlowEntitlementInput) (*mediaconnect.UpdateFlowEntitlementOutput, error)
 	UpdateFlowEntitlementWithContext(aws.Context, *mediaconnect.UpdateFlowEntitlementInput, ...request.Option) (*mediaconnect.UpdateFlowEntitlementOutput, error)

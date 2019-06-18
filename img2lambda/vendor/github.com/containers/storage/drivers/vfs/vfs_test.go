@@ -32,6 +32,10 @@ func TestVfsCreateSnap(t *testing.T) {
 	graphtest.DriverTestCreateSnap(t, "vfs")
 }
 
+func TestVfsCreateFromTemplate(t *testing.T) {
+	graphtest.DriverTestCreateFromTemplate(t, "vfs")
+}
+
 func TestVfsTeardown(t *testing.T) {
 	graphtest.PutDriver(t)
 }

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-
 	"time"
 
 	"github.com/Microsoft/go-winio/vhd"
@@ -54,7 +53,7 @@ func CreateScratch(lcowUVM *uvm.UtilityVM, destFile string, sizeGB uint32, cache
 		return fmt.Errorf("failed to create VHDx %s: %s", destFile, err)
 	}
 
-	controller, lun, err := lcowUVM.AddSCSI(destFile, "") // No destination as not formatted
+	controller, lun, err := lcowUVM.AddSCSI(destFile, "", false) // No destination as not formatted
 	if err != nil {
 		return err
 	}
