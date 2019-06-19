@@ -19,7 +19,12 @@ If a layer is already published to Lambda (same layer name, SHA256 digest, and s
     + [Binaries](#binaries)
     + [From Source](#from-source)
 - [Permissions](#permissions)
-- [Example](#example)
+- [Examples](#examples)
+    + [Docker Example](#docker-example)
+    + [OCI Example](#oci-example)
+    + [Deploy Manually](#deploy-manually)
+    + [Deploy with AWS Serverless Application Model (SAM)](#deploy-with-aws-serverless-application-model-sam)
+    + [Deploy with Serverless Framework](#deploy-with-serverless-framework)
 - [License Summary](#license-summary)
 - [Security Disclosures](#security-disclosures)
 
@@ -32,7 +37,8 @@ USAGE:
    img2lambda [options]
 
 GLOBAL OPTIONS:
-   --image value, -i value                 Name of the source container image. For example, 'my-docker-image:latest'. The Docker image must be pulled locally already.
+   --image value, -i value                 Name or path of the source container image. For example, 'my-docker-image:latest' or './my-oci-image-archive'. The image must be pulled locally already.
+   --image-type value, -t value            Type of the source container image. Valid values: 'docker' (Docker image from the local Docker daemon), 'oci' (OCI image archive at the given path and optional tag) (default: "docker")
    --region value, -r value                AWS region (default: "us-east-1")
    --profile value, -p value               AWS credentials profile. Credentials will default to the same chain as the AWS CLI: environment variables, default profile, container credentials, EC2 instance credentials
    --output-directory value, -o value      Destination directory for command output (default: "./output")
@@ -114,7 +120,9 @@ For example:
 }
 ```
 
-## Example
+## Examples
+
+### Docker Example
 
 Build the example Docker image to create a PHP Lambda custom runtime:
 ```
@@ -133,6 +141,22 @@ docker run lambda-php goodbye '{"name": "World"}'
 Run the tool to create and publish Lambda layers that contain the PHP custom runtime:
 ```
 ../bin/local/img2lambda -i lambda-php:latest -r us-east-1 -o ./output
+```
+
+### OCI Example
+
+Create an OCI image from the example Dockerfile:
+```
+cd example
+
+podman build --format oci -t lambda-php .
+
+podman push lambda-php oci-archive:./lambda-php-oci
+```
+
+Run the tool to create and publish Lambda layers that contain the PHP custom runtime:
+```
+../bin/local/img2lambda -i ./lambda-php-oci -t oci -r us-east-1 -o ./output
 ```
 
 ### Deploy Manually

@@ -4,6 +4,7 @@ package extract
 
 import (
 	"archive/tar"
+	"compress/gzip"
 	"context"
 	"fmt"
 	"io"
@@ -24,7 +25,7 @@ import (
 
 // Converts container image to Lambda layer archive files
 func RepackImage(imageName string, layerOutputDir string) (layers []types.LambdaLayer, retErr error) {
-	log.Printf("Parsing the docker image %s", imageName)
+	log.Printf("Parsing the image %s", imageName)
 
 	// Get image's layer data from image name
 	ref, err := alltransports.ParseImageName(imageName)
@@ -104,9 +105,21 @@ func repackImage(opts *repackOptions) (layers []types.LambdaLayer, retErr error)
 		}
 		defer layerStream.Close()
 
-		fileCreated, err := repackLayer(lambdaLayerFilename, layerStream)
+		fileCreated, err := repackLayer(lambdaLayerFilename, layerStream, false)
 		if err != nil {
-			return nil, err
+			tarErr := err
+
+			// tar extraction failed, try tar.gz
+			layerStream, _, err = opts.rawImageSource.GetBlob(opts.ctx, layerInfo, opts.cache)
+			if err != nil {
+				return nil, err
+			}
+			defer layerStream.Close()
+
+			fileCreated, err = repackLayer(lambdaLayerFilename, layerStream, true)
+			if err != nil {
+				return nil, fmt.Errorf("could not read layer with tar nor tar.gz: %v, %v", err, tarErr)
+			}
 		}
 
 		if fileCreated {
@@ -126,10 +139,21 @@ func repackImage(opts *repackOptions) (layers []types.LambdaLayer, retErr error)
 // Converts container image layer archive (tar) to Lambda layer archive (zip).
 // Filters files from the source and only writes a new archive if at least
 // one file in the source matches the filter (i.e. does not create empty archives).
-func repackLayer(outputFilename string, layerContents io.Reader) (created bool, retError error) {
+func repackLayer(outputFilename string, layerContents io.Reader, isGzip bool) (created bool, retError error) {
 	t := archiver.NewTar()
+	contentsReader := layerContents
+	var err error
 
-	err := t.Open(layerContents, 0)
+	if isGzip {
+		gzr, err := gzip.NewReader(layerContents)
+		if err != nil {
+			return false, fmt.Errorf("could not create gzip reader for layer: %v", err)
+		}
+		defer gzr.Close()
+		contentsReader = gzr
+	}
+
+	err = t.Open(contentsReader, 0)
 	if err != nil {
 		return false, fmt.Errorf("opening layer tar: %v", err)
 	}

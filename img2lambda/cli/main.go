@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/awslabs/aws-lambda-container-image-converter/img2lambda/extract"
 	"github.com/awslabs/aws-lambda-container-image-converter/img2lambda/publish"
@@ -28,13 +29,19 @@ func createApp() (*cli.App, *types.CmdOptions) {
 		opts.CompatibleRuntimes = c.StringSlice("cr")
 
 		validateCliOptions(&opts, c)
-		return repackImageAction(&opts)
+		return repackImageAction(&opts, c)
 	}
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:        "image, i",
-			Usage:       "Name of the source container image. For example, 'my-docker-image:latest'. The Docker image must be pulled locally already.",
+			Usage:       "Name or path of the source container image. For example, 'my-docker-image:latest' or './my-oci-image-archive'. The image must be pulled locally already.",
 			Destination: &opts.Image,
+		},
+		cli.StringFlag{
+			Name:        "image-type, t",
+			Usage:       "Type of the source container image. Valid values: 'docker' (Docker image from the local Docker daemon), 'oci' (OCI image archive at the given path)",
+			Value:       "docker",
+			Destination: &opts.ImageType,
 		},
 		cli.StringFlag{
 			Name:        "region, r",
@@ -101,8 +108,24 @@ func validateCliOptions(opts *types.CmdOptions, context *cli.Context) {
 	}
 }
 
-func repackImageAction(opts *types.CmdOptions) error {
-	layers, err := extract.RepackImage("docker-daemon:"+opts.Image, opts.OutputDir)
+func repackImageAction(opts *types.CmdOptions, context *cli.Context) error {
+	var imageTransport string
+	switch opts.ImageType {
+	case "docker":
+		imageTransport = "docker-daemon:"
+	case "oci":
+		imageTransport = "oci-archive:"
+	default:
+		fmt.Println("ERROR: Image type must be one of the supported image types")
+		cli.ShowAppHelpAndExit(context, 1)
+	}
+
+	imageLocation := imageTransport + opts.Image
+	if opts.ImageType == "docker" && strings.Count(imageLocation, ":") == 1 {
+		imageLocation += ":latest"
+	}
+
+	layers, err := extract.RepackImage(imageLocation, opts.OutputDir)
 	if err != nil {
 		return err
 	}

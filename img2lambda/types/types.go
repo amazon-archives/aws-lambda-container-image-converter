@@ -14,6 +14,7 @@ type LambdaLayer struct {
 
 type CmdOptions struct {
 	Image              string   // Name of the container image
+	ImageType          string   // Type of the container image
 	Region             string   // AWS region
 	Profile            string   // AWS credentials profile
 	OutputDir          string   // Output directory for the Lambda layers

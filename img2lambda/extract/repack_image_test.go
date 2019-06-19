@@ -6,6 +6,7 @@ import (
 	"archive/zip"
 	"bufio"
 	"bytes"
+	"context"
 	"io"
 	"io/ioutil"
 	"os"
@@ -20,12 +21,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func createImageLayer(t *testing.T,
-	rawSource *mocks.MockImageSource,
+func CreateLayerData(t *testing.T,
 	filename string,
 	fileContents string,
-	digest string) *imgtypes.BlobInfo {
-
+	digest string) *bytes.Buffer {
 	tar := archiver.NewTar()
 
 	layerFile, err := ioutil.TempFile("", "")
@@ -60,11 +59,56 @@ func createImageLayer(t *testing.T,
 	err = os.Remove(layerFile.Name())
 	assert.Nil(t, err)
 
+	return &tarContents
+}
+
+func createImageLayer(t *testing.T,
+	rawSource *mocks.MockImageSource,
+	filename string,
+	fileContents string,
+	digest string) *imgtypes.BlobInfo {
+
+	tarContents := CreateLayerData(t, filename, fileContents, digest)
+
 	blobInfo := imgtypes.BlobInfo{Digest: godigest.Digest(digest)}
 
 	rawSource.EXPECT().GetBlob(gomock.Any(),
 		blobInfo,
 		gomock.Any()).Return(ioutil.NopCloser(bytes.NewReader(tarContents.Bytes())), int64(0), nil)
+
+	return &blobInfo
+}
+
+func createGzipImageLayer(t *testing.T,
+	rawSource *mocks.MockImageSource,
+	filename string,
+	fileContents string,
+	digest string) *imgtypes.BlobInfo {
+
+	tarContents := CreateLayerData(t, filename, fileContents, digest)
+
+	var targzContents bytes.Buffer
+	bufWriter := bufio.NewWriter(&targzContents)
+
+	gz := archiver.NewGz()
+	err := gz.Compress(bytes.NewReader(tarContents.Bytes()), bufWriter)
+	assert.Nil(t, err)
+	err = bufWriter.Flush()
+	assert.Nil(t, err)
+
+	blobInfo := imgtypes.BlobInfo{Digest: godigest.Digest(digest)}
+
+	contentsBytes := targzContents.Bytes()
+
+	rawSource.EXPECT().GetBlob(gomock.Any(),
+		blobInfo,
+		gomock.Any()).
+		DoAndReturn(
+			func(context context.Context, blobInfo imgtypes.BlobInfo, cache imgtypes.BlobInfoCache) (io.ReadCloser, int64, error) {
+				// checks whatever
+				return ioutil.NopCloser(bytes.NewReader(contentsBytes)), int64(0), nil
+			}).
+		Times(2)
 
 	return &blobInfo
 }
@@ -126,7 +170,7 @@ func TestRepack(t *testing.T) {
 	blobInfos = append(blobInfos, *blobInfo1)
 
 	// Second matching file
-	blobInfo2 := createImageLayer(t, rawSource, "opt/hello/file2", "hello world 2", "digest2")
+	blobInfo2 := createGzipImageLayer(t, rawSource, "opt/hello/file2", "hello world 2", "digest2")
 	blobInfos = append(blobInfos, *blobInfo2)
 
 	// Irrelevant file
@@ -157,6 +201,47 @@ func TestRepack(t *testing.T) {
 	validateLambdaLayer(t, &layers[0], "file1", "hello world 1", "digest1")
 	validateLambdaLayer(t, &layers[1], "hello/file2", "hello world 2", "digest2")
 	validateLambdaLayer(t, &layers[2], "file1", "hello world 4", "digest4")
+
+	err = os.Remove(dir)
+	assert.Nil(t, err)
+}
+
+func TestRepackFailure(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	source := mocks.NewMockImageCloser(ctrl)
+	rawSource := mocks.NewMockImageSource(ctrl)
+
+	// Create layer tar files
+	var blobInfos []imgtypes.BlobInfo
+
+	// Add garbage data to layer
+	blobInfo := imgtypes.BlobInfo{Digest: godigest.Digest("digest1")}
+	rawSource.EXPECT().GetBlob(gomock.Any(),
+		blobInfo,
+		gomock.Any()).
+		Return(ioutil.NopCloser(bytes.NewReader([]byte("hello world"))), int64(0), nil).
+		Times(2)
+	blobInfos = append(blobInfos, blobInfo)
+
+	source.EXPECT().LayerInfos().Return(blobInfos)
+
+	dir, err := ioutil.TempDir("", "")
+	assert.Nil(t, err)
+
+	layers, err := repackImage(&repackOptions{
+		ctx:            nil,
+		cache:          nil,
+		imageSource:    source,
+		rawImageSource: rawSource,
+		imageName:      "test-image",
+		layerOutputDir: dir,
+	})
+
+	assert.Nil(t, layers)
+	assert.NotNil(t, err)
+	assert.Equal(t, err.Error(), "could not read layer with tar nor tar.gz: could not create gzip reader for layer: EOF, opening next file in layer tar: unexpected EOF")
 
 	err = os.Remove(dir)
 	assert.Nil(t, err)
