@@ -208,7 +208,7 @@
   version = "v1.1.1"
 
 [[projects]]
-  digest = "1:1a8fd913b087787e048c4da5bbba21b6dfa9f1920d1ff6791dbc0af7a640f589"
+  digest = "1:c05f1899f086e3b4613d94d9e6f7ba6f4b6587498a1aa6037c5c294b22f5a743"
   name = "github.com/docker/distribution"
   packages = [
     ".",
@@ -224,7 +224,8 @@
     "registry/storage/cache/memory",
   ]
   pruneopts = ""
-  revision = "83389a148052d74ac602f5f1d62f86ff2f3c4aa5"
+  revision = "2461543d988979529609e8cb6fca9ca190dc48da"
+  version = "v2.7.1"
 
 [[projects]]
   digest = "1:9e4d02bf03e0510cbc7985590ee9ba74b75b8bc016cc6f004e4cb213f943d7e9"

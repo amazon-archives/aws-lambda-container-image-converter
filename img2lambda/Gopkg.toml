@@ -28,7 +28,7 @@
 
 [[override]]
   name = "github.com/docker/distribution"
-  revision = "83389a148052d74ac602f5f1d62f86ff2f3c4aa5"
+  version = "^2.7.1"
 
 [[constraint]]
   name = "gopkg.in/yaml.v2"
