@@ -46,7 +46,7 @@
   version = "v0.8.6"
 
 [[projects]]
-  digest = "1:66a9cb82366310ba4b2ed34374a1ff90dab0162e356a2ffa71fd838489c0b828"
+  digest = "1:d6378e054aac619d5f44e3d4a335741bf28f5c4b07e83f69eab0995842f81835"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -83,10 +83,11 @@
     "service/lambda",
     "service/lambda/lambdaiface",
     "service/sts",
+    "service/sts/stsiface",
   ]
   pruneopts = ""
-  revision = "f93aa42e3b85ff7cc865c95357006d68ad1b3b63"
-  version = "v1.20.3"
+  revision = "fbdf1bd30caaf828d14bd5fed15130417858a723"
+  version = "v1.23.3"
 
 [[projects]]
   digest = "1:0d3deb8a6da8ffba5635d6fb1d2144662200def6c9d82a35a6d05d6c2d4a48f9"
