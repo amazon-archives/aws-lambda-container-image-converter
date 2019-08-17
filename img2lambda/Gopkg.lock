@@ -97,14 +97,6 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:ed112122ed4a920d944cc99b9d00b0441c11685939c28462c719488d36fe29aa"
-  name = "github.com/boltdb/bolt"
-  packages = ["."]
-  pruneopts = ""
-  revision = "2f1ce7a837dcb8da3ec595b1dac9d0632f0f99e8"
-  version = "v1.3.1"
-
-[[projects]]
   branch = "master"
   digest = "1:dc74e60acd910c1284c1b58c9838526368e913606818b93f799b458f580fa67a"
   name = "github.com/containerd/continuity"
@@ -113,7 +105,7 @@
   revision = "aaeac12a7ffcd198ae25440a9dff125c2e2703a7"
 
 [[projects]]
-  digest = "1:8b01cef7eb4586160b45a5b3078b36d9fb7502d73df6535cd95a0ae1f9d16085"
+  digest = "1:a1f891297b5eea4ba863a8fa22c031b71ccc8ca622cb1a73676eb489a334ced6"
   name = "github.com/containers/image"
   packages = [
     "directory",
@@ -139,6 +131,7 @@
     "pkg/blobinfocache/none",
     "pkg/compression",
     "pkg/docker/config",
+    "pkg/keyctl",
     "pkg/strslice",
     "pkg/sysregistriesv2",
     "pkg/tlsclientconfig",
@@ -150,8 +143,8 @@
     "version",
   ]
   pruneopts = ""
-  revision = "f52cf78ebfa1916da406f8b6210d8f7764ec1185"
-  version = "v1.5.1"
+  revision = "186df8702a61dd6ed16a88532ed9a10ddc679132"
+  version = "v3.0.2"
 
 [[projects]]
   digest = "1:a00e0960329fd3f8d34899a8bf2cad70ed634949a4da6225ce0f0f5511e47f31"
@@ -317,6 +310,14 @@
   pruneopts = ""
   revision = "da652975a8eea9fa0735aba8056747a751db0bd3"
   version = "v0.0.1"
+
+[[projects]]
+  digest = "1:a434b4f8c58b32c879170ef48dd400c3cc9c7b6c56a2d2118b93a4575e889319"
+  name = "github.com/etcd-io/bbolt"
+  packages = ["."]
+  pruneopts = ""
+  revision = "a0458a2b35708eef59eb5f620ceb3cd1c01a824d"
+  version = "v1.3.3"
 
 [[projects]]
   digest = "1:b13707423743d41665fd23f0c36b2f37bb49c30e94adb813319c44188a51ba22"
