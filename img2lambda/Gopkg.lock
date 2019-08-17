@@ -46,6 +46,14 @@
   version = "v0.8.6"
 
 [[projects]]
+  branch = "master"
+  digest = "1:c0dd4218fe674dafa3951d43cc0eea289ca93ac3aaaac583f7c0e1fde4e606d5"
+  name = "github.com/andybalholm/brotli"
+  packages = ["."]
+  pruneopts = ""
+  revision = "ed0fd649404dcdcdae403d0e62b555889ee4e6b9"
+
+[[projects]]
   digest = "1:d6378e054aac619d5f44e3d4a335741bf28f5c4b07e83f69eab0995842f81835"
   name = "github.com/aws/aws-sdk-go"
   packages = [
@@ -338,6 +346,17 @@
   version = "v1.2.1"
 
 [[projects]]
+  branch = "master"
+  digest = "1:eb44563fc05ae0fd3cf7db971a5bc2150c26c9528bf96cb8107a5117d8c1fb0f"
+  name = "github.com/golang/gddo"
+  packages = [
+    "httputil",
+    "httputil/header",
+  ]
+  pruneopts = ""
+  revision = "287de01127eff824e82d565b37fdaa1118da5a4d"
+
+[[projects]]
   digest = "1:68c64bb61d55dcd17c82ca0b871ddddb5ae18b30cfe26f6bfd4b6df6287dc2e0"
   name = "github.com/golang/mock"
   packages = ["gomock"]
@@ -387,7 +406,14 @@
 [[projects]]
   digest = "1:b295266acc20731c453567afd744cfc4d2377c98e58b3c81f206bcb348324cf3"
   name = "github.com/klauspost/compress"
-  packages = ["flate"]
+  packages = [
+    "flate",
+    "fse",
+    "huff0",
+    "snappy",
+    "zstd",
+    "zstd/internal/xxhash",
+  ]
   pruneopts = ""
   revision = "7a873649b01a9669308e8d58b6bcbbccc0b06b5d"
   version = "v1.7.1"
@@ -444,12 +470,12 @@
   version = "v1.0.1"
 
 [[projects]]
-  digest = "1:e26c759de83ce6fe27f99082458a7ad9fcc51a95215b4f5bbacd1345b61bc6ba"
+  digest = "1:0f269f9377ca472b4c88ccfe38c67a6088aca9ef6e8a508e4a0d8b6bccada51a"
   name = "github.com/mholt/archiver"
   packages = ["."]
   pruneopts = ""
-  revision = "d572b2e8b82726cee9476d1b9d63a7fe9b601ff1"
-  version = "v3.1.1"
+  revision = "33320f6f730664f9896b05b777e53ae4c917f572"
+  version = "v3.2.0"
 
 [[projects]]
   digest = "1:6510fdfb0657dd8a5c6ea3b877650d42b536173ae0a804faf59bf779b644db7e"
