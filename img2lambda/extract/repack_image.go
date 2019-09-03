@@ -35,10 +35,16 @@ func RepackImage(imageName string, layerOutputDir string) (layers []types.Lambda
 
 	sys := &imgtypes.SystemContext{}
 
-	// Support communicating with Docker for Windows over local plain-text TCP socket
 	dockerHost := os.Getenv("DOCKER_HOST")
+
+	// Support communicating with Docker for Windows over local plain-text TCP socket
 	if dockerHost == "tcp://localhost:2375" || dockerHost == "tcp://127.0.0.1:2375" {
 		sys.DockerDaemonHost = strings.Replace(dockerHost, "tcp://", "http://", -1)
+	}
+
+	// Support communicating with Docker Toolbox over encrypted socket
+	if strings.HasPrefix(dockerHost, "tcp://192.168.") && strings.HasSuffix(dockerHost, ":2376") {
+		sys.DockerDaemonHost = strings.Replace(dockerHost, "tcp://", "https://", -1)
 	}
 
 	ctx := context.Background()
