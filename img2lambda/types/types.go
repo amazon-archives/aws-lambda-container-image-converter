@@ -66,6 +66,7 @@ var ValidRuntimes = Runtimes{
 	"nodejs4.3", // eol = 30/04/2018 but included to support existing versions
 	"nodejs6.10",
 	"nodejs8.10",
+	"nodejs10.x",
 	"java8",
 	"python2.7",
 	"python3.6",
