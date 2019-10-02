@@ -115,7 +115,7 @@
   revision = "aaeac12a7ffcd198ae25440a9dff125c2e2703a7"
 
 [[projects]]
-  digest = "1:a1f891297b5eea4ba863a8fa22c031b71ccc8ca622cb1a73676eb489a334ced6"
+  digest = "1:ee43224021ecd48b11f70816788e437337a6fb92783c56803114f57401794229"
   name = "github.com/containers/image"
   packages = [
     "directory",
@@ -127,6 +127,7 @@
     "docker/reference",
     "docker/tarfile",
     "image",
+    "internal/pkg/keyctl",
     "internal/tmpdir",
     "manifest",
     "oci/archive",
@@ -140,8 +141,9 @@
     "pkg/blobinfocache/memory",
     "pkg/blobinfocache/none",
     "pkg/compression",
+    "pkg/compression/internal",
+    "pkg/compression/types",
     "pkg/docker/config",
-    "pkg/keyctl",
     "pkg/strslice",
     "pkg/sysregistriesv2",
     "pkg/tlsclientconfig",
@@ -153,8 +155,16 @@
     "version",
   ]
   pruneopts = ""
-  revision = "186df8702a61dd6ed16a88532ed9a10ddc679132"
-  version = "v3.0.2"
+  revision = "b49a0b7eac5a602f669dd0f4243985ef7e48033c"
+  version = "v4.0.0"
+
+[[projects]]
+  branch = "master"
+  digest = "1:281c78b2e429f0a3c269f15b55a72d8f97ce8d1a8f83332563b620c40285760d"
+  name = "github.com/containers/libtrust"
+  packages = ["."]
+  pruneopts = ""
+  revision = "14b96171aa3b7be82ffc4aef3b6942125120ebd4"
 
 [[projects]]
   digest = "1:a00e0960329fd3f8d34899a8bf2cad70ed634949a4da6225ce0f0f5511e47f31"
@@ -306,14 +316,6 @@
   pruneopts = ""
   revision = "519db1ee28dcc9fd2474ae59fca29a810482bfb1"
   version = "v0.4.0"
-
-[[projects]]
-  branch = "master"
-  digest = "1:1d0c4a7f7d52eb8da75993ab0526467360795e9dfdd559020a15bfb53a028809"
-  name = "github.com/docker/libtrust"
-  packages = ["."]
-  pruneopts = ""
-  revision = "aabc10ec26b754e797f9028f4589c5b7bd90dc20"
 
 [[projects]]
   digest = "1:ba9a3ee3359edeeec2c6c1ddb6976db4b7ca6ad045e73b43471e32f01b5786e4"
