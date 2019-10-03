@@ -23,7 +23,7 @@ func createApp() (*cli.App, *types.CmdOptions) {
 	app.EnableBashCompletion = true
 	app.Name = "img2lambda"
 	app.Version = version.VersionString()
-	app.Usage = "Repackages a container image into AWS Lambda layers and publishes them to Lambda"
+	app.Usage = "Repackages a container image into an AWS Lambda function deployment package. Extracts AWS Lambda layers from the image and publishes them to Lambda"
 	app.Action = func(c *cli.Context) error {
 		// parse and store the passed runtime list into the options object
 		opts.CompatibleRuntimes = c.StringSlice("cr")
@@ -56,7 +56,7 @@ func createApp() (*cli.App, *types.CmdOptions) {
 		},
 		cli.StringFlag{
 			Name:        "output-directory, o",
-			Usage:       "Destination directory for command output",
+			Usage:       "Destination directory for output: function deployment package (function.zip) and list of published layers (layers.json, layers.yaml)",
 			Value:       "./output",
 			Destination: &opts.OutputDir,
 		},
@@ -125,13 +125,18 @@ func repackImageAction(opts *types.CmdOptions, context *cli.Context) error {
 		imageLocation += ":latest"
 	}
 
-	layers, err := extract.RepackImage(imageLocation, opts.OutputDir)
+	layers, function, err := extract.RepackImage(imageLocation, opts.OutputDir)
 	if err != nil {
 		return err
 	}
 
-	if len(layers) == 0 {
-		return errors.New("No compatible layers found in the image (likely nothing found in /opt)")
+	if function.FileCount == 0 {
+		// remove empty zip file
+		os.Remove(function.File)
+	}
+
+	if len(layers) == 0 && function.FileCount == 0 {
+		return errors.New("No compatible layers or function files found in the image (likely nothing found in /opt and /var/task)")
 	}
 
 	if !opts.DryRun {

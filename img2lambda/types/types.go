@@ -7,6 +7,11 @@ import (
 	"github.com/awslabs/aws-lambda-container-image-converter/img2lambda/clients"
 )
 
+type LambdaDeploymentPackage struct {
+	FileCount int
+	File      string
+}
+
 type LambdaLayer struct {
 	Digest string
 	File   string

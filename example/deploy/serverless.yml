@@ -8,14 +8,12 @@ functions:
   hello:
     handler: hello.hello
     package:
-      include:
-        - src/hello.php
+      artifact: ../output/function.zip
     layers:
       ${file(../output/layers.json)}
   goodbye:
     handler: goodbye.goodbye
     package:
-      include:
-        - src/goodbye.php
+      artifact: ../output/function.zip
     layers:
       ${file(../output/layers.json)}

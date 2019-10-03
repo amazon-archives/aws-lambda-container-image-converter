@@ -155,6 +155,47 @@ func validateLambdaLayer(t *testing.T,
 	assert.Nil(t, err)
 }
 
+func validateLambdaDeploymentPackage(t *testing.T,
+	function *types.LambdaDeploymentPackage,
+	expectedFilenames []string,
+	expectedFilesContents []string) {
+
+	z := archiver.NewZip()
+
+	zipFile, err := os.Open(function.File)
+	assert.Nil(t, err)
+	zipFileInfo, err := os.Stat(zipFile.Name())
+	assert.Nil(t, err)
+
+	err = z.Open(zipFile, zipFileInfo.Size())
+	assert.Nil(t, err)
+
+	for i := range expectedFilenames {
+		contentsFile, err := z.Read()
+		assert.Nil(t, err)
+		zfh, ok := contentsFile.Header.(zip.FileHeader)
+		assert.True(t, ok)
+		assert.Equal(t, expectedFilenames[i], zfh.Name)
+
+		buf := new(bytes.Buffer)
+		_, err = buf.ReadFrom(contentsFile.ReadCloser)
+		assert.Nil(t, err)
+		contents := buf.String()
+		assert.Equal(t, expectedFilesContents[i], contents)
+	}
+
+	_, err = z.Read()
+	assert.NotNil(t, err)
+	assert.Equal(t, io.EOF, err)
+
+	err = z.Close()
+	assert.Nil(t, err)
+	err = zipFile.Close()
+	assert.Nil(t, err)
+	err = os.Remove(zipFile.Name())
+	assert.Nil(t, err)
+}
+
 func TestRepack(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -181,12 +222,22 @@ func TestRepack(t *testing.T) {
 	blobInfo4 := createImageLayer(t, rawSource, "opt/file1", "hello world 4", "digest4")
 	blobInfos = append(blobInfos, *blobInfo4)
 
+	// Function file layers
+	blobInfo5 := createImageLayer(t, rawSource, "var/task/file1", "hello world 5", "digest5")
+	blobInfos = append(blobInfos, *blobInfo5)
+
+	blobInfo6 := createImageLayer(t, rawSource, "var/task/file2", "hello world 6", "digest6")
+	blobInfos = append(blobInfos, *blobInfo6)
+
+	blobInfo7 := createImageLayer(t, rawSource, "var/task/file1", "hello world 7", "digest7")
+	blobInfos = append(blobInfos, *blobInfo7)
+
 	source.EXPECT().LayerInfos().Return(blobInfos)
 
 	dir, err := ioutil.TempDir("", "")
 	assert.Nil(t, err)
 
-	layers, err := repackImage(&repackOptions{
+	layers, function, err := repackImage(&repackOptions{
 		ctx:            nil,
 		cache:          nil,
 		imageSource:    source,
@@ -197,10 +248,15 @@ func TestRepack(t *testing.T) {
 
 	assert.Nil(t, err)
 	assert.Len(t, layers, 3)
+	assert.Equal(t, 3, function.FileCount)
 
 	validateLambdaLayer(t, &layers[0], "file1", "hello world 1", "digest1")
 	validateLambdaLayer(t, &layers[1], "hello/file2", "hello world 2", "digest2")
 	validateLambdaLayer(t, &layers[2], "file1", "hello world 4", "digest4")
+
+	validateLambdaDeploymentPackage(t, function,
+		[]string{"file1", "file2", "file1"},
+		[]string{"hello world 5", "hello world 6", "hello world 7"})
 
 	err = os.Remove(dir)
 	assert.Nil(t, err)
@@ -230,7 +286,7 @@ func TestRepackFailure(t *testing.T) {
 	dir, err := ioutil.TempDir("", "")
 	assert.Nil(t, err)
 
-	layers, err := repackImage(&repackOptions{
+	layers, function, err := repackImage(&repackOptions{
 		ctx:            nil,
 		cache:          nil,
 		imageSource:    source,
@@ -240,8 +296,12 @@ func TestRepackFailure(t *testing.T) {
 	})
 
 	assert.Nil(t, layers)
+	assert.Equal(t, 0, function.FileCount)
 	assert.NotNil(t, err)
 	assert.Equal(t, err.Error(), "could not read layer with tar nor tar.gz: could not create gzip reader for layer: EOF, opening next file in layer tar: unexpected EOF")
+
+	err = os.Remove(function.File)
+	assert.Nil(t, err)
 
 	err = os.Remove(dir)
 	assert.Nil(t, err)

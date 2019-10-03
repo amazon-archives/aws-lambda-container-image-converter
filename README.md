@@ -2,13 +2,18 @@
 
 [![Build Status](https://travis-ci.org/awslabs/aws-lambda-container-image-converter.svg?branch=master)](https://travis-ci.org/awslabs/aws-lambda-container-image-converter)
 
-This container image converter tool (img2lambda) repackages container images (such as Docker images) into AWS Lambda layers, and publishes them as new layer versions to Lambda.
-
-The tool copies all files under '/opt' in the Docker image, maintaining the individual Docker image layers as individual Lambda layers.  The published layer ARNs will be stored in a file 'output/layers.json', which can be used as input when creating Lambda functions.  Each layer is named using a "namespace" prefix (like img2lambda or my-docker-image) and the SHA256 digest of the Docker image layer, in order to provide a way of tracking the provenance of the Lambda layer back to the Docker image that created it.
-
-If a layer is already published to Lambda (same layer name, SHA256 digest, and size), it will not be published again.  Instead the existing layer version ARN will be written to the output file.
+This container image converter tool (img2lambda) extracts an AWS Lambda function deployment package from a container image (such as a Docker image).
+It also extracts AWS Lambda layers from a container image, and publishes them as new layer versions to Lambda.
 
 ![img2lambda Demo](assets/demo.gif)
+
+To extract a Lambda function deployment package, the tool copies all files under '/var/task' in the container image into a deployment package zip file.
+
+To extract Lambda layers, the tool copies all files under '/opt' in the container image, repackaging the individual container image layers as individual Lambda layer zip files.
+The published layer ARNs are stored in a file 'output/layers.json', which can be used as input when creating Lambda functions.
+Each layer is named using a "namespace" prefix (like 'img2lambda' or 'my-docker-image') and the SHA256 digest of the container image layer, in order to provide a way of tracking the provenance of the Lambda layer back to the container image that created it.
+If a layer is already published to Lambda (same layer name, SHA256 digest, and size), it will not be published again.
+Instead the existing layer version ARN will be written to the output file.
 
 **Table of Contents**
 
@@ -41,7 +46,7 @@ GLOBAL OPTIONS:
    --image-type value, -t value            Type of the source container image. Valid values: 'docker' (Docker image from the local Docker daemon), 'oci' (OCI image archive at the given path and optional tag) (default: "docker")
    --region value, -r value                AWS region (default: "us-east-1")
    --profile value, -p value               AWS credentials profile. Credentials will default to the same chain as the AWS CLI: environment variables, default profile, container credentials, EC2 instance credentials
-   --output-directory value, -o value      Destination directory for command output (default: "./output")
+   --output-directory value, -o value      Destination directory for output: function deployment package (function.zip) and list of published layers (layers.json, layers.yaml) (default: "./output")
    --layer-namespace value, -n value       Prefix for the layers published to Lambda (default: "img2lambda")
    --dry-run, -d                           Conduct a dry-run: Repackage the image, but only write the Lambda layers to local disk (do not publish to Lambda)
    --description value, --desc value       The description of this layer version (default: "created by img2lambda from image <name of the image>")
@@ -124,21 +129,21 @@ For example:
 
 ### Docker Example
 
-Build the example Docker image to create a PHP Lambda custom runtime:
+Build the example Docker image to create a PHP Lambda custom runtime and Hello World PHP function:
 ```
 cd example
 
 docker build -t lambda-php .
 ```
 
-The example PHP functions are also built into the example image, so they can be run with Docker:
+The Hello World function can be invoked locally by running the Docker image:
 ```
 docker run lambda-php hello '{"name": "World"}'
 
 docker run lambda-php goodbye '{"name": "World"}'
 ```
 
-Run the tool to create and publish Lambda layers that contain the PHP custom runtime:
+Run the tool to both create a Lambda deployment package that contains the Hello World PHP function, and to create and publish Lambda layers that contain the PHP custom runtime:
 ```
 ../bin/local/img2lambda -i lambda-php:latest -r us-east-1 -o ./output
 ```
@@ -154,26 +159,22 @@ podman build --format oci -t lambda-php .
 podman push lambda-php oci-archive:./lambda-php-oci
 ```
 
-Run the tool to create and publish Lambda layers that contain the PHP custom runtime:
+Run the tool to both create a Lambda deployment package that contains the Hello World PHP function, and to create and publish Lambda layers that contain the PHP custom runtime:
 ```
 ../bin/local/img2lambda -i ./lambda-php-oci -t oci -r us-east-1 -o ./output
 ```
 
 ### Deploy Manually
-Create a PHP function that uses the layers:
+Create a PHP function that uses the layers and deployment package extracted from the container image:
 ```
-cd function
-
-zip hello.zip src/hello.php
-
 aws lambda create-function \
     --function-name php-example-hello \
     --handler hello \
-    --zip-file fileb://./hello.zip \
+    --zip-file fileb://./output/function.zip \
     --runtime provided \
     --role "arn:aws:iam::XXXXXXXXXXXX:role/service-role/LambdaPhpExample" \
     --region us-east-1 \
-    --layers file://../output/layers.json
+    --layers file://./output/layers.json
 ```
 
 Finally, invoke the function:
@@ -191,18 +192,18 @@ cat hello-output.txt
 
 ### Deploy with AWS Serverless Application Model (SAM)
 
-See [the sample template.yaml](example/function/template.yaml) and [the sample template.json](example/function/template.json).
+See [the sample template.yaml](example/deploy/template.yaml) and [the sample template.json](example/deploy/template.json).
 
 Insert the layers ARNs into the function definition:
 ```
-cd function
+cd example/deploy
 
 sed -i 's/^- /      - /' ../output/layers.yaml && \
     sed -e "/LAYERS_PLACEHOLDER/r ../output/layers.yaml" -e "s///" template.yaml > template-with-layers.yaml
 
 OR
 
-cd function
+cd example/deploy
 
 sed -e "/\"LAYERS_PLACEHOLDER\"/r ../output/layers.json" -e "s///" template.json | jq . > template-with-layers.json
 ```
@@ -247,11 +248,11 @@ cat hello-output.txt
 
 ### Deploy with Serverless Framework
 
-See [the sample serverless.yml](example/function/serverless.yml) for how to use the img2lambda-generated layers in your Serverless function.
+See [the sample serverless.yml](example/deploy/serverless.yml) for how to use the img2lambda-generated layers in your Serverless function.
 
 Deploy the function:
 ```
-cd function
+cd example/deploy
 
 serverless deploy -v
 ```

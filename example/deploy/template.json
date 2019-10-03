@@ -8,7 +8,7 @@
                 "FunctionName": "sam-php-example-hello",
                 "Handler": "hello.hello",
                 "Runtime": "provided",
-                "CodeUri": "./",
+                "CodeUri": "../output/function.zip",
                 "Layers": "LAYERS_PLACEHOLDER"
             }
         },
@@ -18,7 +18,7 @@
                 "FunctionName": "sam-php-example-goodbye",
                 "Handler": "goodbye.goodbye",
                 "Runtime": "provided",
-                "CodeUri": "./",
+                "CodeUri": "../output/function.zip",
                 "Layers": "LAYERS_PLACEHOLDER"
             }
         }

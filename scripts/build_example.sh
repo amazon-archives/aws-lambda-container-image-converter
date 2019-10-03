@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -ex
 
 # Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
@@ -20,6 +20,15 @@ docker run lambda-php goodbye '{"name": "World"}'
 
 ../bin/local/img2lambda -i lambda-php:latest --dry-run
 
-# Look for the 2 layers that contain files in opt/
+# Look for the layers that contain files in opt/ and deployment package that contains files in var/task/
 ls output/layer-1.zip
 ls output/layer-2.zip
+ls output/function.zip
+
+unzip -l output/layer-1.zip | grep '2 files'
+unzip -l output/layer-1.zip | grep 'bin/php'
+unzip -l output/layer-1.zip | grep 'bootstrap'
+
+unzip -l output/function.zip | grep '2 files'
+unzip -l output/function.zip | grep 'src/hello.php'
+unzip -l output/function.zip | grep 'src/goodbye.php'
