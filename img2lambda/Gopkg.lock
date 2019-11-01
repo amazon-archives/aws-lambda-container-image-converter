@@ -779,12 +779,12 @@
   version = "v0.3.2"
 
 [[projects]]
-  digest = "1:bb4cb0b6ca4975e8e4ff573e6e0e5692ab23843470a869c217923aa5377f70a5"
+  digest = "1:ab9547706f32a7535bb4f25d6b58ad00436630593cd3e3ed4602f1613ed84783"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
   pruneopts = ""
-  revision = "bb4e33bf68bf89cad44d386192cbed201f35b241"
-  version = "v2.2.3"
+  revision = "f221b8435cfb71e54062f6c6e99e9ade30b124d5"
+  version = "v2.2.4"
 
 [[projects]]
   digest = "1:c2944ab044242534ad7c4b20de548b1df8a6e06ad739ab53b01042a59c4b6991"
