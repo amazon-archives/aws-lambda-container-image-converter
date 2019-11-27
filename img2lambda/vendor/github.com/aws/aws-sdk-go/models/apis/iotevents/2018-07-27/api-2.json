@@ -285,7 +285,11 @@
         "iotTopicPublish":{"shape":"IotTopicPublishAction"},
         "setTimer":{"shape":"SetTimerAction"},
         "clearTimer":{"shape":"ClearTimerAction"},
-        "resetTimer":{"shape":"ResetTimerAction"}
+        "resetTimer":{"shape":"ResetTimerAction"},
+        "lambda":{"shape":"LambdaAction"},
+        "iotEvents":{"shape":"IotEventsAction"},
+        "sqs":{"shape":"SqsAction"},
+        "firehose":{"shape":"FirehoseAction"}
       }
     },
     "Actions":{
@@ -340,7 +344,8 @@
         "detectorModelDescription":{"shape":"DetectorModelDescription"},
         "key":{"shape":"AttributeJsonPath"},
         "roleArn":{"shape":"AmazonResourceName"},
-        "tags":{"shape":"Tags"}
+        "tags":{"shape":"Tags"},
+        "evaluationMethod":{"shape":"EvaluationMethod"}
       }
     },
     "CreateDetectorModelResponse":{
@@ -400,6 +405,7 @@
       "members":{
       }
     },
+    "DeliveryStreamName":{"type":"string"},
     "DescribeDetectorModelRequest":{
       "type":"structure",
       "required":["detectorModelName"],
@@ -482,7 +488,8 @@
         "creationTime":{"shape":"Timestamp"},
         "lastUpdateTime":{"shape":"Timestamp"},
         "status":{"shape":"DetectorModelVersionStatus"},
-        "key":{"shape":"AttributeJsonPath"}
+        "key":{"shape":"AttributeJsonPath"},
+        "evaluationMethod":{"shape":"EvaluationMethod"}
       }
     },
     "DetectorModelDefinition":{
@@ -548,8 +555,16 @@
         "roleArn":{"shape":"AmazonResourceName"},
         "creationTime":{"shape":"Timestamp"},
         "lastUpdateTime":{"shape":"Timestamp"},
-        "status":{"shape":"DetectorModelVersionStatus"}
+        "status":{"shape":"DetectorModelVersionStatus"},
+        "evaluationMethod":{"shape":"EvaluationMethod"}
       }
+    },
+    "EvaluationMethod":{
+      "type":"string",
+      "enum":[
+        "BATCH",
+        "SERIAL"
+      ]
     },
     "Event":{
       "type":"structure",
@@ -567,6 +582,18 @@
     "Events":{
       "type":"list",
       "member":{"shape":"Event"}
+    },
+    "FirehoseAction":{
+      "type":"structure",
+      "required":["deliveryStreamName"],
+      "members":{
+        "deliveryStreamName":{"shape":"DeliveryStreamName"},
+        "separator":{"shape":"FirehoseSeparator"}
+      }
+    },
+    "FirehoseSeparator":{
+      "type":"string",
+      "pattern":"([\\n\\t])|(\\r\\n)|(,)"
     },
     "Input":{
       "type":"structure",
@@ -652,6 +679,13 @@
       "error":{"httpStatusCode":400},
       "exception":true
     },
+    "IotEventsAction":{
+      "type":"structure",
+      "required":["inputName"],
+      "members":{
+        "inputName":{"shape":"InputName"}
+      }
+    },
     "IotTopicPublishAction":{
       "type":"structure",
       "required":["mqttTopic"],
@@ -663,7 +697,14 @@
       "type":"string",
       "max":128,
       "min":1,
-      "pattern":"^[a-zA-Z0-9\\-_]+$"
+      "pattern":"^[a-zA-Z0-9\\-_:]+$"
+    },
+    "LambdaAction":{
+      "type":"structure",
+      "required":["functionArn"],
+      "members":{
+        "functionArn":{"shape":"AmazonResourceName"}
+      }
     },
     "LimitExceededException":{
       "type":"structure",
@@ -822,6 +863,7 @@
         "loggingOptions":{"shape":"LoggingOptions"}
       }
     },
+    "QueueUrl":{"type":"string"},
     "ResetTimerAction":{
       "type":"structure",
       "required":["timerName"],
@@ -892,6 +934,14 @@
       "members":{
         "variableName":{"shape":"VariableName"},
         "value":{"shape":"VariableValue"}
+      }
+    },
+    "SqsAction":{
+      "type":"structure",
+      "required":["queueUrl"],
+      "members":{
+        "queueUrl":{"shape":"QueueUrl"},
+        "useBase64":{"shape":"UseBase64"}
       }
     },
     "State":{
@@ -1043,7 +1093,8 @@
         },
         "detectorModelDefinition":{"shape":"DetectorModelDefinition"},
         "detectorModelDescription":{"shape":"DetectorModelDescription"},
-        "roleArn":{"shape":"AmazonResourceName"}
+        "roleArn":{"shape":"AmazonResourceName"},
+        "evaluationMethod":{"shape":"EvaluationMethod"}
       }
     },
     "UpdateDetectorModelResponse":{
@@ -1074,6 +1125,7 @@
         "inputConfiguration":{"shape":"InputConfiguration"}
       }
     },
+    "UseBase64":{"type":"boolean"},
     "VariableName":{
       "type":"string",
       "max":128,

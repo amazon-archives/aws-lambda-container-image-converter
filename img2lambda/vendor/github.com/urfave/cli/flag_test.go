@@ -2,6 +2,8 @@ package cli
 
 import (
 	"fmt"
+	"io"
+	"io/ioutil"
 	"os"
 	"reflect"
 	"regexp"
@@ -87,7 +89,7 @@ func TestFlagsFromEnv(t *testing.T) {
 
 	for _, test := range flagTests {
 		os.Clearenv()
-		os.Setenv(reflect.ValueOf(test.flag).FieldByName("EnvVar").String(), test.input)
+		_ = os.Setenv(reflect.ValueOf(test.flag).FieldByName("EnvVar").String(), test.input)
 		a := App{
 			Flags: []Flag{test.flag},
 			Action: func(ctx *Context) error {
@@ -143,7 +145,7 @@ func TestStringFlagHelpOutput(t *testing.T) {
 
 func TestStringFlagWithEnvVarHelpOutput(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("APP_FOO", "derp")
+	_ = os.Setenv("APP_FOO", "derp")
 	for _, test := range stringFlagTests {
 		flag := StringFlag{Name: test.name, Value: test.value, EnvVar: "APP_FOO"}
 		output := flag.String()
@@ -158,6 +160,83 @@ func TestStringFlagWithEnvVarHelpOutput(t *testing.T) {
 	}
 }
 
+var prefixStringFlagTests = []struct {
+	name     string
+	usage    string
+	value    string
+	prefixer FlagNamePrefixFunc
+	expected string
+}{
+	{"foo", "", "", func(a, b string) string {
+		return fmt.Sprintf("name: %s, ph: %s", a, b)
+	}, "name: foo, ph: value\t"},
+	{"f", "", "", func(a, b string) string {
+		return fmt.Sprintf("name: %s, ph: %s", a, b)
+	}, "name: f, ph: value\t"},
+	{"f", "The total `foo` desired", "all", func(a, b string) string {
+		return fmt.Sprintf("name: %s, ph: %s", a, b)
+	}, "name: f, ph: foo\tThe total foo desired (default: \"all\")"},
+	{"test", "", "Something", func(a, b string) string {
+		return fmt.Sprintf("name: %s, ph: %s", a, b)
+	}, "name: test, ph: value\t(default: \"Something\")"},
+	{"config,c", "Load configuration from `FILE`", "", func(a, b string) string {
+		return fmt.Sprintf("name: %s, ph: %s", a, b)
+	}, "name: config,c, ph: FILE\tLoad configuration from FILE"},
+	{"config,c", "Load configuration from `CONFIG`", "config.json", func(a, b string) string {
+		return fmt.Sprintf("name: %s, ph: %s", a, b)
+	}, "name: config,c, ph: CONFIG\tLoad configuration from CONFIG (default: \"config.json\")"},
+}
+
+func TestFlagNamePrefixer(t *testing.T) {
+	defer func() {
+		FlagNamePrefixer = prefixedNames
+	}()
+
+	for _, test := range prefixStringFlagTests {
+		FlagNamePrefixer = test.prefixer
+		flag := StringFlag{Name: test.name, Usage: test.usage, Value: test.value}
+		output := flag.String()
+		if output != test.expected {
+			t.Errorf("%q does not match %q", output, test.expected)
+		}
+	}
+}
+
+var envHintFlagTests = []struct {
+	name     string
+	env      string
+	hinter   FlagEnvHintFunc
+	expected string
+}{
+	{"foo", "", func(a, b string) string {
+		return fmt.Sprintf("env: %s, str: %s", a, b)
+	}, "env: , str: --foo value\t"},
+	{"f", "", func(a, b string) string {
+		return fmt.Sprintf("env: %s, str: %s", a, b)
+	}, "env: , str: -f value\t"},
+	{"foo", "ENV_VAR", func(a, b string) string {
+		return fmt.Sprintf("env: %s, str: %s", a, b)
+	}, "env: ENV_VAR, str: --foo value\t"},
+	{"f", "ENV_VAR", func(a, b string) string {
+		return fmt.Sprintf("env: %s, str: %s", a, b)
+	}, "env: ENV_VAR, str: -f value\t"},
+}
+
+func TestFlagEnvHinter(t *testing.T) {
+	defer func() {
+		FlagEnvHinter = withEnvHint
+	}()
+
+	for _, test := range envHintFlagTests {
+		FlagEnvHinter = test.hinter
+		flag := StringFlag{Name: test.name, EnvVar: test.env}
+		output := flag.String()
+		if output != test.expected {
+			t.Errorf("%q does not match %q", output, test.expected)
+		}
+	}
+}
+
 var stringSliceFlagTests = []struct {
 	name     string
 	value    *StringSlice
@@ -165,22 +244,22 @@ var stringSliceFlagTests = []struct {
 }{
 	{"foo", func() *StringSlice {
 		s := &StringSlice{}
-		s.Set("")
+		_ = s.Set("")
 		return s
 	}(), "--foo value\t"},
 	{"f", func() *StringSlice {
 		s := &StringSlice{}
-		s.Set("")
+		_ = s.Set("")
 		return s
 	}(), "-f value\t"},
 	{"f", func() *StringSlice {
 		s := &StringSlice{}
-		s.Set("Lipstick")
+		_ = s.Set("Lipstick")
 		return s
 	}(), "-f value\t(default: \"Lipstick\")"},
 	{"test", func() *StringSlice {
 		s := &StringSlice{}
-		s.Set("Something")
+		_ = s.Set("Something")
 		return s
 	}(), "--test value\t(default: \"Something\")"},
 }
@@ -198,7 +277,7 @@ func TestStringSliceFlagHelpOutput(t *testing.T) {
 
 func TestStringSliceFlagWithEnvVarHelpOutput(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("APP_QWWX", "11,4")
+	_ = os.Setenv("APP_QWWX", "11,4")
 	for _, test := range stringSliceFlagTests {
 		flag := StringSliceFlag{Name: test.name, Value: test.value, EnvVar: "APP_QWWX"}
 		output := flag.String()
@@ -234,7 +313,7 @@ func TestIntFlagHelpOutput(t *testing.T) {
 
 func TestIntFlagWithEnvVarHelpOutput(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("APP_BAR", "2")
+	_ = os.Setenv("APP_BAR", "2")
 	for _, test := range intFlagTests {
 		flag := IntFlag{Name: test.name, EnvVar: "APP_BAR"}
 		output := flag.String()
@@ -270,7 +349,7 @@ func TestInt64FlagHelpOutput(t *testing.T) {
 
 func TestInt64FlagWithEnvVarHelpOutput(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("APP_BAR", "2")
+	_ = os.Setenv("APP_BAR", "2")
 	for _, test := range int64FlagTests {
 		flag := IntFlag{Name: test.name, EnvVar: "APP_BAR"}
 		output := flag.String()
@@ -306,7 +385,7 @@ func TestUintFlagHelpOutput(t *testing.T) {
 
 func TestUintFlagWithEnvVarHelpOutput(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("APP_BAR", "2")
+	_ = os.Setenv("APP_BAR", "2")
 	for _, test := range uintFlagTests {
 		flag := UintFlag{Name: test.name, EnvVar: "APP_BAR"}
 		output := flag.String()
@@ -342,7 +421,7 @@ func TestUint64FlagHelpOutput(t *testing.T) {
 
 func TestUint64FlagWithEnvVarHelpOutput(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("APP_BAR", "2")
+	_ = os.Setenv("APP_BAR", "2")
 	for _, test := range uint64FlagTests {
 		flag := UintFlag{Name: test.name, EnvVar: "APP_BAR"}
 		output := flag.String()
@@ -378,7 +457,7 @@ func TestDurationFlagHelpOutput(t *testing.T) {
 
 func TestDurationFlagWithEnvVarHelpOutput(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("APP_BAR", "2h3m6s")
+	_ = os.Setenv("APP_BAR", "2h3m6s")
 	for _, test := range durationFlagTests {
 		flag := DurationFlag{Name: test.name, EnvVar: "APP_BAR"}
 		output := flag.String()
@@ -402,8 +481,8 @@ var intSliceFlagTests = []struct {
 	{"H", &IntSlice{}, "-H value\t"},
 	{"H, heads", func() *IntSlice {
 		i := &IntSlice{}
-		i.Set("9")
-		i.Set("3")
+		_ = i.Set("9")
+		_ = i.Set("3")
 		return i
 	}(), "-H value, --heads value\t(default: 9, 3)"},
 }
@@ -421,7 +500,7 @@ func TestIntSliceFlagHelpOutput(t *testing.T) {
 
 func TestIntSliceFlagWithEnvVarHelpOutput(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("APP_SMURF", "42,3")
+	_ = os.Setenv("APP_SMURF", "42,3")
 	for _, test := range intSliceFlagTests {
 		flag := IntSliceFlag{Name: test.name, Value: test.value, EnvVar: "APP_SMURF"}
 		output := flag.String()
@@ -445,8 +524,8 @@ var int64SliceFlagTests = []struct {
 	{"H", &Int64Slice{}, "-H value\t"},
 	{"H, heads", func() *Int64Slice {
 		i := &Int64Slice{}
-		i.Set("2")
-		i.Set("17179869184")
+		_ = i.Set("2")
+		_ = i.Set("17179869184")
 		return i
 	}(), "-H value, --heads value\t(default: 2, 17179869184)"},
 }
@@ -464,7 +543,7 @@ func TestInt64SliceFlagHelpOutput(t *testing.T) {
 
 func TestInt64SliceFlagWithEnvVarHelpOutput(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("APP_SMURF", "42,17179869184")
+	_ = os.Setenv("APP_SMURF", "42,17179869184")
 	for _, test := range int64SliceFlagTests {
 		flag := Int64SliceFlag{Name: test.name, Value: test.value, EnvVar: "APP_SMURF"}
 		output := flag.String()
@@ -489,7 +568,7 @@ var float64FlagTests = []struct {
 
 func TestFloat64FlagHelpOutput(t *testing.T) {
 	for _, test := range float64FlagTests {
-		flag := Float64Flag{Name: test.name, Value: float64(0.1)}
+		flag := Float64Flag{Name: test.name, Value: 0.1}
 		output := flag.String()
 
 		if output != test.expected {
@@ -500,7 +579,7 @@ func TestFloat64FlagHelpOutput(t *testing.T) {
 
 func TestFloat64FlagWithEnvVarHelpOutput(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("APP_BAZ", "99.4")
+	_ = os.Setenv("APP_BAZ", "99.4")
 	for _, test := range float64FlagTests {
 		flag := Float64Flag{Name: test.name, EnvVar: "APP_BAZ"}
 		output := flag.String()
@@ -537,7 +616,7 @@ func TestGenericFlagHelpOutput(t *testing.T) {
 
 func TestGenericFlagWithEnvVarHelpOutput(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("APP_ZAP", "3")
+	_ = os.Setenv("APP_ZAP", "3")
 	for _, test := range genericFlagTests {
 		flag := GenericFlag{Name: test.name, EnvVar: "APP_ZAP"}
 		output := flag.String()
@@ -553,7 +632,7 @@ func TestGenericFlagWithEnvVarHelpOutput(t *testing.T) {
 }
 
 func TestParseMultiString(t *testing.T) {
-	(&App{
+	_ = (&App{
 		Flags: []Flag{
 			StringFlag{Name: "serve, s"},
 		},
@@ -571,7 +650,7 @@ func TestParseMultiString(t *testing.T) {
 
 func TestParseDestinationString(t *testing.T) {
 	var dest string
-	a := App{
+	_ = (&App{
 		Flags: []Flag{
 			StringFlag{
 				Name:        "dest",
@@ -584,14 +663,13 @@ func TestParseDestinationString(t *testing.T) {
 			}
 			return nil
 		},
-	}
-	a.Run([]string{"run", "--dest", "10"})
+	}).Run([]string{"run", "--dest", "10"})
 }
 
 func TestParseMultiStringFromEnv(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("APP_COUNT", "20")
-	(&App{
+	_ = os.Setenv("APP_COUNT", "20")
+	_ = (&App{
 		Flags: []Flag{
 			StringFlag{Name: "count, c", EnvVar: "APP_COUNT"},
 		},
@@ -609,8 +687,8 @@ func TestParseMultiStringFromEnv(t *testing.T) {
 
 func TestParseMultiStringFromEnvCascade(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("APP_COUNT", "20")
-	(&App{
+	_ = os.Setenv("APP_COUNT", "20")
+	_ = (&App{
 		Flags: []Flag{
 			StringFlag{Name: "count, c", EnvVar: "COMPAT_COUNT,APP_COUNT"},
 		},
@@ -627,7 +705,7 @@ func TestParseMultiStringFromEnvCascade(t *testing.T) {
 }
 
 func TestParseMultiStringSlice(t *testing.T) {
-	(&App{
+	_ = (&App{
 		Flags: []Flag{
 			StringSliceFlag{Name: "serve, s", Value: &StringSlice{}},
 		},
@@ -645,9 +723,9 @@ func TestParseMultiStringSlice(t *testing.T) {
 
 func TestParseMultiStringSliceFromEnv(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("APP_INTERVALS", "20,30,40")
+	_ = os.Setenv("APP_INTERVALS", "20,30,40")
 
-	(&App{
+	_ = (&App{
 		Flags: []Flag{
 			StringSliceFlag{Name: "intervals, i", Value: &StringSlice{}, EnvVar: "APP_INTERVALS"},
 		},
@@ -665,9 +743,9 @@ func TestParseMultiStringSliceFromEnv(t *testing.T) {
 
 func TestParseMultiStringSliceFromEnvCascade(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("APP_INTERVALS", "20,30,40")
+	_ = os.Setenv("APP_INTERVALS", "20,30,40")
 
-	(&App{
+	_ = (&App{
 		Flags: []Flag{
 			StringSliceFlag{Name: "intervals, i", Value: &StringSlice{}, EnvVar: "COMPAT_INTERVALS,APP_INTERVALS"},
 		},
@@ -684,7 +762,7 @@ func TestParseMultiStringSliceFromEnvCascade(t *testing.T) {
 }
 
 func TestParseMultiInt(t *testing.T) {
-	a := App{
+	_ = (&App{
 		Flags: []Flag{
 			IntFlag{Name: "serve, s"},
 		},
@@ -697,13 +775,12 @@ func TestParseMultiInt(t *testing.T) {
 			}
 			return nil
 		},
-	}
-	a.Run([]string{"run", "-s", "10"})
+	}).Run([]string{"run", "-s", "10"})
 }
 
 func TestParseDestinationInt(t *testing.T) {
 	var dest int
-	a := App{
+	_ = (&App{
 		Flags: []Flag{
 			IntFlag{
 				Name:        "dest",
@@ -716,14 +793,13 @@ func TestParseDestinationInt(t *testing.T) {
 			}
 			return nil
 		},
-	}
-	a.Run([]string{"run", "--dest", "10"})
+	}).Run([]string{"run", "--dest", "10"})
 }
 
 func TestParseMultiIntFromEnv(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("APP_TIMEOUT_SECONDS", "10")
-	a := App{
+	_ = os.Setenv("APP_TIMEOUT_SECONDS", "10")
+	_ = (&App{
 		Flags: []Flag{
 			IntFlag{Name: "timeout, t", EnvVar: "APP_TIMEOUT_SECONDS"},
 		},
@@ -736,14 +812,13 @@ func TestParseMultiIntFromEnv(t *testing.T) {
 			}
 			return nil
 		},
-	}
-	a.Run([]string{"run"})
+	}).Run([]string{"run"})
 }
 
 func TestParseMultiIntFromEnvCascade(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("APP_TIMEOUT_SECONDS", "10")
-	a := App{
+	_ = os.Setenv("APP_TIMEOUT_SECONDS", "10")
+	_ = (&App{
 		Flags: []Flag{
 			IntFlag{Name: "timeout, t", EnvVar: "COMPAT_TIMEOUT_SECONDS,APP_TIMEOUT_SECONDS"},
 		},
@@ -756,12 +831,11 @@ func TestParseMultiIntFromEnvCascade(t *testing.T) {
 			}
 			return nil
 		},
-	}
-	a.Run([]string{"run"})
+	}).Run([]string{"run"})
 }
 
 func TestParseMultiIntSlice(t *testing.T) {
-	(&App{
+	_ = (&App{
 		Flags: []Flag{
 			IntSliceFlag{Name: "serve, s", Value: &IntSlice{}},
 		},
@@ -779,9 +853,9 @@ func TestParseMultiIntSlice(t *testing.T) {
 
 func TestParseMultiIntSliceFromEnv(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("APP_INTERVALS", "20,30,40")
+	_ = os.Setenv("APP_INTERVALS", "20,30,40")
 
-	(&App{
+	_ = (&App{
 		Flags: []Flag{
 			IntSliceFlag{Name: "intervals, i", Value: &IntSlice{}, EnvVar: "APP_INTERVALS"},
 		},
@@ -799,9 +873,9 @@ func TestParseMultiIntSliceFromEnv(t *testing.T) {
 
 func TestParseMultiIntSliceFromEnvCascade(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("APP_INTERVALS", "20,30,40")
+	_ = os.Setenv("APP_INTERVALS", "20,30,40")
 
-	(&App{
+	_ = (&App{
 		Flags: []Flag{
 			IntSliceFlag{Name: "intervals, i", Value: &IntSlice{}, EnvVar: "COMPAT_INTERVALS,APP_INTERVALS"},
 		},
@@ -818,7 +892,7 @@ func TestParseMultiIntSliceFromEnvCascade(t *testing.T) {
 }
 
 func TestParseMultiInt64Slice(t *testing.T) {
-	(&App{
+	_ = (&App{
 		Flags: []Flag{
 			Int64SliceFlag{Name: "serve, s", Value: &Int64Slice{}},
 		},
@@ -836,9 +910,9 @@ func TestParseMultiInt64Slice(t *testing.T) {
 
 func TestParseMultiInt64SliceFromEnv(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("APP_INTERVALS", "20,30,17179869184")
+	_ = os.Setenv("APP_INTERVALS", "20,30,17179869184")
 
-	(&App{
+	_ = (&App{
 		Flags: []Flag{
 			Int64SliceFlag{Name: "intervals, i", Value: &Int64Slice{}, EnvVar: "APP_INTERVALS"},
 		},
@@ -856,9 +930,9 @@ func TestParseMultiInt64SliceFromEnv(t *testing.T) {
 
 func TestParseMultiInt64SliceFromEnvCascade(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("APP_INTERVALS", "20,30,17179869184")
+	_ = os.Setenv("APP_INTERVALS", "20,30,17179869184")
 
-	(&App{
+	_ = (&App{
 		Flags: []Flag{
 			Int64SliceFlag{Name: "intervals, i", Value: &Int64Slice{}, EnvVar: "COMPAT_INTERVALS,APP_INTERVALS"},
 		},
@@ -875,7 +949,7 @@ func TestParseMultiInt64SliceFromEnvCascade(t *testing.T) {
 }
 
 func TestParseMultiFloat64(t *testing.T) {
-	a := App{
+	_ = (&App{
 		Flags: []Flag{
 			Float64Flag{Name: "serve, s"},
 		},
@@ -888,13 +962,12 @@ func TestParseMultiFloat64(t *testing.T) {
 			}
 			return nil
 		},
-	}
-	a.Run([]string{"run", "-s", "10.2"})
+	}).Run([]string{"run", "-s", "10.2"})
 }
 
 func TestParseDestinationFloat64(t *testing.T) {
 	var dest float64
-	a := App{
+	_ = (&App{
 		Flags: []Flag{
 			Float64Flag{
 				Name:        "dest",
@@ -907,14 +980,13 @@ func TestParseDestinationFloat64(t *testing.T) {
 			}
 			return nil
 		},
-	}
-	a.Run([]string{"run", "--dest", "10.2"})
+	}).Run([]string{"run", "--dest", "10.2"})
 }
 
 func TestParseMultiFloat64FromEnv(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("APP_TIMEOUT_SECONDS", "15.5")
-	a := App{
+	_ = os.Setenv("APP_TIMEOUT_SECONDS", "15.5")
+	_ = (&App{
 		Flags: []Flag{
 			Float64Flag{Name: "timeout, t", EnvVar: "APP_TIMEOUT_SECONDS"},
 		},
@@ -927,14 +999,13 @@ func TestParseMultiFloat64FromEnv(t *testing.T) {
 			}
 			return nil
 		},
-	}
-	a.Run([]string{"run"})
+	}).Run([]string{"run"})
 }
 
 func TestParseMultiFloat64FromEnvCascade(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("APP_TIMEOUT_SECONDS", "15.5")
-	a := App{
+	_ = os.Setenv("APP_TIMEOUT_SECONDS", "15.5")
+	_ = (&App{
 		Flags: []Flag{
 			Float64Flag{Name: "timeout, t", EnvVar: "COMPAT_TIMEOUT_SECONDS,APP_TIMEOUT_SECONDS"},
 		},
@@ -947,12 +1018,11 @@ func TestParseMultiFloat64FromEnvCascade(t *testing.T) {
 			}
 			return nil
 		},
-	}
-	a.Run([]string{"run"})
+	}).Run([]string{"run"})
 }
 
 func TestParseMultiBool(t *testing.T) {
-	a := App{
+	_ = (&App{
 		Flags: []Flag{
 			BoolFlag{Name: "serve, s"},
 		},
@@ -965,13 +1035,36 @@ func TestParseMultiBool(t *testing.T) {
 			}
 			return nil
 		},
-	}
-	a.Run([]string{"run", "--serve"})
+	}).Run([]string{"run", "--serve"})
+}
+
+func TestParseBoolShortOptionHandle(t *testing.T) {
+	_ = (&App{
+		Commands: []Command{
+			{
+				Name:                   "foobar",
+				UseShortOptionHandling: true,
+				Action: func(ctx *Context) error {
+					if ctx.Bool("serve") != true {
+						t.Errorf("main name not set")
+					}
+					if ctx.Bool("option") != true {
+						t.Errorf("short name not set")
+					}
+					return nil
+				},
+				Flags: []Flag{
+					BoolFlag{Name: "serve, s"},
+					BoolFlag{Name: "option, o"},
+				},
+			},
+		},
+	}).Run([]string{"run", "foobar", "-so"})
 }
 
 func TestParseDestinationBool(t *testing.T) {
 	var dest bool
-	a := App{
+	_ = (&App{
 		Flags: []Flag{
 			BoolFlag{
 				Name:        "dest",
@@ -984,14 +1077,13 @@ func TestParseDestinationBool(t *testing.T) {
 			}
 			return nil
 		},
-	}
-	a.Run([]string{"run", "--dest"})
+	}).Run([]string{"run", "--dest"})
 }
 
 func TestParseMultiBoolFromEnv(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("APP_DEBUG", "1")
-	a := App{
+	_ = os.Setenv("APP_DEBUG", "1")
+	_ = (&App{
 		Flags: []Flag{
 			BoolFlag{Name: "debug, d", EnvVar: "APP_DEBUG"},
 		},
@@ -1004,14 +1096,13 @@ func TestParseMultiBoolFromEnv(t *testing.T) {
 			}
 			return nil
 		},
-	}
-	a.Run([]string{"run"})
+	}).Run([]string{"run"})
 }
 
 func TestParseMultiBoolFromEnvCascade(t *testing.T) {
 	os.Clearenv()
 	os.Setenv("APP_DEBUG", "1")
-	a := App{
+	_ = (&App{
 		Flags: []Flag{
 			BoolFlag{Name: "debug, d", EnvVar: "COMPAT_DEBUG,APP_DEBUG"},
 		},
@@ -1024,8 +1115,7 @@ func TestParseMultiBoolFromEnvCascade(t *testing.T) {
 			}
 			return nil
 		},
-	}
-	a.Run([]string{"run"})
+	}).Run([]string{"run"})
 }
 
 func TestParseBoolTFromEnv(t *testing.T) {
@@ -1041,8 +1131,8 @@ func TestParseBoolTFromEnv(t *testing.T) {
 
 	for _, test := range boolTFlagTests {
 		os.Clearenv()
-		os.Setenv("DEBUG", test.input)
-		a := App{
+		_ = os.Setenv("DEBUG", test.input)
+		_ = (&App{
 			Flags: []Flag{
 				BoolTFlag{Name: "debug, d", EnvVar: "DEBUG"},
 			},
@@ -1055,13 +1145,12 @@ func TestParseBoolTFromEnv(t *testing.T) {
 				}
 				return nil
 			},
-		}
-		a.Run([]string{"run"})
+		}).Run([]string{"run"})
 	}
 }
 
 func TestParseMultiBoolT(t *testing.T) {
-	a := App{
+	_ = (&App{
 		Flags: []Flag{
 			BoolTFlag{Name: "serve, s"},
 		},
@@ -1074,13 +1163,12 @@ func TestParseMultiBoolT(t *testing.T) {
 			}
 			return nil
 		},
-	}
-	a.Run([]string{"run", "--serve"})
+	}).Run([]string{"run", "--serve"})
 }
 
 func TestParseDestinationBoolT(t *testing.T) {
 	var dest bool
-	a := App{
+	_ = (&App{
 		Flags: []Flag{
 			BoolTFlag{
 				Name:        "dest",
@@ -1093,14 +1181,13 @@ func TestParseDestinationBoolT(t *testing.T) {
 			}
 			return nil
 		},
-	}
-	a.Run([]string{"run", "--dest"})
+	}).Run([]string{"run", "--dest"})
 }
 
 func TestParseMultiBoolTFromEnv(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("APP_DEBUG", "0")
-	a := App{
+	_ = os.Setenv("APP_DEBUG", "0")
+	_ = (&App{
 		Flags: []Flag{
 			BoolTFlag{Name: "debug, d", EnvVar: "APP_DEBUG"},
 		},
@@ -1113,14 +1200,13 @@ func TestParseMultiBoolTFromEnv(t *testing.T) {
 			}
 			return nil
 		},
-	}
-	a.Run([]string{"run"})
+	}).Run([]string{"run"})
 }
 
 func TestParseMultiBoolTFromEnvCascade(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("APP_DEBUG", "0")
-	a := App{
+	_ = os.Setenv("APP_DEBUG", "0")
+	_ = (&App{
 		Flags: []Flag{
 			BoolTFlag{Name: "debug, d", EnvVar: "COMPAT_DEBUG,APP_DEBUG"},
 		},
@@ -1133,8 +1219,7 @@ func TestParseMultiBoolTFromEnvCascade(t *testing.T) {
 			}
 			return nil
 		},
-	}
-	a.Run([]string{"run"})
+	}).Run([]string{"run"})
 }
 
 type Parser [2]string
@@ -1160,7 +1245,7 @@ func (p *Parser) Get() interface{} {
 }
 
 func TestParseGeneric(t *testing.T) {
-	a := App{
+	_ = (&App{
 		Flags: []Flag{
 			GenericFlag{Name: "serve, s", Value: &Parser{}},
 		},
@@ -1173,14 +1258,13 @@ func TestParseGeneric(t *testing.T) {
 			}
 			return nil
 		},
-	}
-	a.Run([]string{"run", "-s", "10,20"})
+	}).Run([]string{"run", "-s", "10,20"})
 }
 
 func TestParseGenericFromEnv(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("APP_SERVE", "20,30")
-	a := App{
+	_ = os.Setenv("APP_SERVE", "20,30")
+	_ = (&App{
 		Flags: []Flag{
 			GenericFlag{Name: "serve, s", Value: &Parser{}, EnvVar: "APP_SERVE"},
 		},
@@ -1193,14 +1277,13 @@ func TestParseGenericFromEnv(t *testing.T) {
 			}
 			return nil
 		},
-	}
-	a.Run([]string{"run"})
+	}).Run([]string{"run"})
 }
 
 func TestParseGenericFromEnvCascade(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("APP_FOO", "99,2000")
-	a := App{
+	_ = os.Setenv("APP_FOO", "99,2000")
+	_ = (&App{
 		Flags: []Flag{
 			GenericFlag{Name: "foos", Value: &Parser{}, EnvVar: "COMPAT_FOO,APP_FOO"},
 		},
@@ -1210,6 +1293,40 @@ func TestParseGenericFromEnvCascade(t *testing.T) {
 			}
 			return nil
 		},
+	}).Run([]string{"run"})
+}
+
+func TestFlagFromFile(t *testing.T) {
+	os.Clearenv()
+	os.Setenv("APP_FOO", "123")
+
+	temp, err := ioutil.TempFile("", "urfave_cli_test")
+	if err != nil {
+		t.Error(err)
+		return
 	}
-	a.Run([]string{"run"})
+	_, _ = io.WriteString(temp, "abc")
+	_ = temp.Close()
+	defer func() {
+		_ = os.Remove(temp.Name())
+	}()
+
+	var filePathTests = []struct {
+		path     string
+		name     string
+		expected string
+	}{
+		{"file-does-not-exist", "APP_BAR", ""},
+		{"file-does-not-exist", "APP_FOO", "123"},
+		{"file-does-not-exist", "APP_FOO,APP_BAR", "123"},
+		{temp.Name(), "APP_FOO", "123"},
+		{temp.Name(), "APP_BAR", "abc"},
+	}
+
+	for _, filePathTest := range filePathTests {
+		got, _ := flagFromFileEnv(filePathTest.path, filePathTest.name)
+		if want := filePathTest.expected; got != want {
+			t.Errorf("Did not expect %v - Want %v", got, want)
+		}
+	}
 }

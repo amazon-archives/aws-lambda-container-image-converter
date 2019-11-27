@@ -31,13 +31,7 @@ e.g. `skopeo copy` exposes the `containers/image/copy.Image` functionality.
 
 ## Dependencies
 
-This library does not ship a committed version of its dependencies in a `vendor`
-subdirectory.  This is so you can make well-informed decisions about which
-libraries you should use with this package in your own projects, and because
-types defined in the `vendor` directory would be impossible to use from your projects.
-
-What this project tests against dependencies-wise is located
-[in vendor.conf](https://github.com/containers/image/blob/master/vendor.conf).
+This library ships as a [Go module].
 
 ## Building
 
@@ -45,11 +39,11 @@ If you want to see what the library can do, or an example of how it is called,
 consider starting with the [skopeo](https://github.com/containers/skopeo) tool
 instead.
 
-To integrate this library into your project, put it into `$GOPATH` or use
-your preferred vendoring tool to include a copy in your project.
-Ensure that the dependencies documented [in vendor.conf](https://github.com/containers/image/blob/master/vendor.conf)
-are also available
-(using those exact versions or different versions of your choosing).
+To integrate this library into your project, include it as a [Go module],
+put it into `$GOPATH` or use your preferred vendoring tool to include a copy
+in your project. Ensure that the dependencies documented [in go.mod][go.mod]
+are also available (using those exact versions or different versions of
+your choosing).
 
 This library, by default, also depends on the GpgME and libostree C libraries. Either install them:
 ```sh
@@ -58,12 +52,15 @@ macOS$ brew install gpgme
 ```
 or use the build tags described below to avoid the dependencies (e.g. using `go build -tags …`)
 
+[Go module]: https://github.com/golang/go/wiki/Modules
+[go.mod]: https://github.com/containers/image/blob/master/go.mod
+
 ### Supported build tags
 
 - `containers_image_openpgp`: Use a Golang-only OpenPGP implementation for signature verification instead of the default cgo/gpgme-based implementation;
 the primary downside is that creating new signatures with the Golang-only implementation is not supported.
-- `containers_image_ostree_stub`: Instead of importing `ostree:` transport in `github.com/containers/image/transports/alltransports`, use a stub which reports that the transport is not supported. This allows building the library without requiring the `libostree` development libraries. The `github.com/containers/image/ostree` package is completely disabled
-and impossible to import when this build tag is in use.
+- `containers_image_ostree`: Import `ostree:` transport in `github.com/containers/image/transports/alltransports`. This builds the library requiring the `libostree` development libraries. Otherwise a stub which reports that the transport is not supported gets used. The `github.com/containers/image/ostree` package is completely disabled
+and impossible to import when this build tag is not in use.
 
 ## [Contributing](CONTRIBUTING.md)
 

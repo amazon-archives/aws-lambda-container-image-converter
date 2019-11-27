@@ -1103,6 +1103,39 @@ func (mr *MockLambdaAPIMockRecorder) ListAliases(arg0 interface{}) *gomock.Call 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListAliases", reflect.TypeOf((*MockLambdaAPI)(nil).ListAliases), arg0)
 }
 
+// ListAliasesPages mocks base method
+func (m *MockLambdaAPI) ListAliasesPages(arg0 *lambda.ListAliasesInput, arg1 func(*lambda.ListAliasesOutput, bool) bool) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListAliasesPages", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ListAliasesPages indicates an expected call of ListAliasesPages
+func (mr *MockLambdaAPIMockRecorder) ListAliasesPages(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListAliasesPages", reflect.TypeOf((*MockLambdaAPI)(nil).ListAliasesPages), arg0, arg1)
+}
+
+// ListAliasesPagesWithContext mocks base method
+func (m *MockLambdaAPI) ListAliasesPagesWithContext(arg0 context.Context, arg1 *lambda.ListAliasesInput, arg2 func(*lambda.ListAliasesOutput, bool) bool, arg3 ...request.Option) error {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{arg0, arg1, arg2}
+	for _, a := range arg3 {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "ListAliasesPagesWithContext", varargs...)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ListAliasesPagesWithContext indicates an expected call of ListAliasesPagesWithContext
+func (mr *MockLambdaAPIMockRecorder) ListAliasesPagesWithContext(arg0, arg1, arg2 interface{}, arg3 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{arg0, arg1, arg2}, arg3...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListAliasesPagesWithContext", reflect.TypeOf((*MockLambdaAPI)(nil).ListAliasesPagesWithContext), varargs...)
+}
+
 // ListAliasesRequest mocks base method
 func (m *MockLambdaAPI) ListAliasesRequest(arg0 *lambda.ListAliasesInput) (*request.Request, *lambda.ListAliasesOutput) {
 	m.ctrl.T.Helper()
@@ -1319,6 +1352,39 @@ func (mr *MockLambdaAPIMockRecorder) ListLayerVersions(arg0 interface{}) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListLayerVersions", reflect.TypeOf((*MockLambdaAPI)(nil).ListLayerVersions), arg0)
 }
 
+// ListLayerVersionsPages mocks base method
+func (m *MockLambdaAPI) ListLayerVersionsPages(arg0 *lambda.ListLayerVersionsInput, arg1 func(*lambda.ListLayerVersionsOutput, bool) bool) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListLayerVersionsPages", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ListLayerVersionsPages indicates an expected call of ListLayerVersionsPages
+func (mr *MockLambdaAPIMockRecorder) ListLayerVersionsPages(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListLayerVersionsPages", reflect.TypeOf((*MockLambdaAPI)(nil).ListLayerVersionsPages), arg0, arg1)
+}
+
+// ListLayerVersionsPagesWithContext mocks base method
+func (m *MockLambdaAPI) ListLayerVersionsPagesWithContext(arg0 context.Context, arg1 *lambda.ListLayerVersionsInput, arg2 func(*lambda.ListLayerVersionsOutput, bool) bool, arg3 ...request.Option) error {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{arg0, arg1, arg2}
+	for _, a := range arg3 {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "ListLayerVersionsPagesWithContext", varargs...)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ListLayerVersionsPagesWithContext indicates an expected call of ListLayerVersionsPagesWithContext
+func (mr *MockLambdaAPIMockRecorder) ListLayerVersionsPagesWithContext(arg0, arg1, arg2 interface{}, arg3 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{arg0, arg1, arg2}, arg3...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListLayerVersionsPagesWithContext", reflect.TypeOf((*MockLambdaAPI)(nil).ListLayerVersionsPagesWithContext), varargs...)
+}
+
 // ListLayerVersionsRequest mocks base method
 func (m *MockLambdaAPI) ListLayerVersionsRequest(arg0 *lambda.ListLayerVersionsInput) (*request.Request, *lambda.ListLayerVersionsOutput) {
 	m.ctrl.T.Helper()
@@ -1367,6 +1433,39 @@ func (m *MockLambdaAPI) ListLayers(arg0 *lambda.ListLayersInput) (*lambda.ListLa
 func (mr *MockLambdaAPIMockRecorder) ListLayers(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListLayers", reflect.TypeOf((*MockLambdaAPI)(nil).ListLayers), arg0)
+}
+
+// ListLayersPages mocks base method
+func (m *MockLambdaAPI) ListLayersPages(arg0 *lambda.ListLayersInput, arg1 func(*lambda.ListLayersOutput, bool) bool) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListLayersPages", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ListLayersPages indicates an expected call of ListLayersPages
+func (mr *MockLambdaAPIMockRecorder) ListLayersPages(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListLayersPages", reflect.TypeOf((*MockLambdaAPI)(nil).ListLayersPages), arg0, arg1)
+}
+
+// ListLayersPagesWithContext mocks base method
+func (m *MockLambdaAPI) ListLayersPagesWithContext(arg0 context.Context, arg1 *lambda.ListLayersInput, arg2 func(*lambda.ListLayersOutput, bool) bool, arg3 ...request.Option) error {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{arg0, arg1, arg2}
+	for _, a := range arg3 {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "ListLayersPagesWithContext", varargs...)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ListLayersPagesWithContext indicates an expected call of ListLayersPagesWithContext
+func (mr *MockLambdaAPIMockRecorder) ListLayersPagesWithContext(arg0, arg1, arg2 interface{}, arg3 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{arg0, arg1, arg2}, arg3...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListLayersPagesWithContext", reflect.TypeOf((*MockLambdaAPI)(nil).ListLayersPagesWithContext), varargs...)
 }
 
 // ListLayersRequest mocks base method
@@ -1467,6 +1566,39 @@ func (m *MockLambdaAPI) ListVersionsByFunction(arg0 *lambda.ListVersionsByFuncti
 func (mr *MockLambdaAPIMockRecorder) ListVersionsByFunction(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListVersionsByFunction", reflect.TypeOf((*MockLambdaAPI)(nil).ListVersionsByFunction), arg0)
+}
+
+// ListVersionsByFunctionPages mocks base method
+func (m *MockLambdaAPI) ListVersionsByFunctionPages(arg0 *lambda.ListVersionsByFunctionInput, arg1 func(*lambda.ListVersionsByFunctionOutput, bool) bool) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListVersionsByFunctionPages", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ListVersionsByFunctionPages indicates an expected call of ListVersionsByFunctionPages
+func (mr *MockLambdaAPIMockRecorder) ListVersionsByFunctionPages(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListVersionsByFunctionPages", reflect.TypeOf((*MockLambdaAPI)(nil).ListVersionsByFunctionPages), arg0, arg1)
+}
+
+// ListVersionsByFunctionPagesWithContext mocks base method
+func (m *MockLambdaAPI) ListVersionsByFunctionPagesWithContext(arg0 context.Context, arg1 *lambda.ListVersionsByFunctionInput, arg2 func(*lambda.ListVersionsByFunctionOutput, bool) bool, arg3 ...request.Option) error {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{arg0, arg1, arg2}
+	for _, a := range arg3 {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "ListVersionsByFunctionPagesWithContext", varargs...)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ListVersionsByFunctionPagesWithContext indicates an expected call of ListVersionsByFunctionPagesWithContext
+func (mr *MockLambdaAPIMockRecorder) ListVersionsByFunctionPagesWithContext(arg0, arg1, arg2 interface{}, arg3 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{arg0, arg1, arg2}, arg3...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListVersionsByFunctionPagesWithContext", reflect.TypeOf((*MockLambdaAPI)(nil).ListVersionsByFunctionPagesWithContext), varargs...)
 }
 
 // ListVersionsByFunctionRequest mocks base method

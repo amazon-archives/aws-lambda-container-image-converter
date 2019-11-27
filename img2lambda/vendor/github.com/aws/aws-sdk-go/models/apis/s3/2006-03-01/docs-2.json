@@ -15,7 +15,7 @@
     "DeleteBucketLifecycle": "<p>Deletes the lifecycle configuration from the bucket.</p>",
     "DeleteBucketMetricsConfiguration": "<p>Deletes a metrics configuration (specified by the metrics configuration ID) from the bucket.</p>",
     "DeleteBucketPolicy": "<p>Deletes the policy from the bucket.</p>",
-    "DeleteBucketReplication": "<p> Deletes the replication configuration from the bucket. For information about replication configuration, see <a href=\" https://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html\">Cross-Region Replication (CRR)</a> in the <i>Amazon S3 Developer Guide</i>. </p>",
+    "DeleteBucketReplication": "<p> Deletes the replication configuration from the bucket. For information about replication configuration, see <a href=\"https://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html\">Cross-Region Replication (CRR)</a> in the <i>Amazon S3 Developer Guide</i>. </p>",
     "DeleteBucketTagging": "<p>Deletes the tags from the bucket.</p>",
     "DeleteBucketWebsite": "<p>This operation removes the website configuration from the bucket.</p>",
     "DeleteObject": "<p>Removes the null version (if there is one) of an object and inserts a delete marker, which becomes the latest version of the object. If there isn't a null version, Amazon S3 does not remove any objects.</p>",
@@ -1065,6 +1065,12 @@
       "base": "<p>Specifies encryption-related information for an Amazon S3 bucket that is a destination for replicated objects.</p>",
       "refs": {
         "Destination$EncryptionConfiguration": "<p>A container that provides information about encryption. If <code>SourceSelectionCriteria</code> is specified, you must specify this element.</p>"
+      }
+    },
+    "End": {
+      "base": null,
+      "refs": {
+        "ScanRange$End": "<p>Specifies the end of the byte range. This parameter is optional. Valid values: non-negative integers. The default value is one less than the size of the object being queried.</p>"
       }
     },
     "EndEvent": {
@@ -2624,7 +2630,7 @@
     "Priority": {
       "base": null,
       "refs": {
-        "ReplicationRule$Priority": "<p>The priority associated with the rule. If you specify multiple rules in a replication configuration, Amazon S3 prioritizes the rules to prevent conflicts when filtering. If two or more rules identify the same object based on a specified filter, the rule with higher priority takes precedence. For example:</p> <ul> <li> <p>Same object quality prefix based filter criteria If prefixes you specified in multiple rules overlap </p> </li> <li> <p>Same object qualify tag based filter criteria specified in multiple rules</p> </li> </ul> <p>For more information, see <a href=\" https://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html\">Cross-Region Replication (CRR)</a> in the <i>Amazon S3 Developer Guide</i>.</p>"
+        "ReplicationRule$Priority": "<p>The priority associated with the rule. If you specify multiple rules in a replication configuration, Amazon S3 prioritizes the rules to prevent conflicts when filtering. If two or more rules identify the same object based on a specified filter, the rule with higher priority takes precedence. For example:</p> <ul> <li> <p>Same object quality prefix based filter criteria If prefixes you specified in multiple rules overlap </p> </li> <li> <p>Same object qualify tag based filter criteria specified in multiple rules</p> </li> </ul> <p>For more information, see <a href=\"https://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html\">Cross-Region Replication (CRR)</a> in the <i>Amazon S3 Developer Guide</i>.</p>"
       }
     },
     "Progress": {
@@ -3193,6 +3199,17 @@
         "InventoryEncryption$SSEKMS": "<p>Specifies the use of SSE-KMS to encrypt delivered Inventory reports.</p>"
       }
     },
+    "SSEKMSEncryptionContext": {
+      "base": null,
+      "refs": {
+        "CopyObjectOutput$SSEKMSEncryptionContext": "<p>If present, specifies the AWS KMS Encryption Context to use for object encryption. The value of this header is a base64-encoded UTF-8 string holding JSON with the encryption context key-value pairs.</p>",
+        "CopyObjectRequest$SSEKMSEncryptionContext": "<p>Specifies the AWS KMS Encryption Context to use for object encryption. The value of this header is a base64-encoded UTF-8 string holding JSON with the encryption context key-value pairs.</p>",
+        "CreateMultipartUploadOutput$SSEKMSEncryptionContext": "<p>If present, specifies the AWS KMS Encryption Context to use for object encryption. The value of this header is a base64-encoded UTF-8 string holding JSON with the encryption context key-value pairs.</p>",
+        "CreateMultipartUploadRequest$SSEKMSEncryptionContext": "<p>Specifies the AWS KMS Encryption Context to use for object encryption. The value of this header is a base64-encoded UTF-8 string holding JSON with the encryption context key-value pairs.</p>",
+        "PutObjectOutput$SSEKMSEncryptionContext": "<p>If present, specifies the AWS KMS Encryption Context to use for object encryption. The value of this header is a base64-encoded UTF-8 string holding JSON with the encryption context key-value pairs.</p>",
+        "PutObjectRequest$SSEKMSEncryptionContext": "<p>Specifies the AWS KMS Encryption Context to use for object encryption. The value of this header is a base64-encoded UTF-8 string holding JSON with the encryption context key-value pairs.</p>"
+      }
+    },
     "SSEKMSKeyId": {
       "base": null,
       "refs": {
@@ -3216,6 +3233,12 @@
       "base": "<p>Specifies the use of SSE-S3 to encrypt delivered Inventory reports.</p>",
       "refs": {
         "InventoryEncryption$SSES3": "<p>Specifies the use of SSE-S3 to encrypt delivered Inventory reports.</p>"
+      }
+    },
+    "ScanRange": {
+      "base": null,
+      "refs": {
+        "SelectObjectContentRequest$ScanRange": "<p>Specifies the byte range of the object to get the records from. A record is processed when its first byte is contained by the range. This parameter is optional, but when specified, it must not be empty. See RFC 2616, Section 14.35.1 about how to specify the start and end of the range.</p>"
       }
     },
     "SelectObjectContentEventStream": {
@@ -3316,6 +3339,12 @@
       "base": null,
       "refs": {
         "SseKmsEncryptedObjects$Status": "<p>Specifies whether Amazon S3 replicates objects created with server-side encryption using an AWS KMS-managed key.</p>"
+      }
+    },
+    "Start": {
+      "base": null,
+      "refs": {
+        "ScanRange$Start": "<p>Specifies the start of the byte range. This parameter is optional. Valid values: non-negative integers. The default value is 0.</p>"
       }
     },
     "StartAfter": {

@@ -209,6 +209,9 @@ func getFormat(subcommand string) (interface{}, error) {
 		v.Password = os.Getenv("ARCHIVE_PASSWORD")
 	case *archiver.Tar:
 		v = mytar
+	case *archiver.TarBrotli:
+		v.Tar = mytar
+		v.Quality = compressionLevel
 	case *archiver.TarBz2:
 		v.Tar = mytar
 		v.CompressionLevel = compressionLevel
@@ -222,6 +225,8 @@ func getFormat(subcommand string) (interface{}, error) {
 		v.Tar = mytar
 	case *archiver.TarXz:
 		v.Tar = mytar
+	case *archiver.TarZstd:
+		v.Tar = mytar
 	case *archiver.Zip:
 		v.CompressionLevel = compressionLevel
 		v.OverwriteExisting = overwriteExisting
@@ -231,6 +236,8 @@ func getFormat(subcommand string) (interface{}, error) {
 		v.ContinueOnError = continueOnError
 	case *archiver.Gz:
 		v.CompressionLevel = compressionLevel
+	case *archiver.Brotli:
+		v.Quality = compressionLevel
 	case *archiver.Bz2:
 		v.CompressionLevel = compressionLevel
 	case *archiver.Lz4:
@@ -238,6 +245,8 @@ func getFormat(subcommand string) (interface{}, error) {
 	case *archiver.Snappy:
 		// nothing to customize
 	case *archiver.Xz:
+		// nothing to customize
+	case *archiver.Zstd:
 		// nothing to customize
 	default:
 		return nil, fmt.Errorf("format does not support customization: %s", f)
@@ -290,6 +299,8 @@ const usage = `Usage: arc {archive|unarchive|extract|ls|compress|decompress|help
     file extension. Supported extensions:
       .zip
       .tar
+      .tar.br
+      .tbr
       .tar.gz
       .tgz
       .tar.bz2
@@ -300,6 +311,8 @@ const usage = `Usage: arc {archive|unarchive|extract|ls|compress|decompress|help
       .tlz4
       .tar.sz
       .tsz
+      .zst
+      .tar.zst
       .rar (open only)
       .bz2
       .gz

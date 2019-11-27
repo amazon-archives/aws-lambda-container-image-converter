@@ -278,6 +278,14 @@ func TestManifestSchema1Inspect(t *testing.T) {
 				"sha256:62e48e39dc5b30b75a97f05bccc66efbae6058b860ee20a5c9a184b9d5e25788",
 				"sha256:e623934bca8d1a74f51014256445937714481e49343a31bda2bc5f534748184d",
 			},
+			Env: []string{
+				"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+				"container=oci",
+				"KOLLA_BASE_DISTRO=rhel",
+				"KOLLA_INSTALL_TYPE=binary",
+				"KOLLA_INSTALL_METATYPE=rhos",
+				"PS1=$(tput bold)($(printenv KOLLA_SERVICE_NAME))$(tput sgr0)[$(id -un)@$(hostname -s) $(pwd)]$ ",
+			},
 		}, *ii)
 	}
 }

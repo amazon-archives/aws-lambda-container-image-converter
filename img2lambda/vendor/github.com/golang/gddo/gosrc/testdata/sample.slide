@@ -1,0 +1,83 @@
+Sample Presentation
+Demonstration of present tool features
+15:04 2 Jan 2006
+Tags: foo, bar, baz
+
+Author Name
+Job title, Company
+joe@example.com
+http://url/
+@twitter_name
+
+* Introduction
+
+Presentation intended to demonstrate all `present` features.
+
+* Text
+
+Some Text
+
+- bullets
+- more bullets
+
+Some More text
+
+  Preformatted text
+  is indented (however you like)
+
+: Presenter notes
+
+.link https://golang.org Link to golang.org
+
+_italic_
+*bold*
+`program`
+Markup—_especially_italic_text_—can easily be overused.
+_Why_use_scoped__ptr_? Use plain ***ptr* instead.
+
+* Image
+
+.image gopher.jpg _ 400
+.caption [[https://github.com/egonelbre/gophers][Public Domain Gophers]] provided by [[http://egonelbre.com/][Egon Elbre]]
+
+* Vector Graphics
+
+.image gopher.svg _ 400
+
+* Background
+
+.background gopher.jpg
+
+* Code
+
+Hello World in Go!
+
+.code hello.go
+
+We can extract the main function and highlight interesting parts
+
+.code hello.go /func main/,/^}/ HLhello
+
+Note that lines with `OMIT` are excluded
+
+.code hello.go /START HELLO/,/END HELLO/
+
+* Play
+
+We can even embed playable code
+
+.play hello.go /func main/,/^}/
+
+* HTML
+
+We can include arbitrary HTML from files:
+
+.html embed.html
+
+* Iframe
+
+Or we can embed entire pages as iframes
+
+.iframe iframe.html 400 600
+
+#.link http://foo label

@@ -19,6 +19,7 @@ func TestDetectCompression(t *testing.T) {
 		"fixtures/Hello.gz",
 		"fixtures/Hello.bz2",
 		"fixtures/Hello.xz",
+		"fixtures/Hello.zst",
 	}
 
 	// The original stream is preserved.

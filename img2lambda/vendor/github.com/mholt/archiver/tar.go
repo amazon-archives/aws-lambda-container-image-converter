@@ -78,7 +78,7 @@ func (t *Tar) Archive(sources []string, destination string) error {
 	// if it does not already exist
 	destDir := filepath.Dir(destination)
 	if t.MkdirAll && !fileExists(destDir) {
-		err := mkdir(destDir)
+		err := mkdir(destDir, 0755)
 		if err != nil {
 			return fmt.Errorf("making folder for destination: %v", err)
 		}
@@ -115,7 +115,7 @@ func (t *Tar) Archive(sources []string, destination string) error {
 // Destination will be treated as a folder name.
 func (t *Tar) Unarchive(source, destination string) error {
 	if !fileExists(destination) && t.MkdirAll {
-		err := mkdir(destination)
+		err := mkdir(destination, 0755)
 		if err != nil {
 			return fmt.Errorf("preparing destination: %v", err)
 		}
@@ -231,8 +231,8 @@ func (t *Tar) untarFile(f File, to string) error {
 
 	switch hdr.Typeflag {
 	case tar.TypeDir:
-		return mkdir(to)
-	case tar.TypeReg, tar.TypeRegA, tar.TypeChar, tar.TypeBlock, tar.TypeFifo:
+		return mkdir(to, f.Mode())
+	case tar.TypeReg, tar.TypeRegA, tar.TypeChar, tar.TypeBlock, tar.TypeFifo, tar.TypeGNUSparse:
 		return writeNewFile(to, f, f.Mode())
 	case tar.TypeSymlink:
 		return writeNewSymbolicLink(to, hdr.Linkname)
@@ -285,12 +285,14 @@ func (t *Tar) writeWalk(source, topLevelFolder, destination string) error {
 			return handleErr(err)
 		}
 
-		file, err := os.Open(fpath)
-		if err != nil {
-			return handleErr(fmt.Errorf("%s: opening: %v", fpath, err))
+		var file io.ReadCloser
+		if info.Mode().IsRegular() {
+			file, err = os.Open(fpath)
+			if err != nil {
+				return handleErr(fmt.Errorf("%s: opening: %v", fpath, err))
+			}
+			defer file.Close()
 		}
-		defer file.Close()
-
 		err = t.Write(File{
 			FileInfo: FileInfo{
 				FileInfo:   info,
@@ -338,7 +340,16 @@ func (t *Tar) Write(f File) error {
 		return fmt.Errorf("missing file name")
 	}
 
-	hdr, err := tar.FileInfoHeader(f, f.Name())
+	var linkTarget string
+	if isSymlink(f) {
+		var err error
+		linkTarget, err = os.Readlink(f.Name())
+		if err != nil {
+			return fmt.Errorf("%s: readlink: %v", f.Name(), err)
+		}
+	}
+
+	hdr, err := tar.FileInfoHeader(f, filepath.ToSlash(linkTarget))
 	if err != nil {
 		return fmt.Errorf("%s: making header: %v", f.Name(), err)
 	}
@@ -349,7 +360,7 @@ func (t *Tar) Write(f File) error {
 	}
 
 	if f.IsDir() {
-		return nil
+		return nil // directories have no contents
 	}
 
 	if hdr.Typeflag == tar.TypeReg {

@@ -72,17 +72,17 @@ func (c *RDSDataService) BatchExecuteStatementRequest(input *BatchExecuteStateme
 //   * ErrCodeBadRequestException "BadRequestException"
 //   There is an error in the call or in a SQL statement.
 //
-//   * ErrCodeForbiddenException "ForbiddenException"
-//   There are insufficient privileges to make the call.
+//   * ErrCodeStatementTimeoutException "StatementTimeoutException"
+//   The execution of the SQL statement timed out.
 //
 //   * ErrCodeInternalServerErrorException "InternalServerErrorException"
 //   An internal error occurred.
 //
+//   * ErrCodeForbiddenException "ForbiddenException"
+//   There are insufficient privileges to make the call.
+//
 //   * ErrCodeServiceUnavailableError "ServiceUnavailableError"
 //   The service specified by the resourceArn parameter is not available.
-//
-//   * ErrCodeStatementTimeoutException "StatementTimeoutException"
-//   The execution of the SQL statement timed out.
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/rds-data-2018-08-01/BatchExecuteStatement
 func (c *RDSDataService) BatchExecuteStatement(input *BatchExecuteStatementInput) (*BatchExecuteStatementOutput, error) {
@@ -152,15 +152,13 @@ func (c *RDSDataService) BeginTransactionRequest(input *BeginTransactionInput) (
 //
 // Starts a SQL transaction.
 //
-// A transaction can run for a maximum of 24 hours. A transaction is terminated
-// and rolled back automatically after 24 hours.
-//
-// A transaction times out if no calls use its transaction ID in three minutes.
-// If a transaction times out before it's committed, it's rolled back automatically.
-//
-// DDL statements inside a transaction cause an implicit commit. We recommend
-// that you run each DDL statement in a separate ExecuteStatement call with
-// continueAfterTimeout enabled.
+//    <important> <p>A transaction can run for a maximum of 24 hours. A transaction
+//    is terminated and rolled back automatically after 24 hours.</p> <p>A transaction
+//    times out if no calls use its transaction ID in three minutes. If a transaction
+//    times out before it's committed, it's rolled back automatically.</p> <p>DDL
+//    statements inside a transaction cause an implicit commit. We recommend
+//    that you run each DDL statement in a separate <code>ExecuteStatement</code>
+//    call with <code>continueAfterTimeout</code> enabled.</p> </important>
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -173,17 +171,17 @@ func (c *RDSDataService) BeginTransactionRequest(input *BeginTransactionInput) (
 //   * ErrCodeBadRequestException "BadRequestException"
 //   There is an error in the call or in a SQL statement.
 //
-//   * ErrCodeForbiddenException "ForbiddenException"
-//   There are insufficient privileges to make the call.
+//   * ErrCodeStatementTimeoutException "StatementTimeoutException"
+//   The execution of the SQL statement timed out.
 //
 //   * ErrCodeInternalServerErrorException "InternalServerErrorException"
 //   An internal error occurred.
 //
+//   * ErrCodeForbiddenException "ForbiddenException"
+//   There are insufficient privileges to make the call.
+//
 //   * ErrCodeServiceUnavailableError "ServiceUnavailableError"
 //   The service specified by the resourceArn parameter is not available.
-//
-//   * ErrCodeStatementTimeoutException "StatementTimeoutException"
-//   The execution of the SQL statement timed out.
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/rds-data-2018-08-01/BeginTransaction
 func (c *RDSDataService) BeginTransaction(input *BeginTransactionInput) (*BeginTransactionOutput, error) {
@@ -265,17 +263,17 @@ func (c *RDSDataService) CommitTransactionRequest(input *CommitTransactionInput)
 //   * ErrCodeBadRequestException "BadRequestException"
 //   There is an error in the call or in a SQL statement.
 //
-//   * ErrCodeForbiddenException "ForbiddenException"
-//   There are insufficient privileges to make the call.
-//
 //   * ErrCodeInternalServerErrorException "InternalServerErrorException"
 //   An internal error occurred.
 //
-//   * ErrCodeNotFoundException "NotFoundException"
-//   The resourceArn, secretArn, or transactionId value can't be found.
+//   * ErrCodeForbiddenException "ForbiddenException"
+//   There are insufficient privileges to make the call.
 //
 //   * ErrCodeServiceUnavailableError "ServiceUnavailableError"
 //   The service specified by the resourceArn parameter is not available.
+//
+//   * ErrCodeNotFoundException "NotFoundException"
+//   The resourceArn, secretArn, or transactionId value can't be found.
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/rds-data-2018-08-01/CommitTransaction
 func (c *RDSDataService) CommitTransaction(input *CommitTransactionInput) (*CommitTransactionOutput, error) {
@@ -326,7 +324,7 @@ const opExecuteSql = "ExecuteSql"
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/rds-data-2018-08-01/ExecuteSql
 //
-// Deprecated: ExecuteSql has been deprecated
+// Deprecated: The ExecuteSql API is deprecated, please use the ExecuteStatement API.
 func (c *RDSDataService) ExecuteSqlRequest(input *ExecuteSqlInput) (req *request.Request, output *ExecuteSqlOutput) {
 	if c.Client.Config.Logger != nil {
 		c.Client.Config.Logger.Log("This operation, ExecuteSql, has been deprecated")
@@ -364,18 +362,18 @@ func (c *RDSDataService) ExecuteSqlRequest(input *ExecuteSqlInput) (req *request
 //   * ErrCodeBadRequestException "BadRequestException"
 //   There is an error in the call or in a SQL statement.
 //
-//   * ErrCodeForbiddenException "ForbiddenException"
-//   There are insufficient privileges to make the call.
-//
 //   * ErrCodeInternalServerErrorException "InternalServerErrorException"
 //   An internal error occurred.
+//
+//   * ErrCodeForbiddenException "ForbiddenException"
+//   There are insufficient privileges to make the call.
 //
 //   * ErrCodeServiceUnavailableError "ServiceUnavailableError"
 //   The service specified by the resourceArn parameter is not available.
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/rds-data-2018-08-01/ExecuteSql
 //
-// Deprecated: ExecuteSql has been deprecated
+// Deprecated: The ExecuteSql API is deprecated, please use the ExecuteStatement API.
 func (c *RDSDataService) ExecuteSql(input *ExecuteSqlInput) (*ExecuteSqlOutput, error) {
 	req, out := c.ExecuteSqlRequest(input)
 	return out, req.Send()
@@ -391,7 +389,7 @@ func (c *RDSDataService) ExecuteSql(input *ExecuteSqlInput) (*ExecuteSqlOutput, 
 // sub-contexts for http.Requests. See https://golang.org/pkg/context/
 // for more information on using Contexts.
 //
-// Deprecated: ExecuteSqlWithContext has been deprecated
+// Deprecated: The ExecuteSql API is deprecated, please use the ExecuteStatement API.
 func (c *RDSDataService) ExecuteSqlWithContext(ctx aws.Context, input *ExecuteSqlInput, opts ...request.Option) (*ExecuteSqlOutput, error) {
 	req, out := c.ExecuteSqlRequest(input)
 	req.SetContext(ctx)
@@ -462,17 +460,17 @@ func (c *RDSDataService) ExecuteStatementRequest(input *ExecuteStatementInput) (
 //   * ErrCodeBadRequestException "BadRequestException"
 //   There is an error in the call or in a SQL statement.
 //
-//   * ErrCodeForbiddenException "ForbiddenException"
-//   There are insufficient privileges to make the call.
+//   * ErrCodeStatementTimeoutException "StatementTimeoutException"
+//   The execution of the SQL statement timed out.
 //
 //   * ErrCodeInternalServerErrorException "InternalServerErrorException"
 //   An internal error occurred.
 //
+//   * ErrCodeForbiddenException "ForbiddenException"
+//   There are insufficient privileges to make the call.
+//
 //   * ErrCodeServiceUnavailableError "ServiceUnavailableError"
 //   The service specified by the resourceArn parameter is not available.
-//
-//   * ErrCodeStatementTimeoutException "StatementTimeoutException"
-//   The execution of the SQL statement timed out.
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/rds-data-2018-08-01/ExecuteStatement
 func (c *RDSDataService) ExecuteStatement(input *ExecuteStatementInput) (*ExecuteStatementOutput, error) {
@@ -554,17 +552,17 @@ func (c *RDSDataService) RollbackTransactionRequest(input *RollbackTransactionIn
 //   * ErrCodeBadRequestException "BadRequestException"
 //   There is an error in the call or in a SQL statement.
 //
-//   * ErrCodeForbiddenException "ForbiddenException"
-//   There are insufficient privileges to make the call.
-//
 //   * ErrCodeInternalServerErrorException "InternalServerErrorException"
 //   An internal error occurred.
 //
-//   * ErrCodeNotFoundException "NotFoundException"
-//   The resourceArn, secretArn, or transactionId value can't be found.
+//   * ErrCodeForbiddenException "ForbiddenException"
+//   There are insufficient privileges to make the call.
 //
 //   * ErrCodeServiceUnavailableError "ServiceUnavailableError"
 //   The service specified by the resourceArn parameter is not available.
+//
+//   * ErrCodeNotFoundException "NotFoundException"
+//   The resourceArn, secretArn, or transactionId value can't be found.
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/rds-data-2018-08-01/RollbackTransaction
 func (c *RDSDataService) RollbackTransaction(input *RollbackTransactionInput) (*RollbackTransactionOutput, error) {
@@ -588,6 +586,66 @@ func (c *RDSDataService) RollbackTransactionWithContext(ctx aws.Context, input *
 	return out, req.Send()
 }
 
+// Contains an array.
+type ArrayValue struct {
+	_ struct{} `type:"structure"`
+
+	// An array of arrays.
+	ArrayValues []*ArrayValue `locationName:"arrayValues" type:"list"`
+
+	// An array of Boolean values.
+	BooleanValues []*bool `locationName:"booleanValues" type:"list"`
+
+	// An array of integers.
+	DoubleValues []*float64 `locationName:"doubleValues" type:"list"`
+
+	// An array of floating point numbers.
+	LongValues []*int64 `locationName:"longValues" type:"list"`
+
+	// An array of strings.
+	StringValues []*string `locationName:"stringValues" type:"list"`
+}
+
+// String returns the string representation
+func (s ArrayValue) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s ArrayValue) GoString() string {
+	return s.String()
+}
+
+// SetArrayValues sets the ArrayValues field's value.
+func (s *ArrayValue) SetArrayValues(v []*ArrayValue) *ArrayValue {
+	s.ArrayValues = v
+	return s
+}
+
+// SetBooleanValues sets the BooleanValues field's value.
+func (s *ArrayValue) SetBooleanValues(v []*bool) *ArrayValue {
+	s.BooleanValues = v
+	return s
+}
+
+// SetDoubleValues sets the DoubleValues field's value.
+func (s *ArrayValue) SetDoubleValues(v []*float64) *ArrayValue {
+	s.DoubleValues = v
+	return s
+}
+
+// SetLongValues sets the LongValues field's value.
+func (s *ArrayValue) SetLongValues(v []*int64) *ArrayValue {
+	s.LongValues = v
+	return s
+}
+
+// SetStringValues sets the StringValues field's value.
+func (s *ArrayValue) SetStringValues(v []*string) *ArrayValue {
+	s.StringValues = v
+	return s
+}
+
 // The request parameters represent the input of a SQL statement over an array
 // of data.
 type BatchExecuteStatementInput struct {
@@ -602,7 +660,7 @@ type BatchExecuteStatementInput struct {
 	// The Amazon Resource Name (ARN) of the Aurora Serverless DB cluster.
 	//
 	// ResourceArn is a required field
-	ResourceArn *string `locationName:"resourceArn" type:"string" required:"true"`
+	ResourceArn *string `locationName:"resourceArn" min:"11" type:"string" required:"true"`
 
 	// The name of the database schema.
 	Schema *string `locationName:"schema" type:"string"`
@@ -610,7 +668,7 @@ type BatchExecuteStatementInput struct {
 	// The name or ARN of the secret that enables access to the DB cluster.
 	//
 	// SecretArn is a required field
-	SecretArn *string `locationName:"secretArn" type:"string" required:"true"`
+	SecretArn *string `locationName:"secretArn" min:"11" type:"string" required:"true"`
 
 	// The SQL statement to run.
 	//
@@ -641,8 +699,14 @@ func (s *BatchExecuteStatementInput) Validate() error {
 	if s.ResourceArn == nil {
 		invalidParams.Add(request.NewErrParamRequired("ResourceArn"))
 	}
+	if s.ResourceArn != nil && len(*s.ResourceArn) < 11 {
+		invalidParams.Add(request.NewErrParamMinLen("ResourceArn", 11))
+	}
 	if s.SecretArn == nil {
 		invalidParams.Add(request.NewErrParamRequired("SecretArn"))
+	}
+	if s.SecretArn != nil && len(*s.SecretArn) < 11 {
+		invalidParams.Add(request.NewErrParamMinLen("SecretArn", 11))
 	}
 	if s.Sql == nil {
 		invalidParams.Add(request.NewErrParamRequired("Sql"))
@@ -731,7 +795,7 @@ type BeginTransactionInput struct {
 	// The Amazon Resource Name (ARN) of the Aurora Serverless DB cluster.
 	//
 	// ResourceArn is a required field
-	ResourceArn *string `locationName:"resourceArn" type:"string" required:"true"`
+	ResourceArn *string `locationName:"resourceArn" min:"11" type:"string" required:"true"`
 
 	// The name of the database schema.
 	Schema *string `locationName:"schema" type:"string"`
@@ -739,7 +803,7 @@ type BeginTransactionInput struct {
 	// The name or ARN of the secret that enables access to the DB cluster.
 	//
 	// SecretArn is a required field
-	SecretArn *string `locationName:"secretArn" type:"string" required:"true"`
+	SecretArn *string `locationName:"secretArn" min:"11" type:"string" required:"true"`
 }
 
 // String returns the string representation
@@ -758,8 +822,14 @@ func (s *BeginTransactionInput) Validate() error {
 	if s.ResourceArn == nil {
 		invalidParams.Add(request.NewErrParamRequired("ResourceArn"))
 	}
+	if s.ResourceArn != nil && len(*s.ResourceArn) < 11 {
+		invalidParams.Add(request.NewErrParamMinLen("ResourceArn", 11))
+	}
 	if s.SecretArn == nil {
 		invalidParams.Add(request.NewErrParamRequired("SecretArn"))
+	}
+	if s.SecretArn != nil && len(*s.SecretArn) < 11 {
+		invalidParams.Add(request.NewErrParamMinLen("SecretArn", 11))
 	}
 
 	if invalidParams.Len() > 0 {
@@ -964,12 +1034,12 @@ type CommitTransactionInput struct {
 	// The Amazon Resource Name (ARN) of the Aurora Serverless DB cluster.
 	//
 	// ResourceArn is a required field
-	ResourceArn *string `locationName:"resourceArn" type:"string" required:"true"`
+	ResourceArn *string `locationName:"resourceArn" min:"11" type:"string" required:"true"`
 
 	// The name or ARN of the secret that enables access to the DB cluster.
 	//
 	// SecretArn is a required field
-	SecretArn *string `locationName:"secretArn" type:"string" required:"true"`
+	SecretArn *string `locationName:"secretArn" min:"11" type:"string" required:"true"`
 
 	// The identifier of the transaction to end and commit.
 	//
@@ -993,8 +1063,14 @@ func (s *CommitTransactionInput) Validate() error {
 	if s.ResourceArn == nil {
 		invalidParams.Add(request.NewErrParamRequired("ResourceArn"))
 	}
+	if s.ResourceArn != nil && len(*s.ResourceArn) < 11 {
+		invalidParams.Add(request.NewErrParamMinLen("ResourceArn", 11))
+	}
 	if s.SecretArn == nil {
 		invalidParams.Add(request.NewErrParamRequired("SecretArn"))
+	}
+	if s.SecretArn != nil && len(*s.SecretArn) < 11 {
+		invalidParams.Add(request.NewErrParamMinLen("SecretArn", 11))
 	}
 	if s.TransactionId == nil {
 		invalidParams.Add(request.NewErrParamRequired("TransactionId"))
@@ -1057,7 +1133,7 @@ type ExecuteSqlInput struct {
 	// cluster.
 	//
 	// AwsSecretStoreArn is a required field
-	AwsSecretStoreArn *string `locationName:"awsSecretStoreArn" type:"string" required:"true"`
+	AwsSecretStoreArn *string `locationName:"awsSecretStoreArn" min:"11" type:"string" required:"true"`
 
 	// The name of the database.
 	Database *string `locationName:"database" type:"string"`
@@ -1065,7 +1141,7 @@ type ExecuteSqlInput struct {
 	// The ARN of the Aurora Serverless DB cluster.
 	//
 	// DbClusterOrInstanceArn is a required field
-	DbClusterOrInstanceArn *string `locationName:"dbClusterOrInstanceArn" type:"string" required:"true"`
+	DbClusterOrInstanceArn *string `locationName:"dbClusterOrInstanceArn" min:"11" type:"string" required:"true"`
 
 	// The name of the database schema.
 	Schema *string `locationName:"schema" type:"string"`
@@ -1096,8 +1172,14 @@ func (s *ExecuteSqlInput) Validate() error {
 	if s.AwsSecretStoreArn == nil {
 		invalidParams.Add(request.NewErrParamRequired("AwsSecretStoreArn"))
 	}
+	if s.AwsSecretStoreArn != nil && len(*s.AwsSecretStoreArn) < 11 {
+		invalidParams.Add(request.NewErrParamMinLen("AwsSecretStoreArn", 11))
+	}
 	if s.DbClusterOrInstanceArn == nil {
 		invalidParams.Add(request.NewErrParamRequired("DbClusterOrInstanceArn"))
+	}
+	if s.DbClusterOrInstanceArn != nil && len(*s.DbClusterOrInstanceArn) < 11 {
+		invalidParams.Add(request.NewErrParamMinLen("DbClusterOrInstanceArn", 11))
 	}
 	if s.SqlStatements == nil {
 		invalidParams.Add(request.NewErrParamRequired("SqlStatements"))
@@ -1190,7 +1272,10 @@ type ExecuteStatementInput struct {
 	// The Amazon Resource Name (ARN) of the Aurora Serverless DB cluster.
 	//
 	// ResourceArn is a required field
-	ResourceArn *string `locationName:"resourceArn" type:"string" required:"true"`
+	ResourceArn *string `locationName:"resourceArn" min:"11" type:"string" required:"true"`
+
+	// Options that control how the result set is returned.
+	ResultSetOptions *ResultSetOptions `locationName:"resultSetOptions" type:"structure"`
 
 	// The name of the database schema.
 	Schema *string `locationName:"schema" type:"string"`
@@ -1198,7 +1283,7 @@ type ExecuteStatementInput struct {
 	// The name or ARN of the secret that enables access to the DB cluster.
 	//
 	// SecretArn is a required field
-	SecretArn *string `locationName:"secretArn" type:"string" required:"true"`
+	SecretArn *string `locationName:"secretArn" min:"11" type:"string" required:"true"`
 
 	// The SQL statement to run.
 	//
@@ -1229,8 +1314,14 @@ func (s *ExecuteStatementInput) Validate() error {
 	if s.ResourceArn == nil {
 		invalidParams.Add(request.NewErrParamRequired("ResourceArn"))
 	}
+	if s.ResourceArn != nil && len(*s.ResourceArn) < 11 {
+		invalidParams.Add(request.NewErrParamMinLen("ResourceArn", 11))
+	}
 	if s.SecretArn == nil {
 		invalidParams.Add(request.NewErrParamRequired("SecretArn"))
+	}
+	if s.SecretArn != nil && len(*s.SecretArn) < 11 {
+		invalidParams.Add(request.NewErrParamMinLen("SecretArn", 11))
 	}
 	if s.Sql == nil {
 		invalidParams.Add(request.NewErrParamRequired("Sql"))
@@ -1272,6 +1363,12 @@ func (s *ExecuteStatementInput) SetResourceArn(v string) *ExecuteStatementInput 
 	return s
 }
 
+// SetResultSetOptions sets the ResultSetOptions field's value.
+func (s *ExecuteStatementInput) SetResultSetOptions(v *ResultSetOptions) *ExecuteStatementInput {
+	s.ResultSetOptions = v
+	return s
+}
+
 // SetSchema sets the Schema field's value.
 func (s *ExecuteStatementInput) SetSchema(v string) *ExecuteStatementInput {
 	s.Schema = &v
@@ -1305,6 +1402,11 @@ type ExecuteStatementOutput struct {
 	ColumnMetadata []*ColumnMetadata `locationName:"columnMetadata" type:"list"`
 
 	// Values for fields generated during the request.
+	//
+	//    <note> <p>The <code>generatedFields</code> data isn't supported by Aurora
+	//    PostgreSQL. To get the values of generated fields, use the <code>RETURNING</code>
+	//    clause. For more information, see <a href="https://www.postgresql.org/docs/10/dml-returning.html">Returning
+	//    Data From Modified Rows</a> in the PostgreSQL documentation.</p> </note>
 	GeneratedFields []*Field `locationName:"generatedFields" type:"list"`
 
 	// The number of records updated by the request.
@@ -1352,6 +1454,9 @@ func (s *ExecuteStatementOutput) SetRecords(v [][]*Field) *ExecuteStatementOutpu
 type Field struct {
 	_ struct{} `type:"structure"`
 
+	// An array of values.
+	ArrayValue *ArrayValue `locationName:"arrayValue" type:"structure"`
+
 	// A value of BLOB data type.
 	//
 	// BlobValue is automatically base64 encoded/decoded by the SDK.
@@ -1381,6 +1486,12 @@ func (s Field) String() string {
 // GoString returns the string representation
 func (s Field) GoString() string {
 	return s.String()
+}
+
+// SetArrayValue sets the ArrayValue field's value.
+func (s *Field) SetArrayValue(v *ArrayValue) *Field {
+	s.ArrayValue = v
+	return s
 }
 
 // SetBlobValue sets the BlobValue field's value.
@@ -1509,6 +1620,37 @@ func (s *ResultSetMetadata) SetColumnMetadata(v []*ColumnMetadata) *ResultSetMet
 	return s
 }
 
+// Options that control how the result set is returned.
+type ResultSetOptions struct {
+	_ struct{} `type:"structure"`
+
+	// A value that indicates how a field of DECIMAL type is represented in the
+	// response. The value of STRING, the default, specifies that it is converted
+	// to a String value. The value of DOUBLE_OR_LONG specifies that it is converted
+	// to a Long value if its scale is 0, or to a Double value otherwise.
+	//
+	// Conversion to Double or Long can result in roundoff errors due to precision
+	// loss. We recommend converting to String, especially when working with currency
+	// values.
+	DecimalReturnType *string `locationName:"decimalReturnType" type:"string" enum:"DecimalReturnType"`
+}
+
+// String returns the string representation
+func (s ResultSetOptions) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s ResultSetOptions) GoString() string {
+	return s.String()
+}
+
+// SetDecimalReturnType sets the DecimalReturnType field's value.
+func (s *ResultSetOptions) SetDecimalReturnType(v string) *ResultSetOptions {
+	s.DecimalReturnType = &v
+	return s
+}
+
 // The request parameters represent the input of a request to perform a rollback
 // of a transaction.
 type RollbackTransactionInput struct {
@@ -1517,12 +1659,12 @@ type RollbackTransactionInput struct {
 	// The Amazon Resource Name (ARN) of the Aurora Serverless DB cluster.
 	//
 	// ResourceArn is a required field
-	ResourceArn *string `locationName:"resourceArn" type:"string" required:"true"`
+	ResourceArn *string `locationName:"resourceArn" min:"11" type:"string" required:"true"`
 
 	// The name or ARN of the secret that enables access to the DB cluster.
 	//
 	// SecretArn is a required field
-	SecretArn *string `locationName:"secretArn" type:"string" required:"true"`
+	SecretArn *string `locationName:"secretArn" min:"11" type:"string" required:"true"`
 
 	// The identifier of the transaction to roll back.
 	//
@@ -1546,8 +1688,14 @@ func (s *RollbackTransactionInput) Validate() error {
 	if s.ResourceArn == nil {
 		invalidParams.Add(request.NewErrParamRequired("ResourceArn"))
 	}
+	if s.ResourceArn != nil && len(*s.ResourceArn) < 11 {
+		invalidParams.Add(request.NewErrParamMinLen("ResourceArn", 11))
+	}
 	if s.SecretArn == nil {
 		invalidParams.Add(request.NewErrParamRequired("SecretArn"))
+	}
+	if s.SecretArn != nil && len(*s.SecretArn) < 11 {
+		invalidParams.Add(request.NewErrParamMinLen("SecretArn", 11))
 	}
 	if s.TransactionId == nil {
 		invalidParams.Add(request.NewErrParamRequired("TransactionId"))
@@ -1636,6 +1784,8 @@ func (s *SqlParameter) SetValue(v *Field) *SqlParameter {
 }
 
 // The result of a SQL statement.
+//
+//    <important> <p>This data type is deprecated.</p> </important>
 type SqlStatementResult struct {
 	_ struct{} `type:"structure"`
 
@@ -1717,6 +1867,8 @@ func (s *UpdateResult) SetGeneratedFields(v []*Field) *UpdateResult {
 }
 
 // Contains the value of a column.
+//
+//    <important> <p>This data type is deprecated.</p> </important>
 type Value struct {
 	_ struct{} `type:"structure"`
 
@@ -1822,3 +1974,11 @@ func (s *Value) SetStructValue(v *StructValue) *Value {
 	s.StructValue = v
 	return s
 }
+
+const (
+	// DecimalReturnTypeDoubleOrLong is a DecimalReturnType enum value
+	DecimalReturnTypeDoubleOrLong = "DOUBLE_OR_LONG"
+
+	// DecimalReturnTypeString is a DecimalReturnType enum value
+	DecimalReturnTypeString = "STRING"
+)

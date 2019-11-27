@@ -10,7 +10,7 @@ import (
 	"reflect"
 
 	"github.com/BurntSushi/toml"
-	"gopkg.in/urfave/cli.v1"
+	"github.com/urfave/cli"
 )
 
 type tomlMap struct {
@@ -66,9 +66,9 @@ func unmarshalMap(i interface{}) (ret map[interface{}]interface{}, err error) {
 	return ret, nil
 }
 
-func (self *tomlMap) UnmarshalTOML(i interface{}) error {
+func (tm *tomlMap) UnmarshalTOML(i interface{}) error {
 	if tmp, err := unmarshalMap(i); err == nil {
-		self.Map = tmp
+		tm.Map = tmp
 	} else {
 		return err
 	}

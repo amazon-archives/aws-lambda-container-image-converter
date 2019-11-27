@@ -3,6 +3,7 @@ package alltransports
 import (
 	"testing"
 
+	"github.com/containers/image/directory"
 	"github.com/containers/image/transports"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -50,4 +51,13 @@ func TestImageNameHandling(t *testing.T) {
 		transport := transports.Get(c)
 		assert.NotNil(t, transport, c)
 	}
+}
+
+func TestTransportFromImageName(t *testing.T) {
+	dirTransport := TransportFromImageName("dir:/tmp/test")
+	assert.Equal(t, dirTransport.Name(), directory.Transport.Name())
+	unknownTransport := TransportFromImageName("unknown:ref:test")
+	assert.Equal(t, unknownTransport, nil)
+	invalidName := TransportFromImageName("unknown")
+	assert.Equal(t, invalidName, nil)
 }

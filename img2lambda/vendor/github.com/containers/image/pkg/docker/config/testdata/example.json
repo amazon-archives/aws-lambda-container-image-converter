@@ -1,0 +1,7 @@
+{
+  "auths": {
+    "example.org": {
+      "auth": "ZXhhbXBsZTpvcmc="
+    }
+  }
+}

@@ -1,6 +1,6 @@
 [[constraint]]
   name = "github.com/aws/aws-sdk-go"
-  version = "1.16.16"
+  version = "^1.16.16"
 
 [[constraint]]
   name = "github.com/containers/image"
@@ -8,28 +8,36 @@
 
 [[constraint]]
   name = "github.com/mattn/go-zglob"
-  version = "0.0.1"
+  version = "^0.0.1"
 
 [[constraint]]
   name = "github.com/mholt/archiver"
-  version = "3.1.1"
+  version = "^3.1.1"
 
 [[constraint]]
   name = "github.com/pkg/errors"
-  version = "0.8.1"
+  version = "^0.8.1"
 
 [[constraint]]
   name = "github.com/urfave/cli"
-  version = "1.20.0"
+  version = "^1.20.0"
 
 [[override]]
   name = "github.com/docker/docker"
   revision = "6e3113f700dea1bf2785d94731b4b5a1e602d9ab"
 
 [[override]]
+  name = "github.com/opencontainers/image-spec"
+  revision = "775207bd45b6cb8153ce218cc59351799217451f"
+
+[[override]]
   name = "github.com/docker/distribution"
   version = "^2.7.1"
 
+[[override]]
+  name = "github.com/russross/blackfriday"
+  version = "^1.5.2"
+
 [[constraint]]
   name = "gopkg.in/yaml.v2"
-  version = "2.2.2"
+  version = "^2.2.2"

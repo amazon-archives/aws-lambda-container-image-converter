@@ -3126,7 +3126,9 @@
       "type":"structure",
       "required":["Name"],
       "members":{
-        "Name":{"shape":"DocumentName"}
+        "Name":{"shape":"DocumentName"},
+        "DocumentVersion":{"shape":"DocumentVersion"},
+        "VersionName":{"shape":"DocumentVersionName"}
       }
     },
     "DeleteDocumentResult":{
@@ -5515,7 +5517,7 @@
     "InventoryGroupList":{
       "type":"list",
       "member":{"shape":"InventoryGroup"},
-      "max":10,
+      "max":15,
       "min":1
     },
     "InventoryGroupName":{
@@ -5724,7 +5726,8 @@
     "LabelParameterVersionResult":{
       "type":"structure",
       "members":{
-        "InvalidLabels":{"shape":"ParameterLabelList"}
+        "InvalidLabels":{"shape":"ParameterLabelList"},
+        "ParameterVersion":{"shape":"PSParameterVersion"}
       }
     },
     "LastResourceDataSyncMessage":{"type":"string"},
@@ -6204,7 +6207,10 @@
     },
     "MaintenanceWindowResourceType":{
       "type":"string",
-      "enum":["INSTANCE"]
+      "enum":[
+        "INSTANCE",
+        "RESOURCE_GROUP"
+      ]
     },
     "MaintenanceWindowRunCommandParameters":{
       "type":"structure",
@@ -7010,7 +7016,8 @@
       "type":"string",
       "enum":[
         "Standard",
-        "Advanced"
+        "Advanced",
+        "Intelligent-Tiering"
       ]
     },
     "ParameterType":{
@@ -7391,7 +7398,7 @@
     },
     "PatchSourceConfiguration":{
       "type":"string",
-      "max":512,
+      "max":1024,
       "min":1,
       "sensitive":true
     },
@@ -7531,7 +7538,8 @@
     "PutParameterResult":{
       "type":"structure",
       "members":{
-        "Version":{"shape":"PSParameterVersion"}
+        "Version":{"shape":"PSParameterVersion"},
+        "Tier":{"shape":"ParameterTier"}
       }
     },
     "Region":{"type":"string"},
@@ -8409,9 +8417,9 @@
     },
     "TargetKey":{
       "type":"string",
-      "max":128,
+      "max":163,
       "min":1,
-      "pattern":"^[\\p{L}\\p{Z}\\p{N}_.:/=\\-@]*$"
+      "pattern":"^[\\p{L}\\p{Z}\\p{N}_.:/=\\-@]*$|resource-groups:ResourceTypeFilters|resource-groups:Name"
     },
     "TargetLocation":{
       "type":"structure",

@@ -118,6 +118,8 @@ func TestComputeDiffID(t *testing.T) {
 		{"fixtures/Hello.uncompressed", nil, "sha256:185f8db32271fe25f561a6fc938b2e264306ec304eda518007d1764826381969"},
 		{"fixtures/Hello.gz", nil, "sha256:0bd4409dcd76476a263b8f3221b4ce04eb4686dec40bfdcc2e86a7403de13609"},
 		{"fixtures/Hello.gz", compression.GzipDecompressor, "sha256:185f8db32271fe25f561a6fc938b2e264306ec304eda518007d1764826381969"},
+		{"fixtures/Hello.zst", nil, "sha256:361a8e0372ad438a0316eb39a290318364c10b60d0a7e55b40aa3eafafc55238"},
+		{"fixtures/Hello.zst", compression.ZstdDecompressor, "sha256:185f8db32271fe25f561a6fc938b2e264306ec304eda518007d1764826381969"},
 	} {
 		stream, err := os.Open(c.filename)
 		require.NoError(t, err, c.filename)

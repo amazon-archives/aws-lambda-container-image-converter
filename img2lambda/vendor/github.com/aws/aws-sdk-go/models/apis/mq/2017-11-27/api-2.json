@@ -796,6 +796,10 @@
           "shape" : "DeploymentMode",
           "locationName" : "deploymentMode"
         },
+        "EncryptionOptions" : {
+          "shape" : "EncryptionOptions",
+          "locationName" : "encryptionOptions"
+        },
         "EngineType" : {
           "shape" : "EngineType",
           "locationName" : "engineType"
@@ -874,6 +878,10 @@
         "DeploymentMode" : {
           "shape" : "DeploymentMode",
           "locationName" : "deploymentMode"
+        },
+        "EncryptionOptions" : {
+          "shape" : "EncryptionOptions",
+          "locationName" : "encryptionOptions"
         },
         "EngineType" : {
           "shape" : "EngineType",
@@ -1277,6 +1285,10 @@
           "shape" : "DeploymentMode",
           "locationName" : "deploymentMode"
         },
+        "EncryptionOptions" : {
+          "shape" : "EncryptionOptions",
+          "locationName" : "encryptionOptions"
+        },
         "EngineType" : {
           "shape" : "EngineType",
           "locationName" : "engineType"
@@ -1300,6 +1312,14 @@
         "PendingEngineVersion" : {
           "shape" : "__string",
           "locationName" : "pendingEngineVersion"
+        },
+        "PendingSecurityGroups" : {
+          "shape": "__listOf__string",
+          "locationName": "pendingSecurityGroups"
+        },
+        "PendingHostInstanceType" : {
+          "shape" : "__string",
+          "locationName" : "pendingHostInstanceType"
         },
         "PubliclyAccessible" : {
           "shape" : "__boolean",
@@ -1373,6 +1393,10 @@
           "shape" : "DeploymentMode",
           "locationName" : "deploymentMode"
         },
+        "EncryptionOptions" : {
+          "shape" : "EncryptionOptions",
+          "locationName" : "encryptionOptions"
+        },
         "EngineType" : {
           "shape" : "EngineType",
           "locationName" : "engineType"
@@ -1396,6 +1420,14 @@
         "PendingEngineVersion" : {
           "shape" : "__string",
           "locationName" : "pendingEngineVersion"
+        },
+        "PendingSecurityGroups" : {
+          "shape" : "__listOf__string",
+          "locationName" : "pendingSecurityGroups"
+        },
+          "PendingHostInstanceType" : {
+          "shape" : "__string",
+          "locationName" : "pendingHostInstanceType"
         },
         "PubliclyAccessible" : {
           "shape" : "__boolean",
@@ -1594,6 +1626,20 @@
           "locationName" : "username"
         }
       }
+    },
+    "EncryptionOptions" : {
+      "type" : "structure",
+      "members" : {
+        "KmsKeyId" : {
+          "shape" : "__string",
+          "locationName" : "kmsKeyId"
+        },
+        "UseAwsOwnedKey" : {
+          "shape" : "__boolean",
+          "locationName" : "useAwsOwnedKey"
+        }
+      },
+      "required" : [ "UseAwsOwnedKey" ]
     },
     "EngineType" : {
       "type" : "string",
@@ -2041,9 +2087,17 @@
           "shape" : "__string",
           "locationName" : "engineVersion"
         },
+        "HostInstanceType" : {
+          "shape" : "__string",
+          "locationName" : "hostInstanceType"
+        },
         "Logs" : {
           "shape" : "Logs",
           "locationName" : "logs"
+        },
+        "SecurityGroups" : {
+          "shape" : "__listOf__string",
+          "locationName" : "securityGroups"
         }
       }
     },
@@ -2066,9 +2120,17 @@
           "shape" : "__string",
           "locationName" : "engineVersion"
         },
+        "HostInstanceType" : {
+          "shape" : "__string",
+          "locationName" : "hostInstanceType"
+        },
         "Logs" : {
           "shape" : "Logs",
           "locationName" : "logs"
+        },
+        "SecurityGroups" : {
+          "shape" : "__listOf__string",
+          "locationName" : "securityGroups"
         }
       }
     },
@@ -2092,9 +2154,17 @@
           "shape" : "__string",
           "locationName" : "engineVersion"
         },
+        "HostInstanceType" : {
+          "shape" : "__string",
+          "locationName" : "hostInstanceType"
+        },
         "Logs" : {
           "shape" : "Logs",
           "locationName" : "logs"
+        },
+        "SecurityGroups" : {
+          "shape" : "__listOf__string",
+          "locationName" : "securityGroups"
         }
       },
       "required" : [ "BrokerId" ]
@@ -2118,9 +2188,17 @@
           "shape" : "__string",
           "locationName" : "engineVersion"
         },
+        "HostInstanceType" : {
+          "shape" : "__string",
+          "locationName" : "hostInstanceType"
+        },
         "Logs" : {
           "shape" : "Logs",
           "locationName" : "logs"
+        },
+        "SecurityGroups" : {
+          "shape" : "__listOf__string",
+          "locationName" : "securityGroups"
         }
       }
     },
@@ -2445,6 +2523,16 @@
     "__timestampUnix" : {
       "type" : "timestamp",
       "timestampFormat" : "unixTimestamp"
+    }
+  },
+  "authorizers" : {
+    "authorization_strategy" : {
+      "name" : "authorization_strategy",
+      "type" : "provided",
+      "placement" : {
+        "location" : "header",
+        "name" : "Authorization"
+      }
     }
   }
 }

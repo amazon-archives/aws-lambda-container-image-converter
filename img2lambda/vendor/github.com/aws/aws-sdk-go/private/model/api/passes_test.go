@@ -120,10 +120,10 @@ func TestUniqueInputAndOutputs(t *testing.T) {
 					},
 					OutputRef: ShapeRef{
 						API:       a,
-						ShapeName: op.input,
+						ShapeName: op.output,
 						Shape: &Shape{
 							API:       a,
-							ShapeName: op.input,
+							ShapeName: op.output,
 						},
 					},
 				}
@@ -145,11 +145,13 @@ func TestUniqueInputAndOutputs(t *testing.T) {
 			a.applyShapeNameAliases()
 			a.createInputOutputShapes()
 			for k, v := range expected {
-				if a.Operations[k].InputRef.Shape.ShapeName != v[0] {
-					t.Errorf("Error %s case: Expected %q, but received %q", k, v[0], a.Operations[k].InputRef.Shape.ShapeName)
+				if e, ac := v[0], a.Operations[k].InputRef.Shape.ShapeName; e != ac {
+					t.Errorf("Error %s case: Expected %q, but received %q",
+						k, e, ac)
 				}
-				if a.Operations[k].OutputRef.Shape.ShapeName != v[1] {
-					t.Errorf("Error %s case: Expected %q, but received %q", k, v[1], a.Operations[k].OutputRef.Shape.ShapeName)
+				if e, ac := v[1], a.Operations[k].OutputRef.Shape.ShapeName; e != ac {
+					t.Errorf("Error %s case: Expected %q, but received %q",
+						k, e, ac)
 				}
 			}
 		})
@@ -222,6 +224,49 @@ func TestCollidingFields(t *testing.T) {
 				if e, a := c.Expect[i], name; e != a {
 					t.Errorf("expect %v, got %v", e, a)
 				}
+			}
+		})
+	}
+}
+
+func TestCollidingFields_MaintainOriginalName(t *testing.T) {
+	cases := map[string]struct {
+		MemberRefs map[string]*ShapeRef
+		Expect     map[string]*ShapeRef
+	}{
+		"NoLocationName": {
+			MemberRefs: map[string]*ShapeRef{
+				"String": {},
+			},
+			Expect: map[string]*ShapeRef{
+				"String_": {LocationName: "String"},
+			},
+		},
+		"ExitingLocationName": {
+			MemberRefs: map[string]*ShapeRef{
+				"String": {LocationName: "OtherName"},
+			},
+			Expect: map[string]*ShapeRef{
+				"String_": {LocationName: "OtherName"},
+			},
+		},
+	}
+
+	for k, c := range cases {
+		t.Run(k, func(t *testing.T) {
+			a := &API{
+				Shapes: map[string]*Shape{
+					"shapename": {
+						ShapeName:  k,
+						MemberRefs: c.MemberRefs,
+					},
+				},
+			}
+
+			a.renameCollidingFields()
+
+			if e, a := c.Expect, a.Shapes["shapename"].MemberRefs; !reflect.DeepEqual(e, a) {
+				t.Errorf("expect %v, got %v", e, a)
 			}
 		})
 	}

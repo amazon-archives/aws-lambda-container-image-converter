@@ -12,7 +12,7 @@ import (
 // package's PutObjectInput with the exception that the Body member is an
 // io.Reader instead of an io.ReadSeeker.
 type UploadInput struct {
-	_ struct{} `type:"structure" payload:"Body"`
+	_ struct{} `locationName:"PutObjectRequest" type:"structure" payload:"Body"`
 
 	// The canned ACL to apply to the object.
 	ACL *string `location:"header" locationName:"x-amz-acl" type:"string" enum:"ObjectCannedACL"`
@@ -99,6 +99,11 @@ type UploadInput struct {
 	// Amazon S3 uses this header for a message integrity check to ensure the encryption
 	// key was transmitted without error.
 	SSECustomerKeyMD5 *string `location:"header" locationName:"x-amz-server-side-encryption-customer-key-MD5" type:"string"`
+
+	// Specifies the AWS KMS Encryption Context to use for object encryption. The
+	// value of this header is a base64-encoded UTF-8 string holding JSON with the
+	// encryption context key-value pairs.
+	SSEKMSEncryptionContext *string `location:"header" locationName:"x-amz-server-side-encryption-context" type:"string" sensitive:"true"`
 
 	// Specifies the AWS KMS key ID to use for object encryption. All GET and PUT
 	// requests for an object protected by AWS KMS will fail if not made via SSL

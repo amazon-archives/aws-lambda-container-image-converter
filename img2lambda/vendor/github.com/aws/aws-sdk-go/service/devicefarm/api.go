@@ -6779,7 +6779,7 @@ type AccountSettings struct {
 	AwsAccountNumber *string `locationName:"awsAccountNumber" min:"2" type:"string"`
 
 	// The default number of minutes (at the account level) a test run will execute
-	// before it times out. Default value is 60 minutes.
+	// before it times out. The default value is 150 minutes.
 	DefaultJobTimeoutMinutes *int64 `locationName:"defaultJobTimeoutMinutes" type:"integer"`
 
 	// The maximum number of minutes a test run will execute before it times out.
@@ -6932,7 +6932,7 @@ type Artifact struct {
 	//
 	//    * APPLICATION_CRASH_REPORT: The application crash report output type.
 	//
-	//    * XCTEST_LOG: The XCode test output type.
+	//    * XCTEST_LOG: The Xcode test output type.
 	//
 	//    * VIDEO: The Video output type.
 	//
@@ -7620,6 +7620,8 @@ type CreateRemoteAccessSessionInput struct {
 	// on the same client, you should pass the same clientId value in each call
 	// to CreateRemoteAccessSession. This is required only if remoteDebugEnabled
 	// is set to true.
+	//
+	// Remote debugging is no longer supported (https://docs.aws.amazon.com/devicefarm/latest/developerguide/history.html).
 	ClientId *string `locationName:"clientId" type:"string"`
 
 	// The configuration information for the remote access session request.
@@ -7660,6 +7662,8 @@ type CreateRemoteAccessSessionInput struct {
 
 	// Set to true if you want to access devices remotely for debugging in your
 	// remote access session.
+	//
+	// Remote debugging is no longer supported (https://docs.aws.amazon.com/devicefarm/latest/developerguide/history.html).
 	RemoteDebugEnabled *bool `locationName:"remoteDebugEnabled" type:"boolean"`
 
 	// The Amazon Resource Name (ARN) for the app to be recorded in the remote access
@@ -7678,9 +7682,11 @@ type CreateRemoteAccessSessionInput struct {
 	// Farm FAQs.
 	SkipAppResign *bool `locationName:"skipAppResign" type:"boolean"`
 
-	// The public key of the ssh key pair you want to use for connecting to remote
-	// devices in your remote debugging session. This is only required if remoteDebugEnabled
-	// is set to true.
+	// Ignored. The public key of the ssh key pair you want to use for connecting
+	// to remote devices in your remote debugging session. This is only required
+	// if remoteDebugEnabled is set to true.
+	//
+	// Remote debugging is no longer supported (https://docs.aws.amazon.com/devicefarm/latest/developerguide/history.html).
 	SshPublicKey *string `locationName:"sshPublicKey" type:"string"`
 }
 
@@ -7885,9 +7891,9 @@ type CreateUploadInput struct {
 	//
 	//    * UIAUTOMATOR_TEST_PACKAGE: A uiautomator test package upload.
 	//
-	//    * XCTEST_TEST_PACKAGE: An XCode test package upload.
+	//    * XCTEST_TEST_PACKAGE: An Xcode test package upload.
 	//
-	//    * XCTEST_UI_TEST_PACKAGE: An XCode UI test package upload.
+	//    * XCTEST_UI_TEST_PACKAGE: An Xcode UI test package upload.
 	//
 	//    * APPIUM_JAVA_JUNIT_TEST_SPEC: An Appium Java JUnit test spec upload.
 	//
@@ -7916,7 +7922,7 @@ type CreateUploadInput struct {
 	//
 	//    * INSTRUMENTATION_TEST_SPEC: An instrumentation test spec upload.
 	//
-	//    * XCTEST_UI_TEST_SPEC: An XCode UI test spec upload.
+	//    * XCTEST_UI_TEST_SPEC: An Xcode UI test spec upload.
 	//
 	// Note If you call CreateUpload with WEB_APP specified, AWS Device Farm throws
 	// an ArgumentException error.
@@ -8387,7 +8393,7 @@ func (s DeleteProjectOutput) GoString() string {
 type DeleteRemoteAccessSessionInput struct {
 	_ struct{} `type:"structure"`
 
-	// The Amazon Resource Name (ARN) of the sesssion for which you want to delete
+	// The Amazon Resource Name (ARN) of the session for which you want to delete
 	// remote access.
 	//
 	// Arn is a required field
@@ -8689,6 +8695,8 @@ type Device struct {
 	RemoteAccessEnabled *bool `locationName:"remoteAccessEnabled" type:"boolean"`
 
 	// This flag is set to true if remote debugging is enabled for the device.
+	//
+	// Remote debugging is no longer supported (https://docs.aws.amazon.com/devicefarm/latest/developerguide/history.html).
 	RemoteDebugEnabled *bool `locationName:"remoteDebugEnabled" type:"boolean"`
 
 	// The resolution of the device.
@@ -8900,10 +8908,12 @@ type DeviceFilter struct {
 	//
 	// REMOTE_DEBUG_ENABLED
 	//
-	// Whether the device is enabled for remote debugging. Valid values are "TRUE"
-	// or "FALSE".
+	// Ignored.Whether the device is enabled for remote debugging. Valid values
+	// are "TRUE" or "FALSE".
 	//
 	// Supported operators: EQUALS
+	//
+	// This filter will be ignored, as remote debugging is no longer supported (https://docs.aws.amazon.com/devicefarm/latest/developerguide/history.html).
 	//
 	// INSTANCE_ARN
 	//
@@ -9239,9 +9249,11 @@ type DeviceSelectionConfiguration struct {
 	//    For example, "Apple". REMOTE_ACCESS_ENABLED: Whether the device is enabled
 	//    for remote access. Valid values are "TRUE" or "FALSE". REMOTE_DEBUG_ENABLED:
 	//    Whether the device is enabled for remote debugging. Valid values are "TRUE"
-	//    or "FALSE". INSTANCE_ARN: The Amazon Resource Name (ARN) of the device
-	//    instance. INSTANCE_LABELS: The label of the device instance. FLEET_TYPE:
-	//    The fleet type. Valid values are "PUBLIC" or "PRIVATE".
+	//    or "FALSE". This filter will be ignored, as remote debugging is no longer
+	//    supported (https://docs.aws.amazon.com/devicefarm/latest/developerguide/history.html).
+	//    INSTANCE_ARN: The Amazon Resource Name (ARN) of the device instance. INSTANCE_LABELS:
+	//    The label of the device instance. FLEET_TYPE: The fleet type. Valid values
+	//    are "PUBLIC" or "PRIVATE".
 	//
 	//    * Operator The filter operator. The EQUALS operator is available for every
 	//    attribute except INSTANCE_LABELS. The CONTAINS operator is available for
@@ -9647,9 +9659,9 @@ type GetDevicePoolCompatibilityInput struct {
 	//
 	//    * UIAUTOMATOR: The uiautomator type.
 	//
-	//    * XCTEST: The XCode test type.
+	//    * XCTEST: The Xcode test type.
 	//
-	//    * XCTEST_UI: The XCode UI test type.
+	//    * XCTEST_UI: The Xcode UI test type.
 	TestType *string `locationName:"testType" type:"string" enum:"TestType"`
 }
 
@@ -10884,9 +10896,9 @@ type Job struct {
 	//
 	//    * UIAUTOMATOR: The uiautomator type.
 	//
-	//    * XCTEST: The XCode test type.
+	//    * XCTEST: The Xcode test type.
 	//
-	//    * XCTEST_UI: The XCode UI test type.
+	//    * XCTEST_UI: The Xcode UI test type.
 	Type *string `locationName:"type" type:"string" enum:"TestType"`
 
 	// This value is set to true if video capture is enabled; otherwise, it is set
@@ -11306,7 +11318,7 @@ type ListDevicesInput struct {
 	// operator, and one or more values.
 	//
 	//    * Attribute: The aspect of a device such as platform or model used as
-	//    the selction criteria in a device filter. Allowed values include: ARN:
+	//    the selection criteria in a device filter. Allowed values include: ARN:
 	//    The Amazon Resource Name (ARN) of the device. For example, "arn:aws:devicefarm:us-west-2::device:12345Example".
 	//    PLATFORM: The device platform. Valid values are "ANDROID" or "IOS". OS_VERSION:
 	//    The operating system version. For example, "10.3.2". MODEL: The device
@@ -11317,9 +11329,11 @@ type ListDevicesInput struct {
 	//    For example, "Apple". REMOTE_ACCESS_ENABLED: Whether the device is enabled
 	//    for remote access. Valid values are "TRUE" or "FALSE". REMOTE_DEBUG_ENABLED:
 	//    Whether the device is enabled for remote debugging. Valid values are "TRUE"
-	//    or "FALSE". INSTANCE_ARN: The Amazon Resource Name (ARN) of the device
-	//    instance. INSTANCE_LABELS: The label of the device instance. FLEET_TYPE:
-	//    The fleet type. Valid values are "PUBLIC" or "PRIVATE".
+	//    or "FALSE". This attribute will be ignored, as remote debugging is no
+	//    longer supported (https://docs.aws.amazon.com/devicefarm/latest/developerguide/history.html).
+	//    INSTANCE_ARN: The Amazon Resource Name (ARN) of the device instance. INSTANCE_LABELS:
+	//    The label of the device instance. FLEET_TYPE: The fleet type. Valid values
+	//    are "PUBLIC" or "PRIVATE".
 	//
 	//    * Operator: The filter operator. The EQUALS operator is available for
 	//    every attribute except INSTANCE_LABELS. The CONTAINS operator is available
@@ -11993,8 +12007,8 @@ func (s *ListProjectsOutput) SetProjects(v []*Project) *ListProjectsOutput {
 type ListRemoteAccessSessionsInput struct {
 	_ struct{} `type:"structure"`
 
-	// The Amazon Resource Name (ARN) of the remote access session about which you
-	// are requesting information.
+	// The Amazon Resource Name (ARN) of the project about which you are requesting
+	// information.
 	//
 	// Arn is a required field
 	Arn *string `locationName:"arn" min:"32" type:"string" required:"true"`
@@ -12639,7 +12653,7 @@ type ListUploadsInput struct {
 	//
 	//    * IOS_APP: An iOS upload.
 	//
-	//    * WEB_APP: A web appliction upload.
+	//    * WEB_APP: A web application upload.
 	//
 	//    * EXTERNAL_DATA: An external data upload.
 	//
@@ -12677,9 +12691,9 @@ type ListUploadsInput struct {
 	//
 	//    * UIAUTOMATOR_TEST_PACKAGE: A uiautomator test package upload.
 	//
-	//    * XCTEST_TEST_PACKAGE: An XCode test package upload.
+	//    * XCTEST_TEST_PACKAGE: An Xcode test package upload.
 	//
-	//    * XCTEST_UI_TEST_PACKAGE: An XCode UI test package upload.
+	//    * XCTEST_UI_TEST_PACKAGE: An Xcode UI test package upload.
 	//
 	//    * APPIUM_JAVA_JUNIT_TEST_SPEC: An Appium Java JUnit test spec upload.
 	//
@@ -12708,7 +12722,7 @@ type ListUploadsInput struct {
 	//
 	//    * INSTRUMENTATION_TEST_SPEC: An instrumentation test spec upload.
 	//
-	//    * XCTEST_UI_TEST_SPEC: An XCode UI test spec upload.
+	//    * XCTEST_UI_TEST_SPEC: An Xcode UI test spec upload.
 	Type *string `locationName:"type" type:"string" enum:"UploadType"`
 }
 
@@ -13434,7 +13448,7 @@ type Project struct {
 	Created *time.Time `locationName:"created" type:"timestamp"`
 
 	// The default number of minutes (at the project level) a test run will execute
-	// before it times out. Default value is 60 minutes.
+	// before it times out. The default value is 150 minutes.
 	DefaultJobTimeoutMinutes *int64 `locationName:"defaultJobTimeoutMinutes" type:"integer"`
 
 	// The project's name.
@@ -13656,6 +13670,8 @@ type RemoteAccessSession struct {
 
 	// Unique identifier of your client for the remote access session. Only returned
 	// if remote debugging is enabled for the remote access session.
+	//
+	// Remote debugging is no longer supported (https://docs.aws.amazon.com/devicefarm/latest/developerguide/history.html).
 	ClientId *string `locationName:"clientId" type:"string"`
 
 	// The date and time the remote access session was created.
@@ -13664,12 +13680,14 @@ type RemoteAccessSession struct {
 	// The device (phone or tablet) used in the remote access session.
 	Device *Device `locationName:"device" type:"structure"`
 
-	// The number of minutes a device is used in a remote access sesssion (including
+	// The number of minutes a device is used in a remote access session (including
 	// setup and teardown minutes).
 	DeviceMinutes *DeviceMinutes `locationName:"deviceMinutes" type:"structure"`
 
 	// Unique device identifier for the remote device. Only returned if remote debugging
 	// is enabled for the remote access session.
+	//
+	// Remote debugging is no longer supported (https://docs.aws.amazon.com/devicefarm/latest/developerguide/history.html).
 	DeviceUdid *string `locationName:"deviceUdid" type:"string"`
 
 	// The endpoint for the remote access sesssion.
@@ -13677,6 +13695,8 @@ type RemoteAccessSession struct {
 
 	// IP address of the EC2 host where you need to connect to remotely debug devices.
 	// Only returned if remote debugging is enabled for the remote access session.
+	//
+	// Remote debugging is no longer supported (https://docs.aws.amazon.com/devicefarm/latest/developerguide/history.html).
 	HostAddress *string `locationName:"hostAddress" type:"string"`
 
 	// The Amazon Resource Name (ARN) of the instance.
@@ -13704,6 +13724,8 @@ type RemoteAccessSession struct {
 
 	// This flag is set to true if remote debugging is enabled for the remote access
 	// session.
+	//
+	// Remote debugging is no longer supported (https://docs.aws.amazon.com/devicefarm/latest/developerguide/history.html).
 	RemoteDebugEnabled *bool `locationName:"remoteDebugEnabled" type:"boolean"`
 
 	// The Amazon Resource Name (ARN) for the app to be recorded in the remote access
@@ -14098,6 +14120,8 @@ type Rule struct {
 	// or "FALSE".
 	//
 	// Supported operators: EQUALS
+	//
+	// This filter will be ignored, as remote debugging is no longer supported (https://docs.aws.amazon.com/devicefarm/latest/developerguide/history.html).
 	Attribute *string `locationName:"attribute" type:"string" enum:"DeviceAttribute"`
 
 	// Specifies how Device Farm compares the rule's attribute to the value. For
@@ -14320,9 +14344,9 @@ type Run struct {
 	//
 	//    * UIAUTOMATOR: The uiautomator type.
 	//
-	//    * XCTEST: The XCode test type.
+	//    * XCTEST: The Xcode test type.
 	//
-	//    * XCTEST_UI: The XCode UI test type.
+	//    * XCTEST_UI: The Xcode UI test type.
 	Type *string `locationName:"type" type:"string" enum:"TestType"`
 
 	// The Device Farm console URL for the recording of the run.
@@ -14614,7 +14638,8 @@ func (s *Sample) SetUrl(v string) *Sample {
 type ScheduleRunConfiguration struct {
 	_ struct{} `type:"structure"`
 
-	// A list of auxiliary apps for the run.
+	// A list of Upload ARNs for app packages that will be installed alongside your
+	// app.
 	AuxiliaryApps []*string `locationName:"auxiliaryApps" type:"list"`
 
 	// Specifies the billing method for a test run: metered or unmetered. If the
@@ -15005,9 +15030,9 @@ type ScheduleRunTest struct {
 	//
 	//    * UIAUTOMATOR: The uiautomator type.
 	//
-	//    * XCTEST: The XCode test type.
+	//    * XCTEST: The Xcode test type.
 	//
-	//    * XCTEST_UI: The XCode UI test type.
+	//    * XCTEST_UI: The Xcode UI test type.
 	//
 	// Type is a required field
 	Type *string `locationName:"type" type:"string" required:"true" enum:"TestType"`
@@ -15380,9 +15405,9 @@ type Suite struct {
 	//
 	//    * UIAUTOMATOR: The uiautomator type.
 	//
-	//    * XCTEST: The XCode test type.
+	//    * XCTEST: The Xcode test type.
 	//
-	//    * XCTEST_UI: The XCode UI test type.
+	//    * XCTEST_UI: The Xcode UI test type.
 	Type *string `locationName:"type" type:"string" enum:"TestType"`
 }
 
@@ -15715,9 +15740,9 @@ type Test struct {
 	//
 	//    * UIAUTOMATOR: The uiautomator type.
 	//
-	//    * XCTEST: The XCode test type.
+	//    * XCTEST: The Xcode test type.
 	//
-	//    * XCTEST_UI: The XCode UI test type.
+	//    * XCTEST_UI: The Xcode UI test type.
 	Type *string `locationName:"type" type:"string" enum:"TestType"`
 }
 
@@ -16025,7 +16050,7 @@ func (s *UpdateDeviceInstanceOutput) SetDeviceInstance(v *DeviceInstance) *Updat
 type UpdateDevicePoolInput struct {
 	_ struct{} `type:"structure"`
 
-	// The Amazon Resourc Name (ARN) of the Device Farm device pool you wish to
+	// The Amazon Resource Name (ARN) of the Device Farm device pool you wish to
 	// update.
 	//
 	// Arn is a required field
@@ -16275,7 +16300,7 @@ type UpdateNetworkProfileInput struct {
 	// Arn is a required field
 	Arn *string `locationName:"arn" min:"32" type:"string" required:"true"`
 
-	// The descriptoin of the network profile about which you are returning information.
+	// The description of the network profile about which you are returning information.
 	Description *string `locationName:"description" type:"string"`
 
 	// The data throughput rate in bits per second, as an integer from 0 to 104857600.
@@ -16769,7 +16794,7 @@ type Upload struct {
 	//
 	//    * IOS_APP: An iOS upload.
 	//
-	//    * WEB_APP: A web appliction upload.
+	//    * WEB_APP: A web application upload.
 	//
 	//    * EXTERNAL_DATA: An external data upload.
 	//
@@ -16807,9 +16832,9 @@ type Upload struct {
 	//
 	//    * UIAUTOMATOR_TEST_PACKAGE: A uiautomator test package upload.
 	//
-	//    * XCTEST_TEST_PACKAGE: An XCode test package upload.
+	//    * XCTEST_TEST_PACKAGE: An Xcode test package upload.
 	//
-	//    * XCTEST_UI_TEST_PACKAGE: An XCode UI test package upload.
+	//    * XCTEST_UI_TEST_PACKAGE: An Xcode UI test package upload.
 	//
 	//    * APPIUM_JAVA_JUNIT_TEST_SPEC: An Appium Java JUnit test spec upload.
 	//
@@ -16838,7 +16863,7 @@ type Upload struct {
 	//
 	//    * INSTRUMENTATION_TEST_SPEC: An instrumentation test spec upload.
 	//
-	//    * XCTEST_UI_TEST_SPEC: An XCode UI test spec upload.
+	//    * XCTEST_UI_TEST_SPEC: An Xcode UI test spec upload.
 	Type *string `locationName:"type" type:"string" enum:"UploadType"`
 
 	// The pre-signed Amazon S3 URL that was used to store a file through a corresponding

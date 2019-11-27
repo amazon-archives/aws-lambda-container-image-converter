@@ -5,39 +5,46 @@
 //
 // This guide describes the API operations for the resource groups tagging.
 //
-// A tag is a key-value pair that you can add to an AWS resource. A tag consists
-// of a key and a value, both of which you define. For example, if you have
-// two Amazon EC2 instances, you might assign both a tag key of "Stack." But
-// the value of "Stack" might be "Testing" for one and "Production" for the
-// other.
+// A tag is a label that you assign to an AWS resource. A tag consists of a
+// key and a value, both of which you define. For example, if you have two Amazon
+// EC2 instances, you might assign both a tag key of "Stack." But the value
+// of "Stack" might be "Testing" for one and "Production" for the other.
 //
 // Tagging can help you organize your resources and enables you to simplify
-// resource management, access management, and cost allocation.
+// resource management, access management and cost allocation.
 //
 // You can use the resource groups tagging API operations to complete the following
 // tasks:
 //
-//    * Tag and untag supported resources located in the specified Region for
-//    the AWS account.
+//    * Tag and untag supported resources located in the specified region for
+//    the AWS account
 //
 //    * Use tag-based filters to search for resources located in the specified
-//    Region for the AWS account.
+//    region for the AWS account
 //
-//    * List all existing tag keys in the specified Region for the AWS account.
+//    * List all existing tag keys in the specified region for the AWS account
 //
-//    * List all existing values for the specified key in the specified Region
-//    for the AWS account.
+//    * List all existing values for the specified key in the specified region
+//    for the AWS account
 //
-//    * Configure tag policies to help maintain standardized tags across your
-//    organization's resources. For more information on tag policies, see Tag
-//    Policies (http://docs.aws.amazon.com/ARG/latest/userguide/tag-policies.html)in
-//    the AWS Resource Groups User Guide.
+// To use resource groups tagging API operations, you must add the following
+// permissions to your IAM policy:
 //
-// To make full use of the resource groups tagging API operations, you might
-// need additional IAM permissions, including permission to access the resources
-// of individual services as well as permission to view and apply tags to those
-// resources. For more information, see Set Up Permissions (http://docs.aws.amazon.com/ARG/latest/userguide/gettingstarted-prereqs.html#rg-permissions)
-// in the AWS Resource Groups User Guide.
+//    * tag:GetResources
+//
+//    * tag:TagResources
+//
+//    * tag:UntagResources
+//
+//    * tag:GetTagKeys
+//
+//    * tag:GetTagValues
+//
+// You'll also need permissions to access the resources of individual services
+// so that you can tag and untag those resources.
+//
+// For more information on IAM policies, see Managing IAM Policies (http://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_manage.html)
+// in the IAM User Guide.
 //
 // You can use the Resource Groups Tagging API to tag resources for the following
 // AWS services.
@@ -48,9 +55,15 @@
 //
 //    * AWS AppStream
 //
+//    * AWS AppSync
+//
+//    * AWS App Mesh
+//
 //    * Amazon Athena
 //
 //    * Amazon Aurora
+//
+//    * AWS Backup
 //
 //    * AWS Certificate Manager
 //
@@ -73,6 +86,10 @@
 //    * Amazon CloudWatch Logs
 //
 //    * AWS CodeBuild
+//
+//    * AWS CodeCommit
+//
+//    * AWS CodePipeline
 //
 //    * AWS CodeStar
 //
@@ -138,9 +155,13 @@
 //
 //    * AWS IoT Device Management
 //
+//    * AWS IoT Greengrass
+//
 //    * AWS Key Management Service
 //
 //    * Amazon Kinesis
+//
+//    * Amazon Kinesis Data Analytics
 //
 //    * Amazon Kinesis Data Firehose
 //
@@ -179,6 +200,8 @@
 //    * AWS Secrets Manager
 //
 //    * AWS Service Catalog
+//
+//    * Amazon Simple Notification Service (SNS)
 //
 //    * Amazon Simple Queue Service (SQS)
 //

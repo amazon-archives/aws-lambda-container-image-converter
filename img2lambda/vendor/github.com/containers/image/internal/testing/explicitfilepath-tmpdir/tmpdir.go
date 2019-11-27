@@ -21,7 +21,7 @@ import (
 )
 
 func init() {
-	tmpDir := os.Getenv("TMPDIR")
+	tmpDir := os.TempDir()
 	explicitTmpDir, err := filepath.EvalSymlinks(tmpDir)
 	if err == nil {
 		os.Setenv("TMPDIR", explicitTmpDir)

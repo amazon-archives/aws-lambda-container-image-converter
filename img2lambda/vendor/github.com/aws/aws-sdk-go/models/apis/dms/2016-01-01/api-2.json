@@ -142,6 +142,20 @@
         {"shape":"InvalidResourceStateFault"}
       ]
     },
+    "DeleteConnection":{
+      "name":"DeleteConnection",
+      "http":{
+        "method":"POST",
+        "requestUri":"/"
+      },
+      "input":{"shape":"DeleteConnectionMessage"},
+      "output":{"shape":"DeleteConnectionResponse"},
+      "errors":[
+        {"shape":"AccessDeniedFault"},
+        {"shape":"ResourceNotFoundFault"},
+        {"shape":"InvalidResourceStateFault"}
+      ]
+    },
     "DeleteEndpoint":{
       "name":"DeleteEndpoint",
       "http":{
@@ -916,6 +930,23 @@
         "Certificate":{"shape":"Certificate"}
       }
     },
+    "DeleteConnectionMessage":{
+      "type":"structure",
+      "required":[
+        "EndpointArn",
+        "ReplicationInstanceArn"
+      ],
+      "members":{
+        "EndpointArn":{"shape":"String"},
+        "ReplicationInstanceArn":{"shape":"String"}
+      }
+    },
+    "DeleteConnectionResponse":{
+      "type":"structure",
+      "members":{
+        "Connection":{"shape":"Connection"}
+      }
+    },
     "DeleteEndpointMessage":{
       "type":"structure",
       "required":["EndpointArn"],
@@ -988,7 +1019,8 @@
     "DescribeAccountAttributesResponse":{
       "type":"structure",
       "members":{
-        "AccountQuotas":{"shape":"AccountQuotaList"}
+        "AccountQuotas":{"shape":"AccountQuotaList"},
+        "UniqueAccountIdentifier":{"shape":"String"}
       }
     },
     "DescribeCertificatesMessage":{
@@ -1679,7 +1711,8 @@
         "MaxAllocatedStorage":{"shape":"Integer"},
         "DefaultAllocatedStorage":{"shape":"Integer"},
         "IncludedAllocatedStorage":{"shape":"Integer"},
-        "AvailabilityZones":{"shape":"AvailabilityZonesList"}
+        "AvailabilityZones":{"shape":"AvailabilityZonesList"},
+        "ReleaseStatus":{"shape":"ReleaseStatusValues"}
       }
     },
     "OrderableReplicationInstanceList":{
@@ -1790,6 +1823,10 @@
         "failed",
         "refreshing"
       ]
+    },
+    "ReleaseStatusValues":{
+      "type":"string",
+      "enum":["beta"]
     },
     "ReloadOptionValue":{
       "type":"string",
@@ -2029,7 +2066,10 @@
         "DataPageSize":{"shape":"IntegerOptional"},
         "ParquetVersion":{"shape":"ParquetVersionValue"},
         "EnableStatistics":{"shape":"BooleanOptional"},
-        "CdcInsertsOnly":{"shape":"BooleanOptional"}
+        "IncludeOpForFullLoad":{"shape":"BooleanOptional"},
+        "CdcInsertsOnly":{"shape":"BooleanOptional"},
+        "TimestampColumnName":{"shape":"String"},
+        "ParquetTimestampInMillisecond":{"shape":"BooleanOptional"}
       }
     },
     "SNSInvalidTopicFault":{

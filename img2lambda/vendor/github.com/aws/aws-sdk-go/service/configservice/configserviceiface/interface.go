@@ -92,6 +92,10 @@ type ConfigServiceAPI interface {
 	DeleteEvaluationResultsWithContext(aws.Context, *configservice.DeleteEvaluationResultsInput, ...request.Option) (*configservice.DeleteEvaluationResultsOutput, error)
 	DeleteEvaluationResultsRequest(*configservice.DeleteEvaluationResultsInput) (*request.Request, *configservice.DeleteEvaluationResultsOutput)
 
+	DeleteOrganizationConfigRule(*configservice.DeleteOrganizationConfigRuleInput) (*configservice.DeleteOrganizationConfigRuleOutput, error)
+	DeleteOrganizationConfigRuleWithContext(aws.Context, *configservice.DeleteOrganizationConfigRuleInput, ...request.Option) (*configservice.DeleteOrganizationConfigRuleOutput, error)
+	DeleteOrganizationConfigRuleRequest(*configservice.DeleteOrganizationConfigRuleInput) (*request.Request, *configservice.DeleteOrganizationConfigRuleOutput)
+
 	DeletePendingAggregationRequest(*configservice.DeletePendingAggregationRequestInput) (*configservice.DeletePendingAggregationRequestOutput, error)
 	DeletePendingAggregationRequestWithContext(aws.Context, *configservice.DeletePendingAggregationRequestInput, ...request.Option) (*configservice.DeletePendingAggregationRequestOutput, error)
 	DeletePendingAggregationRequestRequest(*configservice.DeletePendingAggregationRequestInput) (*request.Request, *configservice.DeletePendingAggregationRequestOutput)
@@ -99,6 +103,10 @@ type ConfigServiceAPI interface {
 	DeleteRemediationConfiguration(*configservice.DeleteRemediationConfigurationInput) (*configservice.DeleteRemediationConfigurationOutput, error)
 	DeleteRemediationConfigurationWithContext(aws.Context, *configservice.DeleteRemediationConfigurationInput, ...request.Option) (*configservice.DeleteRemediationConfigurationOutput, error)
 	DeleteRemediationConfigurationRequest(*configservice.DeleteRemediationConfigurationInput) (*request.Request, *configservice.DeleteRemediationConfigurationOutput)
+
+	DeleteRemediationExceptions(*configservice.DeleteRemediationExceptionsInput) (*configservice.DeleteRemediationExceptionsOutput, error)
+	DeleteRemediationExceptionsWithContext(aws.Context, *configservice.DeleteRemediationExceptionsInput, ...request.Option) (*configservice.DeleteRemediationExceptionsOutput, error)
+	DeleteRemediationExceptionsRequest(*configservice.DeleteRemediationExceptionsInput) (*request.Request, *configservice.DeleteRemediationExceptionsOutput)
 
 	DeleteRetentionConfiguration(*configservice.DeleteRetentionConfigurationInput) (*configservice.DeleteRetentionConfigurationOutput, error)
 	DeleteRetentionConfigurationWithContext(aws.Context, *configservice.DeleteRetentionConfigurationInput, ...request.Option) (*configservice.DeleteRetentionConfigurationOutput, error)
@@ -156,6 +164,14 @@ type ConfigServiceAPI interface {
 	DescribeDeliveryChannelsWithContext(aws.Context, *configservice.DescribeDeliveryChannelsInput, ...request.Option) (*configservice.DescribeDeliveryChannelsOutput, error)
 	DescribeDeliveryChannelsRequest(*configservice.DescribeDeliveryChannelsInput) (*request.Request, *configservice.DescribeDeliveryChannelsOutput)
 
+	DescribeOrganizationConfigRuleStatuses(*configservice.DescribeOrganizationConfigRuleStatusesInput) (*configservice.DescribeOrganizationConfigRuleStatusesOutput, error)
+	DescribeOrganizationConfigRuleStatusesWithContext(aws.Context, *configservice.DescribeOrganizationConfigRuleStatusesInput, ...request.Option) (*configservice.DescribeOrganizationConfigRuleStatusesOutput, error)
+	DescribeOrganizationConfigRuleStatusesRequest(*configservice.DescribeOrganizationConfigRuleStatusesInput) (*request.Request, *configservice.DescribeOrganizationConfigRuleStatusesOutput)
+
+	DescribeOrganizationConfigRules(*configservice.DescribeOrganizationConfigRulesInput) (*configservice.DescribeOrganizationConfigRulesOutput, error)
+	DescribeOrganizationConfigRulesWithContext(aws.Context, *configservice.DescribeOrganizationConfigRulesInput, ...request.Option) (*configservice.DescribeOrganizationConfigRulesOutput, error)
+	DescribeOrganizationConfigRulesRequest(*configservice.DescribeOrganizationConfigRulesInput) (*request.Request, *configservice.DescribeOrganizationConfigRulesOutput)
+
 	DescribePendingAggregationRequests(*configservice.DescribePendingAggregationRequestsInput) (*configservice.DescribePendingAggregationRequestsOutput, error)
 	DescribePendingAggregationRequestsWithContext(aws.Context, *configservice.DescribePendingAggregationRequestsInput, ...request.Option) (*configservice.DescribePendingAggregationRequestsOutput, error)
 	DescribePendingAggregationRequestsRequest(*configservice.DescribePendingAggregationRequestsInput) (*request.Request, *configservice.DescribePendingAggregationRequestsOutput)
@@ -163,6 +179,13 @@ type ConfigServiceAPI interface {
 	DescribeRemediationConfigurations(*configservice.DescribeRemediationConfigurationsInput) (*configservice.DescribeRemediationConfigurationsOutput, error)
 	DescribeRemediationConfigurationsWithContext(aws.Context, *configservice.DescribeRemediationConfigurationsInput, ...request.Option) (*configservice.DescribeRemediationConfigurationsOutput, error)
 	DescribeRemediationConfigurationsRequest(*configservice.DescribeRemediationConfigurationsInput) (*request.Request, *configservice.DescribeRemediationConfigurationsOutput)
+
+	DescribeRemediationExceptions(*configservice.DescribeRemediationExceptionsInput) (*configservice.DescribeRemediationExceptionsOutput, error)
+	DescribeRemediationExceptionsWithContext(aws.Context, *configservice.DescribeRemediationExceptionsInput, ...request.Option) (*configservice.DescribeRemediationExceptionsOutput, error)
+	DescribeRemediationExceptionsRequest(*configservice.DescribeRemediationExceptionsInput) (*request.Request, *configservice.DescribeRemediationExceptionsOutput)
+
+	DescribeRemediationExceptionsPages(*configservice.DescribeRemediationExceptionsInput, func(*configservice.DescribeRemediationExceptionsOutput, bool) bool) error
+	DescribeRemediationExceptionsPagesWithContext(aws.Context, *configservice.DescribeRemediationExceptionsInput, func(*configservice.DescribeRemediationExceptionsOutput, bool) bool, ...request.Option) error
 
 	DescribeRemediationExecutionStatus(*configservice.DescribeRemediationExecutionStatusInput) (*configservice.DescribeRemediationExecutionStatusOutput, error)
 	DescribeRemediationExecutionStatusWithContext(aws.Context, *configservice.DescribeRemediationExecutionStatusInput, ...request.Option) (*configservice.DescribeRemediationExecutionStatusOutput, error)
@@ -211,6 +234,10 @@ type ConfigServiceAPI interface {
 	GetDiscoveredResourceCountsWithContext(aws.Context, *configservice.GetDiscoveredResourceCountsInput, ...request.Option) (*configservice.GetDiscoveredResourceCountsOutput, error)
 	GetDiscoveredResourceCountsRequest(*configservice.GetDiscoveredResourceCountsInput) (*request.Request, *configservice.GetDiscoveredResourceCountsOutput)
 
+	GetOrganizationConfigRuleDetailedStatus(*configservice.GetOrganizationConfigRuleDetailedStatusInput) (*configservice.GetOrganizationConfigRuleDetailedStatusOutput, error)
+	GetOrganizationConfigRuleDetailedStatusWithContext(aws.Context, *configservice.GetOrganizationConfigRuleDetailedStatusInput, ...request.Option) (*configservice.GetOrganizationConfigRuleDetailedStatusOutput, error)
+	GetOrganizationConfigRuleDetailedStatusRequest(*configservice.GetOrganizationConfigRuleDetailedStatusInput) (*request.Request, *configservice.GetOrganizationConfigRuleDetailedStatusOutput)
+
 	GetResourceConfigHistory(*configservice.GetResourceConfigHistoryInput) (*configservice.GetResourceConfigHistoryOutput, error)
 	GetResourceConfigHistoryWithContext(aws.Context, *configservice.GetResourceConfigHistoryInput, ...request.Option) (*configservice.GetResourceConfigHistoryOutput, error)
 	GetResourceConfigHistoryRequest(*configservice.GetResourceConfigHistoryInput) (*request.Request, *configservice.GetResourceConfigHistoryOutput)
@@ -254,9 +281,17 @@ type ConfigServiceAPI interface {
 	PutEvaluationsWithContext(aws.Context, *configservice.PutEvaluationsInput, ...request.Option) (*configservice.PutEvaluationsOutput, error)
 	PutEvaluationsRequest(*configservice.PutEvaluationsInput) (*request.Request, *configservice.PutEvaluationsOutput)
 
+	PutOrganizationConfigRule(*configservice.PutOrganizationConfigRuleInput) (*configservice.PutOrganizationConfigRuleOutput, error)
+	PutOrganizationConfigRuleWithContext(aws.Context, *configservice.PutOrganizationConfigRuleInput, ...request.Option) (*configservice.PutOrganizationConfigRuleOutput, error)
+	PutOrganizationConfigRuleRequest(*configservice.PutOrganizationConfigRuleInput) (*request.Request, *configservice.PutOrganizationConfigRuleOutput)
+
 	PutRemediationConfigurations(*configservice.PutRemediationConfigurationsInput) (*configservice.PutRemediationConfigurationsOutput, error)
 	PutRemediationConfigurationsWithContext(aws.Context, *configservice.PutRemediationConfigurationsInput, ...request.Option) (*configservice.PutRemediationConfigurationsOutput, error)
 	PutRemediationConfigurationsRequest(*configservice.PutRemediationConfigurationsInput) (*request.Request, *configservice.PutRemediationConfigurationsOutput)
+
+	PutRemediationExceptions(*configservice.PutRemediationExceptionsInput) (*configservice.PutRemediationExceptionsOutput, error)
+	PutRemediationExceptionsWithContext(aws.Context, *configservice.PutRemediationExceptionsInput, ...request.Option) (*configservice.PutRemediationExceptionsOutput, error)
+	PutRemediationExceptionsRequest(*configservice.PutRemediationExceptionsInput) (*request.Request, *configservice.PutRemediationExceptionsOutput)
 
 	PutRetentionConfiguration(*configservice.PutRetentionConfigurationInput) (*configservice.PutRetentionConfigurationOutput, error)
 	PutRetentionConfigurationWithContext(aws.Context, *configservice.PutRetentionConfigurationInput, ...request.Option) (*configservice.PutRetentionConfigurationOutput, error)

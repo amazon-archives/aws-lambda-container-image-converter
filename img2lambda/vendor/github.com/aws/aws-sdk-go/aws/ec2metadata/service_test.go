@@ -13,8 +13,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/ec2metadata"
 	"github.com/aws/aws-sdk-go/aws/request"
-	"github.com/aws/aws-sdk-go/awstesting"
 	"github.com/aws/aws-sdk-go/awstesting/unit"
+	"github.com/aws/aws-sdk-go/internal/sdktesting"
 )
 
 func TestClientOverrideDefaultHTTPClientTimeout(t *testing.T) {
@@ -62,6 +62,7 @@ func TestClientOverrideDefaultHTTPClientTimeoutRace(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("us-east-1a"))
 	}))
+	defer server.Close()
 
 	cfg := aws.NewConfig().WithEndpoint(server.URL)
 	runEC2MetadataClients(t, cfg, 100)
@@ -71,6 +72,7 @@ func TestClientOverrideDefaultHTTPClientTimeoutRaceWithTransport(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("us-east-1a"))
 	}))
+	defer server.Close()
 
 	cfg := aws.NewConfig().WithEndpoint(server.URL).WithHTTPClient(&http.Client{
 		Transport: http.DefaultTransport,
@@ -80,8 +82,8 @@ func TestClientOverrideDefaultHTTPClientTimeoutRaceWithTransport(t *testing.T) {
 }
 
 func TestClientDisableIMDS(t *testing.T) {
-	env := awstesting.StashEnv()
-	defer awstesting.PopEnv(env)
+	restoreEnvFn := sdktesting.StashEnv()
+	defer restoreEnvFn()
 
 	os.Setenv("AWS_EC2_METADATA_DISABLED", "true")
 

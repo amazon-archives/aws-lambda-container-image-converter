@@ -7,6 +7,7 @@ LINTIGNOREENDPOINTS='aws/endpoints/(defaults|dep_service_ids).go:.+(method|const
 LINTIGNOREDEPS='vendor/.+\.go'
 LINTIGNOREPKGCOMMENT='service/[^/]+/doc_custom.go:.+package comment should be of the form'
 UNIT_TEST_TAGS="example codegen awsinclude"
+ALL_TAGS="example codegen awsinclude integration perftest"
 
 # SDK's Core and client packages that are compatable with Go 1.5+.
 SDK_CORE_PKGS=./aws/... ./private/... ./internal/...
@@ -18,6 +19,8 @@ SDK_EXAMPLES_PKGS=./example/...
 SDK_TESTING_PKGS=./awstesting/...
 SDK_MODELS_PKGS=./models/...
 SDK_ALL_PKGS=${SDK_COMPA_PKGS} ${SDK_TESTING_PKGS} ${SDK_EXAMPLES_PKGS} ${SDK_MODELS_PKGS}
+
+TEST_TIMEOUT=-timeout 5m
 
 all: generate unit
 
@@ -51,17 +54,23 @@ cleanup-models:
 ###################
 # Unit/CI Testing #
 ###################
-unit: verify
-	@echo "go test SDK and vendor packages"
-	go test -count=1 -tags ${UNIT_TEST_TAGS} ${SDK_ALL_PKGS}
 
-unit-with-race-cover: verify
+build:
+	go build -o /dev/null -tags ${ALL_TAGS} ${SDK_ALL_PKGS}
+
+unit-no-verify:
 	@echo "go test SDK and vendor packages"
-	go test -count=1 -tags ${UNIT_TEST_TAGS} -race -cpu=1,2,4 ${SDK_ALL_PKGS}
+	go test ${TEST_TIMEOUT} -v -count=1 -tags ${UNIT_TEST_TAGS} ${SDK_ALL_PKGS}
+
+unit: verify build unit-no-verify
+
+unit-with-race-cover: verify build
+	@echo "go test SDK and vendor packages"
+	go test ${TEST_TIMEOUT} -v -count=1 -tags ${UNIT_TEST_TAGS} -race -cpu=1,2,4 ${SDK_ALL_PKGS}
 
 unit-old-go-race-cover:
 	@echo "go test SDK only packages for old Go versions"
-	go test -count=1 -race -cpu=1,2,4 ${SDK_COMPA_PKGS}
+	go test ${TEST_TIMEOUT} -v -count=1 -race -cpu=1,2,4 ${SDK_COMPA_PKGS}
 
 ci-test: generate unit-with-race-cover ci-test-generate-validate
 
@@ -70,9 +79,9 @@ ci-test-generate-validate:
 	git update-index --assume-unchanged go.mod go.sum
 	git add . -A
 	gitstatus=`git diff --cached --ignore-space-change`; \
-	git update-index --no-assume-unchanged go.mod go.sum
 	echo "$$gitstatus"; \
 	if [ "$$gitstatus" != "" ] && [ "$$gitstatus" != "skipping validation" ]; then echo "$$gitstatus"; exit 1; fi
+	git update-index --no-assume-unchanged go.mod go.sum
 
 #######################
 # Integration Testing #
@@ -196,7 +205,6 @@ get-deps: get-deps-tests get-deps-x-tests get-deps-codegen get-deps-verify
 
 get-deps-tests:
 	@echo "go get SDK testing dependencies"
-	go get github.com/stretchr/testify
 
 get-deps-x-tests:
 	@echo "go get SDK testing golang.org/x dependencies"

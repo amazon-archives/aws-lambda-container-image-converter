@@ -1,0 +1,10 @@
+runtime: go
+api_version: go1
+service: serviceproxy
+
+handlers:
+- url: /.*
+  script: _go_app
+- url: /_ah/remote_api
+  script: _go_app
+

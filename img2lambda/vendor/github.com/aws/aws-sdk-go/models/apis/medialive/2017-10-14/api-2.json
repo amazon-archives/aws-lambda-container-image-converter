@@ -2149,6 +2149,10 @@
           "shape": "__string",
           "locationName": "name"
         },
+        "PipelineDetails": {
+          "shape": "__listOfPipelineDetail",
+          "locationName": "pipelineDetails"
+        },
         "PipelinesRunningCount": {
           "shape": "__integer",
           "locationName": "pipelinesRunningCount"
@@ -2267,6 +2271,11 @@
           "shape": "Tags",
           "locationName": "tags"
         }
+      }
+    },
+    "ColorSpacePassthroughSettings": {
+      "type": "structure",
+      "members": {
       }
     },
     "ConflictException": {
@@ -2616,6 +2625,10 @@
           "shape": "__string",
           "locationName": "name"
         },
+        "PipelineDetails": {
+          "shape": "__listOfPipelineDetail",
+          "locationName": "pipelineDetails"
+        },
         "PipelinesRunningCount": {
           "shape": "__integer",
           "locationName": "pipelinesRunningCount"
@@ -2853,6 +2866,10 @@
           "shape": "__string",
           "locationName": "name"
         },
+        "PipelineDetails": {
+          "shape": "__listOfPipelineDetail",
+          "locationName": "pipelineDetails"
+        },
         "PipelinesRunningCount": {
           "shape": "__integer",
           "locationName": "pipelinesRunningCount"
@@ -2906,6 +2923,10 @@
         "InputClass": {
           "shape": "InputClass",
           "locationName": "inputClass"
+        },
+        "InputSourceType": {
+          "shape": "InputSourceType",
+          "locationName": "inputSourceType"
         },
         "MediaConnectFlows": {
           "shape": "__listOfMediaConnectFlow",
@@ -3872,6 +3893,23 @@
         "INSERT"
       ]
     },
+    "H264ColorSpaceSettings": {
+      "type": "structure",
+      "members": {
+        "ColorSpacePassthroughSettings": {
+          "shape": "ColorSpacePassthroughSettings",
+          "locationName": "colorSpacePassthroughSettings"
+        },
+        "Rec601Settings": {
+          "shape": "Rec601Settings",
+          "locationName": "rec601Settings"
+        },
+        "Rec709Settings": {
+          "shape": "Rec709Settings",
+          "locationName": "rec709Settings"
+        }
+      }
+    },
     "H264EntropyEncoding": {
       "type": "string",
       "enum": [
@@ -3959,6 +3997,7 @@
       "type": "string",
       "enum": [
         "CBR",
+        "MULTIPLEX",
         "QVBR",
         "VBR"
       ]
@@ -4003,6 +4042,10 @@
         "ColorMetadata": {
           "shape": "H264ColorMetadata",
           "locationName": "colorMetadata"
+        },
+        "ColorSpaceSettings": {
+          "shape": "H264ColorSpaceSettings",
+          "locationName": "colorSpaceSettings"
         },
         "EntropyEncoding": {
           "shape": "H264EntropyEncoding",
@@ -4164,6 +4207,268 @@
         "DISABLED",
         "PIC_TIMING_SEI"
       ]
+    },
+    "H265AdaptiveQuantization": {
+      "type": "string",
+      "enum": [
+        "HIGH",
+        "HIGHER",
+        "LOW",
+        "MAX",
+        "MEDIUM",
+        "OFF"
+      ]
+    },
+    "H265AlternativeTransferFunction": {
+      "type": "string",
+      "enum": [
+        "INSERT",
+        "OMIT"
+      ]
+    },
+    "H265ColorMetadata": {
+      "type": "string",
+      "enum": [
+        "IGNORE",
+        "INSERT"
+      ]
+    },
+    "H265ColorSpaceSettings": {
+      "type": "structure",
+      "members": {
+        "ColorSpacePassthroughSettings": {
+          "shape": "ColorSpacePassthroughSettings",
+          "locationName": "colorSpacePassthroughSettings"
+        },
+        "Hdr10Settings": {
+          "shape": "Hdr10Settings",
+          "locationName": "hdr10Settings"
+        },
+        "Rec601Settings": {
+          "shape": "Rec601Settings",
+          "locationName": "rec601Settings"
+        },
+        "Rec709Settings": {
+          "shape": "Rec709Settings",
+          "locationName": "rec709Settings"
+        }
+      }
+    },
+    "H265FlickerAq": {
+      "type": "string",
+      "enum": [
+        "DISABLED",
+        "ENABLED"
+      ]
+    },
+    "H265GopSizeUnits": {
+      "type": "string",
+      "enum": [
+        "FRAMES",
+        "SECONDS"
+      ]
+    },
+    "H265Level": {
+      "type": "string",
+      "enum": [
+        "H265_LEVEL_1",
+        "H265_LEVEL_2",
+        "H265_LEVEL_2_1",
+        "H265_LEVEL_3",
+        "H265_LEVEL_3_1",
+        "H265_LEVEL_4",
+        "H265_LEVEL_4_1",
+        "H265_LEVEL_5",
+        "H265_LEVEL_5_1",
+        "H265_LEVEL_5_2",
+        "H265_LEVEL_6",
+        "H265_LEVEL_6_1",
+        "H265_LEVEL_6_2",
+        "H265_LEVEL_AUTO"
+      ]
+    },
+    "H265LookAheadRateControl": {
+      "type": "string",
+      "enum": [
+        "HIGH",
+        "LOW",
+        "MEDIUM"
+      ]
+    },
+    "H265Profile": {
+      "type": "string",
+      "enum": [
+        "MAIN",
+        "MAIN_10BIT"
+      ]
+    },
+    "H265RateControlMode": {
+      "type": "string",
+      "enum": [
+        "CBR",
+        "QVBR"
+      ]
+    },
+    "H265ScanType": {
+      "type": "string",
+      "enum": [
+        "PROGRESSIVE"
+      ]
+    },
+    "H265SceneChangeDetect": {
+      "type": "string",
+      "enum": [
+        "DISABLED",
+        "ENABLED"
+      ]
+    },
+    "H265Settings": {
+      "type": "structure",
+      "members": {
+        "AdaptiveQuantization": {
+          "shape": "H265AdaptiveQuantization",
+          "locationName": "adaptiveQuantization"
+        },
+        "AfdSignaling": {
+          "shape": "AfdSignaling",
+          "locationName": "afdSignaling"
+        },
+        "AlternativeTransferFunction": {
+          "shape": "H265AlternativeTransferFunction",
+          "locationName": "alternativeTransferFunction"
+        },
+        "Bitrate": {
+          "shape": "__integerMin100000Max40000000",
+          "locationName": "bitrate"
+        },
+        "BufSize": {
+          "shape": "__integerMin100000Max80000000",
+          "locationName": "bufSize"
+        },
+        "ColorMetadata": {
+          "shape": "H265ColorMetadata",
+          "locationName": "colorMetadata"
+        },
+        "ColorSpaceSettings": {
+          "shape": "H265ColorSpaceSettings",
+          "locationName": "colorSpaceSettings"
+        },
+        "FixedAfd": {
+          "shape": "FixedAfd",
+          "locationName": "fixedAfd"
+        },
+        "FlickerAq": {
+          "shape": "H265FlickerAq",
+          "locationName": "flickerAq"
+        },
+        "FramerateDenominator": {
+          "shape": "__integerMin1Max3003",
+          "locationName": "framerateDenominator"
+        },
+        "FramerateNumerator": {
+          "shape": "__integerMin1",
+          "locationName": "framerateNumerator"
+        },
+        "GopClosedCadence": {
+          "shape": "__integerMin0",
+          "locationName": "gopClosedCadence"
+        },
+        "GopSize": {
+          "shape": "__doubleMin1",
+          "locationName": "gopSize"
+        },
+        "GopSizeUnits": {
+          "shape": "H265GopSizeUnits",
+          "locationName": "gopSizeUnits"
+        },
+        "Level": {
+          "shape": "H265Level",
+          "locationName": "level"
+        },
+        "LookAheadRateControl": {
+          "shape": "H265LookAheadRateControl",
+          "locationName": "lookAheadRateControl"
+        },
+        "MaxBitrate": {
+          "shape": "__integerMin100000Max40000000",
+          "locationName": "maxBitrate"
+        },
+        "MinIInterval": {
+          "shape": "__integerMin0Max30",
+          "locationName": "minIInterval"
+        },
+        "ParDenominator": {
+          "shape": "__integerMin1",
+          "locationName": "parDenominator"
+        },
+        "ParNumerator": {
+          "shape": "__integerMin1",
+          "locationName": "parNumerator"
+        },
+        "Profile": {
+          "shape": "H265Profile",
+          "locationName": "profile"
+        },
+        "QvbrQualityLevel": {
+          "shape": "__integerMin1Max10",
+          "locationName": "qvbrQualityLevel"
+        },
+        "RateControlMode": {
+          "shape": "H265RateControlMode",
+          "locationName": "rateControlMode"
+        },
+        "ScanType": {
+          "shape": "H265ScanType",
+          "locationName": "scanType"
+        },
+        "SceneChangeDetect": {
+          "shape": "H265SceneChangeDetect",
+          "locationName": "sceneChangeDetect"
+        },
+        "Slices": {
+          "shape": "__integerMin1Max16",
+          "locationName": "slices"
+        },
+        "Tier": {
+          "shape": "H265Tier",
+          "locationName": "tier"
+        },
+        "TimecodeInsertion": {
+          "shape": "H265TimecodeInsertionBehavior",
+          "locationName": "timecodeInsertion"
+        }
+      },
+      "required": [
+        "FramerateNumerator",
+        "FramerateDenominator"
+      ]
+    },
+    "H265Tier": {
+      "type": "string",
+      "enum": [
+        "HIGH",
+        "MAIN"
+      ]
+    },
+    "H265TimecodeInsertionBehavior": {
+      "type": "string",
+      "enum": [
+        "DISABLED",
+        "PIC_TIMING_SEI"
+      ]
+    },
+    "Hdr10Settings": {
+      "type": "structure",
+      "members": {
+        "MaxCll": {
+          "shape": "__integerMin0Max32768",
+          "locationName": "maxCll"
+        },
+        "MaxFall": {
+          "shape": "__integerMin0Max32768",
+          "locationName": "maxFall"
+        }
+      }
     },
     "HlsAdMarkers": {
       "type": "string",
@@ -4668,6 +4973,11 @@
         "STANDARD"
       ]
     },
+    "ImmediateModeScheduleActionStartSettings": {
+      "type": "structure",
+      "members": {
+      }
+    },
     "Input": {
       "type": "structure",
       "members": {
@@ -4690,6 +5000,10 @@
         "InputClass": {
           "shape": "InputClass",
           "locationName": "inputClass"
+        },
+        "InputSourceType": {
+          "shape": "InputSourceType",
+          "locationName": "inputSourceType"
         },
         "MediaConnectFlows": {
           "shape": "__listOfMediaConnectFlow",
@@ -4764,6 +5078,26 @@
       "enum": [
         "STANDARD",
         "SINGLE_PIPELINE"
+      ]
+    },
+    "InputClippingSettings": {
+      "type": "structure",
+      "members": {
+        "InputTimecodeSource": {
+          "shape": "InputTimecodeSource",
+          "locationName": "inputTimecodeSource"
+        },
+        "StartTimecode": {
+          "shape": "StartTimecode",
+          "locationName": "startTimecode"
+        },
+        "StopTimecode": {
+          "shape": "StopTimecode",
+          "locationName": "stopTimecode"
+        }
+      },
+      "required": [
+        "InputTimecodeSource"
       ]
     },
     "InputCodec": {
@@ -5069,6 +5403,13 @@
         }
       }
     },
+    "InputSourceType": {
+      "type": "string",
+      "enum": [
+        "STATIC",
+        "DYNAMIC"
+      ]
+    },
     "InputSpecification": {
       "type": "structure",
       "members": {
@@ -5102,10 +5443,25 @@
         "InputAttachmentNameReference": {
           "shape": "__string",
           "locationName": "inputAttachmentNameReference"
+        },
+        "InputClippingSettings": {
+          "shape": "InputClippingSettings",
+          "locationName": "inputClippingSettings"
+        },
+        "UrlPath": {
+          "shape": "__listOf__string",
+          "locationName": "urlPath"
         }
       },
       "required": [
         "InputAttachmentNameReference"
+      ]
+    },
+    "InputTimecodeSource": {
+      "type": "string",
+      "enum": [
+        "ZEROBASED",
+        "EMBEDDED"
       ]
     },
     "InputType": {
@@ -5193,6 +5549,13 @@
           "locationName": "staticKeySettings"
         }
       }
+    },
+    "LastFrameClippingBehavior": {
+      "type": "string",
+      "enum": [
+        "EXCLUDE_LAST_FRAME",
+        "INCLUDE_LAST_FRAME"
+      ]
     },
     "LimitExceeded": {
       "type": "structure",
@@ -6091,9 +6454,20 @@
         "Destination"
       ]
     },
+    "MsSmoothH265PackagingType": {
+      "type": "string",
+      "enum": [
+        "HEV1",
+        "HVC1"
+      ]
+    },
     "MsSmoothOutputSettings": {
       "type": "structure",
       "members": {
+        "H265PackagingType": {
+          "shape": "MsSmoothH265PackagingType",
+          "locationName": "h265PackagingType"
+        },
         "NameModifier": {
           "shape": "__string",
           "locationName": "nameModifier"
@@ -6370,6 +6744,23 @@
         }
       }
     },
+    "PipelineDetail": {
+      "type": "structure",
+      "members": {
+        "ActiveInputAttachmentName": {
+          "shape": "__string",
+          "locationName": "activeInputAttachmentName"
+        },
+        "ActiveInputSwitchActionName": {
+          "shape": "__string",
+          "locationName": "activeInputSwitchActionName"
+        },
+        "PipelineId": {
+          "shape": "__string",
+          "locationName": "pipelineId"
+        }
+      }
+    },
     "PipelineId": {
       "type": "string",
       "enum": [
@@ -6469,6 +6860,16 @@
           "shape": "Reservation",
           "locationName": "reservation"
         }
+      }
+    },
+    "Rec601Settings": {
+      "type": "structure",
+      "members": {
+      }
+    },
+    "Rec709Settings": {
+      "type": "structure",
+      "members": {
       }
     },
     "RemixSettings": {
@@ -6836,6 +7237,10 @@
         "FollowModeScheduleActionStartSettings": {
           "shape": "FollowModeScheduleActionStartSettings",
           "locationName": "followModeScheduleActionStartSettings"
+        },
+        "ImmediateModeScheduleActionStartSettings": {
+          "shape": "ImmediateModeScheduleActionStartSettings",
+          "locationName": "immediateModeScheduleActionStartSettings"
         }
       }
     },
@@ -6991,7 +7396,7 @@
       "type": "structure",
       "members": {
         "SpliceEventId": {
-          "shape": "__integerMin0Max4294967295",
+          "shape": "__longMin0Max4294967295",
           "locationName": "spliceEventId"
         }
       },
@@ -7022,11 +7427,11 @@
           "locationName": "segmentationCancelIndicator"
         },
         "SegmentationDuration": {
-          "shape": "__integerMin0Max1099511627775",
+          "shape": "__longMin0Max1099511627775",
           "locationName": "segmentationDuration"
         },
         "SegmentationEventId": {
-          "shape": "__integerMin0Max4294967295",
+          "shape": "__longMin0Max4294967295",
           "locationName": "segmentationEventId"
         },
         "SegmentationTypeId": {
@@ -7087,11 +7492,11 @@
       "type": "structure",
       "members": {
         "Duration": {
-          "shape": "__integerMin0Max8589934591",
+          "shape": "__longMin0Max8589934591",
           "locationName": "duration"
         },
         "SpliceEventId": {
-          "shape": "__integerMin0Max4294967295",
+          "shape": "__longMin0Max4294967295",
           "locationName": "spliceEventId"
         }
       },
@@ -7276,6 +7681,10 @@
           "shape": "__string",
           "locationName": "name"
         },
+        "PipelineDetails": {
+          "shape": "__listOfPipelineDetail",
+          "locationName": "pipelineDetails"
+        },
         "PipelinesRunningCount": {
           "shape": "__integer",
           "locationName": "pipelinesRunningCount"
@@ -7291,6 +7700,15 @@
         "Tags": {
           "shape": "Tags",
           "locationName": "tags"
+        }
+      }
+    },
+    "StartTimecode": {
+      "type": "structure",
+      "members": {
+        "Timecode": {
+          "shape": "__string",
+          "locationName": "timecode"
         }
       }
     },
@@ -7427,6 +7845,10 @@
           "shape": "__string",
           "locationName": "name"
         },
+        "PipelineDetails": {
+          "shape": "__listOfPipelineDetail",
+          "locationName": "pipelineDetails"
+        },
         "PipelinesRunningCount": {
           "shape": "__integer",
           "locationName": "pipelinesRunningCount"
@@ -7442,6 +7864,19 @@
         "Tags": {
           "shape": "Tags",
           "locationName": "tags"
+        }
+      }
+    },
+    "StopTimecode": {
+      "type": "structure",
+      "members": {
+        "LastFrameClippingBehavior": {
+          "shape": "LastFrameClippingBehavior",
+          "locationName": "lastFrameClippingBehavior"
+        },
+        "Timecode": {
+          "shape": "__string",
+          "locationName": "timecode"
         }
       }
     },
@@ -7935,6 +8370,10 @@
         "H264Settings": {
           "shape": "H264Settings",
           "locationName": "h264Settings"
+        },
+        "H265Settings": {
+          "shape": "H265Settings",
+          "locationName": "h265Settings"
         }
       }
     },
@@ -8066,7 +8505,16 @@
     "__doubleMin0": {
       "type": "double"
     },
+    "__doubleMin0Max1000000000": {
+      "type": "double"
+    },
+    "__doubleMin0Max65535": {
+      "type": "double"
+    },
     "__doubleMin1": {
+      "type": "double"
+    },
+    "__doubleMin10000Max1000000000": {
       "type": "double"
     },
     "__doubleMinNegative59Max0": {
@@ -8104,11 +8552,6 @@
       "min": 0,
       "max": 1000000
     },
-    "__integerMin0Max1099511627775": {
-      "type": "long",
-      "min": 0,
-      "max": 1099511627775
-    },
     "__integerMin0Max128": {
       "type": "integer",
       "min": 0,
@@ -8129,15 +8572,15 @@
       "min": 0,
       "max": 30
     },
+    "__integerMin0Max32768": {
+      "type": "integer",
+      "min": 0,
+      "max": 32768
+    },
     "__integerMin0Max3600": {
       "type": "integer",
       "min": 0,
       "max": 3600
-    },
-    "__integerMin0Max4294967295": {
-      "type": "long",
-      "min": 0,
-      "max": 4294967295
     },
     "__integerMin0Max500": {
       "type": "integer",
@@ -8169,11 +8612,6 @@
       "min": 0,
       "max": 8191
     },
-    "__integerMin0Max8589934591": {
-      "type": "long",
-      "min": 0,
-      "max": 8589934591
-    },
     "__integerMin1": {
       "type": "integer",
       "min": 1
@@ -8181,6 +8619,16 @@
     "__integerMin1000": {
       "type": "integer",
       "min": 1000
+    },
+    "__integerMin100000Max40000000": {
+      "type": "integer",
+      "min": 100000,
+      "max": 40000000
+    },
+    "__integerMin100000Max80000000": {
+      "type": "integer",
+      "min": 100000,
+      "max": 80000000
     },
     "__integerMin1000Max30000": {
       "type": "integer",
@@ -8206,6 +8654,11 @@
       "type": "integer",
       "min": 1,
       "max": 20
+    },
+    "__integerMin1Max3003": {
+      "type": "integer",
+      "min": 1,
+      "max": 3003
     },
     "__integerMin1Max31": {
       "type": "integer",
@@ -8447,6 +8900,12 @@
         "shape": "OutputGroup"
       }
     },
+    "__listOfPipelineDetail": {
+      "type": "list",
+      "member": {
+        "shape": "PipelineDetail"
+      }
+    },
     "__listOfPipelinePauseStateSettings": {
       "type": "list",
       "member": {
@@ -8492,8 +8951,27 @@
     "__long": {
       "type": "long"
     },
+    "__longMin0Max1099511627775": {
+      "type": "long",
+      "min": 0,
+      "max": 1099511627775
+    },
+    "__longMin0Max4294967295": {
+      "type": "long",
+      "min": 0,
+      "max": 4294967295
+    },
+    "__longMin0Max8589934591": {
+      "type": "long",
+      "min": 0,
+      "max": 8589934591
+    },
     "__string": {
       "type": "string"
+    },
+    "__stringMax256": {
+      "type": "string",
+      "max": 256
     },
     "__stringMax32": {
       "type": "string",

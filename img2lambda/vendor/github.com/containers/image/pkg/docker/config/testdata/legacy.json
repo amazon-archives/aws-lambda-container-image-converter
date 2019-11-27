@@ -1,0 +1,8 @@
+{
+  "docker.io/v2": {
+    "auth": "ZG9ja2VyOmlvLWxlZ2FjeQ=="
+  },
+  "https://localhost/v1": {
+    "auth": "bG9jYWw6aG9zdC1sZWdhY3k="
+  }
+}

@@ -32,9 +32,13 @@ var (
 	dockerHomePath          = filepath.FromSlash(".docker/config.json")
 	dockerLegacyHomePath    = ".dockercfg"
 
+	enableKeyring = false
+
 	// ErrNotLoggedIn is returned for users not logged into a registry
 	// that they are trying to logout of
 	ErrNotLoggedIn = errors.New("not logged in")
+	// ErrNotSupported is returned for unsupported methods
+	ErrNotSupported = errors.New("not supported")
 )
 
 // SetAuthentication stores the username and password in the auth.json file
@@ -44,6 +48,18 @@ func SetAuthentication(sys *types.SystemContext, registry, username, password st
 			return false, setAuthToCredHelper(ch, registry, username, password)
 		}
 
+		// Set the credentials to kernel keyring if enableKeyring is true.
+		// The keyring might not work in all environments (e.g., missing capability) and isn't supported on all platforms.
+		// Hence, we want to fall-back to using the authfile in case the keyring failed.
+		// However, if the enableKeyring is false, we want adhere to the user specification and not use the keyring.
+		if enableKeyring {
+			err := setAuthToKernelKeyring(registry, username, password)
+			if err == nil {
+				logrus.Debugf("credentials for (%s, %s) were stored in the kernel keyring\n", registry, username)
+				return false, nil
+			}
+			logrus.Debugf("failed to authenticate with the kernel keyring, falling back to authfiles. %v", err)
+		}
 		creds := base64.StdEncoding.EncodeToString([]byte(username + ":" + password))
 		newCreds := dockerAuthConfig{Auth: creds}
 		auths.AuthConfigs[registry] = newCreds
@@ -56,7 +72,16 @@ func SetAuthentication(sys *types.SystemContext, registry, username, password st
 // If an entry is not found empty strings are returned for the username and password
 func GetAuthentication(sys *types.SystemContext, registry string) (string, string, error) {
 	if sys != nil && sys.DockerAuthConfig != nil {
+		logrus.Debug("Returning credentials from DockerAuthConfig")
 		return sys.DockerAuthConfig.Username, sys.DockerAuthConfig.Password, nil
+	}
+
+	if enableKeyring {
+		username, password, err := getAuthFromKernelKeyring(registry)
+		if err == nil {
+			logrus.Debug("returning credentials from kernel keyring")
+			return username, password, nil
+		}
 	}
 
 	dockerLegacyPath := filepath.Join(homedir.Get(), dockerLegacyHomePath)
@@ -76,28 +101,16 @@ func GetAuthentication(sys *types.SystemContext, registry string) (string, strin
 		legacyFormat := path == dockerLegacyPath
 		username, password, err := findAuthentication(registry, path, legacyFormat)
 		if err != nil {
+			logrus.Debugf("Credentials not found")
 			return "", "", err
 		}
 		if username != "" && password != "" {
+			logrus.Debugf("Returning credentials from %s", path)
 			return username, password, nil
 		}
 	}
+	logrus.Debugf("Credentials not found")
 	return "", "", nil
-}
-
-// GetUserLoggedIn returns the username logged in to registry from either
-// auth.json or XDG_RUNTIME_DIR
-// Used to tell the user if someone is logged in to the registry when logging in
-func GetUserLoggedIn(sys *types.SystemContext, registry string) (string, error) {
-	path, err := getPathToAuth(sys)
-	if err != nil {
-		return "", err
-	}
-	username, _, _ := findAuthentication(registry, path, false)
-	if username != "" {
-		return username, nil
-	}
-	return "", nil
 }
 
 // RemoveAuthentication deletes the credentials stored in auth.json
@@ -106,6 +119,16 @@ func RemoveAuthentication(sys *types.SystemContext, registry string) error {
 		// First try cred helpers.
 		if ch, exists := auths.CredHelpers[registry]; exists {
 			return false, deleteAuthFromCredHelper(ch, registry)
+		}
+
+		// Next if keyring is enabled try kernel keyring
+		if enableKeyring {
+			err := deleteAuthFromKernelKeyring(registry)
+			if err == nil {
+				logrus.Debugf("credentials for %s were deleted from the kernel keyring", registry)
+				return false, nil
+			}
+			logrus.Debugf("failed to delete credentials from the kernel keyring, falling back to authfiles")
 		}
 
 		if _, ok := auths.AuthConfigs[registry]; ok {
@@ -119,9 +142,17 @@ func RemoveAuthentication(sys *types.SystemContext, registry string) error {
 	})
 }
 
-// RemoveAllAuthentication deletes all the credentials stored in auth.json
+// RemoveAllAuthentication deletes all the credentials stored in auth.json and kernel keyring
 func RemoveAllAuthentication(sys *types.SystemContext) error {
 	return modifyJSON(sys, func(auths *dockerConfigFile) (bool, error) {
+		if enableKeyring {
+			err := removeAllAuthFromKernelKeyring()
+			if err == nil {
+				logrus.Debugf("removing all credentials from kernel keyring")
+				return false, nil
+			}
+			logrus.Debugf("error removing credentials from kernel keyring")
+		}
 		auths.CredHelpers = make(map[string]string)
 		auths.AuthConfigs = make(map[string]dockerAuthConfig)
 		return true, nil

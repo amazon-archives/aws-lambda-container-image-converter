@@ -12,7 +12,7 @@ import (
 )
 
 // OpsWorksCM provides the API operation methods for making requests to
-// AWS OpsWorks for Chef Automate. See this package's package overview docs
+// AWS OpsWorks CM. See this package's package overview docs
 // for details on the service.
 //
 // OpsWorksCM methods are safe to use concurrently. It is not safe to
@@ -49,11 +49,11 @@ func New(p client.ConfigProvider, cfgs ...*aws.Config) *OpsWorksCM {
 	if c.SigningNameDerived || len(c.SigningName) == 0 {
 		c.SigningName = "opsworks-cm"
 	}
-	return newClient(*c.Config, c.Handlers, c.Endpoint, c.SigningRegion, c.SigningName)
+	return newClient(*c.Config, c.Handlers, c.PartitionID, c.Endpoint, c.SigningRegion, c.SigningName)
 }
 
 // newClient creates, initializes and returns a new service client instance.
-func newClient(cfg aws.Config, handlers request.Handlers, endpoint, signingRegion, signingName string) *OpsWorksCM {
+func newClient(cfg aws.Config, handlers request.Handlers, partitionID, endpoint, signingRegion, signingName string) *OpsWorksCM {
 	svc := &OpsWorksCM{
 		Client: client.New(
 			cfg,
@@ -62,6 +62,7 @@ func newClient(cfg aws.Config, handlers request.Handlers, endpoint, signingRegio
 				ServiceID:     ServiceID,
 				SigningName:   signingName,
 				SigningRegion: signingRegion,
+				PartitionID:   partitionID,
 				Endpoint:      endpoint,
 				APIVersion:    "2016-11-01",
 				JSONVersion:   "1.1",

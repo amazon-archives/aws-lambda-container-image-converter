@@ -4698,9 +4698,7 @@ type CreateSimulationApplicationInput struct {
 	Name *string `locationName:"name" min:"1" type:"string" required:"true"`
 
 	// The rendering engine for the simulation application.
-	//
-	// RenderingEngine is a required field
-	RenderingEngine *RenderingEngine `locationName:"renderingEngine" type:"structure" required:"true"`
+	RenderingEngine *RenderingEngine `locationName:"renderingEngine" type:"structure"`
 
 	// The robot software suite of the simulation application.
 	//
@@ -4740,9 +4738,6 @@ func (s *CreateSimulationApplicationInput) Validate() error {
 	}
 	if s.Name != nil && len(*s.Name) < 1 {
 		invalidParams.Add(request.NewErrParamMinLen("Name", 1))
-	}
-	if s.RenderingEngine == nil {
-		invalidParams.Add(request.NewErrParamRequired("RenderingEngine"))
 	}
 	if s.RobotSoftwareSuite == nil {
 		invalidParams.Add(request.NewErrParamRequired("RobotSoftwareSuite"))
@@ -5068,6 +5063,12 @@ type CreateSimulationJobInput struct {
 	// of the request.
 	ClientRequestToken *string `locationName:"clientRequestToken" min:"1" type:"string" idempotencyToken:"true"`
 
+	// The data sources for the simulation job.
+	//
+	// There is a limit of 100 files and a combined size of 25GB for all DataSourceConfig
+	// objects.
+	DataSources []*DataSourceConfig `locationName:"dataSources" min:"1" type:"list"`
+
 	// The failure behavior the simulation job.
 	//
 	// Continue
@@ -5085,6 +5086,9 @@ type CreateSimulationJobInput struct {
 	//
 	// IamRole is a required field
 	IamRole *string `locationName:"iamRole" min:"1" type:"string" required:"true"`
+
+	// The logging configuration.
+	LoggingConfig *LoggingConfig `locationName:"loggingConfig" type:"structure"`
 
 	// The maximum simulation job duration in seconds (up to 14 days or 1,209,600
 	// seconds. When maxJobDurationInSeconds is reached, the simulation job will
@@ -5129,6 +5133,9 @@ func (s *CreateSimulationJobInput) Validate() error {
 	if s.ClientRequestToken != nil && len(*s.ClientRequestToken) < 1 {
 		invalidParams.Add(request.NewErrParamMinLen("ClientRequestToken", 1))
 	}
+	if s.DataSources != nil && len(s.DataSources) < 1 {
+		invalidParams.Add(request.NewErrParamMinLen("DataSources", 1))
+	}
 	if s.IamRole == nil {
 		invalidParams.Add(request.NewErrParamRequired("IamRole"))
 	}
@@ -5143,6 +5150,21 @@ func (s *CreateSimulationJobInput) Validate() error {
 	}
 	if s.SimulationApplications != nil && len(s.SimulationApplications) < 1 {
 		invalidParams.Add(request.NewErrParamMinLen("SimulationApplications", 1))
+	}
+	if s.DataSources != nil {
+		for i, v := range s.DataSources {
+			if v == nil {
+				continue
+			}
+			if err := v.Validate(); err != nil {
+				invalidParams.AddNested(fmt.Sprintf("%s[%v]", "DataSources", i), err.(request.ErrInvalidParams))
+			}
+		}
+	}
+	if s.LoggingConfig != nil {
+		if err := s.LoggingConfig.Validate(); err != nil {
+			invalidParams.AddNested("LoggingConfig", err.(request.ErrInvalidParams))
+		}
 	}
 	if s.OutputLocation != nil {
 		if err := s.OutputLocation.Validate(); err != nil {
@@ -5187,6 +5209,12 @@ func (s *CreateSimulationJobInput) SetClientRequestToken(v string) *CreateSimula
 	return s
 }
 
+// SetDataSources sets the DataSources field's value.
+func (s *CreateSimulationJobInput) SetDataSources(v []*DataSourceConfig) *CreateSimulationJobInput {
+	s.DataSources = v
+	return s
+}
+
 // SetFailureBehavior sets the FailureBehavior field's value.
 func (s *CreateSimulationJobInput) SetFailureBehavior(v string) *CreateSimulationJobInput {
 	s.FailureBehavior = &v
@@ -5196,6 +5224,12 @@ func (s *CreateSimulationJobInput) SetFailureBehavior(v string) *CreateSimulatio
 // SetIamRole sets the IamRole field's value.
 func (s *CreateSimulationJobInput) SetIamRole(v string) *CreateSimulationJobInput {
 	s.IamRole = &v
+	return s
+}
+
+// SetLoggingConfig sets the LoggingConfig field's value.
+func (s *CreateSimulationJobInput) SetLoggingConfig(v *LoggingConfig) *CreateSimulationJobInput {
+	s.LoggingConfig = v
 	return s
 }
 
@@ -5244,6 +5278,9 @@ type CreateSimulationJobOutput struct {
 	// Unique, case-sensitive identifier that you provide to ensure the idempotency
 	// of the request.
 	ClientRequestToken *string `locationName:"clientRequestToken" min:"1" type:"string"`
+
+	// The data sources for the simulation job.
+	DataSources []*DataSource `locationName:"dataSources" type:"list"`
 
 	// the failure behavior for the simulation job.
 	FailureBehavior *string `locationName:"failureBehavior" type:"string" enum:"FailureBehavior"`
@@ -5321,6 +5358,9 @@ type CreateSimulationJobOutput struct {
 	// updated.
 	LastUpdatedAt *time.Time `locationName:"lastUpdatedAt" type:"timestamp"`
 
+	// The logging configuration.
+	LoggingConfig *LoggingConfig `locationName:"loggingConfig" type:"structure"`
+
 	// The maximum simulation job duration in seconds.
 	MaxJobDurationInSeconds *int64 `locationName:"maxJobDurationInSeconds" type:"long"`
 
@@ -5368,6 +5408,12 @@ func (s *CreateSimulationJobOutput) SetClientRequestToken(v string) *CreateSimul
 	return s
 }
 
+// SetDataSources sets the DataSources field's value.
+func (s *CreateSimulationJobOutput) SetDataSources(v []*DataSource) *CreateSimulationJobOutput {
+	s.DataSources = v
+	return s
+}
+
 // SetFailureBehavior sets the FailureBehavior field's value.
 func (s *CreateSimulationJobOutput) SetFailureBehavior(v string) *CreateSimulationJobOutput {
 	s.FailureBehavior = &v
@@ -5395,6 +5441,12 @@ func (s *CreateSimulationJobOutput) SetLastStartedAt(v time.Time) *CreateSimulat
 // SetLastUpdatedAt sets the LastUpdatedAt field's value.
 func (s *CreateSimulationJobOutput) SetLastUpdatedAt(v time.Time) *CreateSimulationJobOutput {
 	s.LastUpdatedAt = &v
+	return s
+}
+
+// SetLoggingConfig sets the LoggingConfig field's value.
+func (s *CreateSimulationJobOutput) SetLoggingConfig(v *LoggingConfig) *CreateSimulationJobOutput {
+	s.LoggingConfig = v
 	return s
 }
 
@@ -5443,6 +5495,124 @@ func (s *CreateSimulationJobOutput) SetTags(v map[string]*string) *CreateSimulat
 // SetVpcConfig sets the VpcConfig field's value.
 func (s *CreateSimulationJobOutput) SetVpcConfig(v *VPCConfigResponse) *CreateSimulationJobOutput {
 	s.VpcConfig = v
+	return s
+}
+
+// Information about a data source.
+type DataSource struct {
+	_ struct{} `type:"structure"`
+
+	// The name of the data source.
+	Name *string `locationName:"name" min:"1" type:"string"`
+
+	// The S3 bucket where the data files are located.
+	S3Bucket *string `locationName:"s3Bucket" min:"3" type:"string"`
+
+	// The list of S3 keys identifying the data source files.
+	S3Keys []*S3KeyOutput `locationName:"s3Keys" type:"list"`
+}
+
+// String returns the string representation
+func (s DataSource) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DataSource) GoString() string {
+	return s.String()
+}
+
+// SetName sets the Name field's value.
+func (s *DataSource) SetName(v string) *DataSource {
+	s.Name = &v
+	return s
+}
+
+// SetS3Bucket sets the S3Bucket field's value.
+func (s *DataSource) SetS3Bucket(v string) *DataSource {
+	s.S3Bucket = &v
+	return s
+}
+
+// SetS3Keys sets the S3Keys field's value.
+func (s *DataSource) SetS3Keys(v []*S3KeyOutput) *DataSource {
+	s.S3Keys = v
+	return s
+}
+
+// Information about a data source.
+type DataSourceConfig struct {
+	_ struct{} `type:"structure"`
+
+	// The name of the data source.
+	//
+	// Name is a required field
+	Name *string `locationName:"name" min:"1" type:"string" required:"true"`
+
+	// The S3 bucket where the data files are located.
+	//
+	// S3Bucket is a required field
+	S3Bucket *string `locationName:"s3Bucket" min:"3" type:"string" required:"true"`
+
+	// The list of S3 keys identifying the data source files.
+	//
+	// S3Keys is a required field
+	S3Keys []*string `locationName:"s3Keys" min:"1" type:"list" required:"true"`
+}
+
+// String returns the string representation
+func (s DataSourceConfig) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DataSourceConfig) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *DataSourceConfig) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "DataSourceConfig"}
+	if s.Name == nil {
+		invalidParams.Add(request.NewErrParamRequired("Name"))
+	}
+	if s.Name != nil && len(*s.Name) < 1 {
+		invalidParams.Add(request.NewErrParamMinLen("Name", 1))
+	}
+	if s.S3Bucket == nil {
+		invalidParams.Add(request.NewErrParamRequired("S3Bucket"))
+	}
+	if s.S3Bucket != nil && len(*s.S3Bucket) < 3 {
+		invalidParams.Add(request.NewErrParamMinLen("S3Bucket", 3))
+	}
+	if s.S3Keys == nil {
+		invalidParams.Add(request.NewErrParamRequired("S3Keys"))
+	}
+	if s.S3Keys != nil && len(s.S3Keys) < 1 {
+		invalidParams.Add(request.NewErrParamMinLen("S3Keys", 1))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetName sets the Name field's value.
+func (s *DataSourceConfig) SetName(v string) *DataSourceConfig {
+	s.Name = &v
+	return s
+}
+
+// SetS3Bucket sets the S3Bucket field's value.
+func (s *DataSourceConfig) SetS3Bucket(v string) *DataSourceConfig {
+	s.S3Bucket = &v
+	return s
+}
+
+// SetS3Keys sets the S3Keys field's value.
+func (s *DataSourceConfig) SetS3Keys(v []*string) *DataSourceConfig {
+	s.S3Keys = v
 	return s
 }
 
@@ -5777,6 +5947,11 @@ type DeploymentConfig struct {
 
 	// The percentage of deployments that need to fail before stopping deployment.
 	FailureThresholdPercentage *int64 `locationName:"failureThresholdPercentage" min:"1" type:"integer"`
+
+	// The amount of time, in seconds, to wait for deployment to a single robot
+	// to complete. Choose a time between 1 minute and 7 days. The default is 5
+	// hours.
+	RobotDeploymentTimeoutInSeconds *int64 `locationName:"robotDeploymentTimeoutInSeconds" type:"long"`
 }
 
 // String returns the string representation
@@ -5814,6 +5989,12 @@ func (s *DeploymentConfig) SetConcurrentDeploymentPercentage(v int64) *Deploymen
 // SetFailureThresholdPercentage sets the FailureThresholdPercentage field's value.
 func (s *DeploymentConfig) SetFailureThresholdPercentage(v int64) *DeploymentConfig {
 	s.FailureThresholdPercentage = &v
+	return s
+}
+
+// SetRobotDeploymentTimeoutInSeconds sets the RobotDeploymentTimeoutInSeconds field's value.
+func (s *DeploymentConfig) SetRobotDeploymentTimeoutInSeconds(v int64) *DeploymentConfig {
+	s.RobotDeploymentTimeoutInSeconds = &v
 	return s
 }
 
@@ -6855,6 +7036,9 @@ type DescribeSimulationJobOutput struct {
 	// of the request.
 	ClientRequestToken *string `locationName:"clientRequestToken" min:"1" type:"string"`
 
+	// The data sources for the simulation job.
+	DataSources []*DataSource `locationName:"dataSources" type:"list"`
+
 	// The failure behavior for the simulation job.
 	FailureBehavior *string `locationName:"failureBehavior" type:"string" enum:"FailureBehavior"`
 
@@ -6935,12 +7119,18 @@ type DescribeSimulationJobOutput struct {
 	// updated.
 	LastUpdatedAt *time.Time `locationName:"lastUpdatedAt" type:"timestamp"`
 
+	// The logging configuration.
+	LoggingConfig *LoggingConfig `locationName:"loggingConfig" type:"structure"`
+
 	// The maximum job duration in seconds. The value must be 8 days (691,200 seconds)
 	// or less.
 	MaxJobDurationInSeconds *int64 `locationName:"maxJobDurationInSeconds" type:"long"`
 
 	// The name of the simulation job.
 	Name *string `locationName:"name" min:"1" type:"string"`
+
+	// The network interface information for the simulation job.
+	NetworkInterface *NetworkInterface `locationName:"networkInterface" type:"structure"`
 
 	// Location for output files generated by the simulation job.
 	OutputLocation *OutputLocation `locationName:"outputLocation" type:"structure"`
@@ -6986,6 +7176,12 @@ func (s *DescribeSimulationJobOutput) SetClientRequestToken(v string) *DescribeS
 	return s
 }
 
+// SetDataSources sets the DataSources field's value.
+func (s *DescribeSimulationJobOutput) SetDataSources(v []*DataSource) *DescribeSimulationJobOutput {
+	s.DataSources = v
+	return s
+}
+
 // SetFailureBehavior sets the FailureBehavior field's value.
 func (s *DescribeSimulationJobOutput) SetFailureBehavior(v string) *DescribeSimulationJobOutput {
 	s.FailureBehavior = &v
@@ -7022,6 +7218,12 @@ func (s *DescribeSimulationJobOutput) SetLastUpdatedAt(v time.Time) *DescribeSim
 	return s
 }
 
+// SetLoggingConfig sets the LoggingConfig field's value.
+func (s *DescribeSimulationJobOutput) SetLoggingConfig(v *LoggingConfig) *DescribeSimulationJobOutput {
+	s.LoggingConfig = v
+	return s
+}
+
 // SetMaxJobDurationInSeconds sets the MaxJobDurationInSeconds field's value.
 func (s *DescribeSimulationJobOutput) SetMaxJobDurationInSeconds(v int64) *DescribeSimulationJobOutput {
 	s.MaxJobDurationInSeconds = &v
@@ -7031,6 +7233,12 @@ func (s *DescribeSimulationJobOutput) SetMaxJobDurationInSeconds(v int64) *Descr
 // SetName sets the Name field's value.
 func (s *DescribeSimulationJobOutput) SetName(v string) *DescribeSimulationJobOutput {
 	s.Name = &v
+	return s
+}
+
+// SetNetworkInterface sets the NetworkInterface field's value.
+func (s *DescribeSimulationJobOutput) SetNetworkInterface(v *NetworkInterface) *DescribeSimulationJobOutput {
+	s.NetworkInterface = v
 	return s
 }
 
@@ -7210,6 +7418,9 @@ type LaunchConfig struct {
 	//
 	// PackageName is a required field
 	PackageName *string `locationName:"packageName" min:"1" type:"string" required:"true"`
+
+	// The port forwarding configuration.
+	PortForwardingConfig *PortForwardingConfig `locationName:"portForwardingConfig" type:"structure"`
 }
 
 // String returns the string representation
@@ -7237,6 +7448,11 @@ func (s *LaunchConfig) Validate() error {
 	if s.PackageName != nil && len(*s.PackageName) < 1 {
 		invalidParams.Add(request.NewErrParamMinLen("PackageName", 1))
 	}
+	if s.PortForwardingConfig != nil {
+		if err := s.PortForwardingConfig.Validate(); err != nil {
+			invalidParams.AddNested("PortForwardingConfig", err.(request.ErrInvalidParams))
+		}
+	}
 
 	if invalidParams.Len() > 0 {
 		return invalidParams
@@ -7259,6 +7475,12 @@ func (s *LaunchConfig) SetLaunchFile(v string) *LaunchConfig {
 // SetPackageName sets the PackageName field's value.
 func (s *LaunchConfig) SetPackageName(v string) *LaunchConfig {
 	s.PackageName = &v
+	return s
+}
+
+// SetPortForwardingConfig sets the PortForwardingConfig field's value.
+func (s *LaunchConfig) SetPortForwardingConfig(v *PortForwardingConfig) *LaunchConfig {
+	s.PortForwardingConfig = v
 	return s
 }
 
@@ -8058,6 +8280,87 @@ func (s *ListTagsForResourceOutput) SetTags(v map[string]*string) *ListTagsForRe
 	return s
 }
 
+// The logging configuration.
+type LoggingConfig struct {
+	_ struct{} `type:"structure"`
+
+	// A boolean indicating whether to record all ROS topics.
+	//
+	// RecordAllRosTopics is a required field
+	RecordAllRosTopics *bool `locationName:"recordAllRosTopics" type:"boolean" required:"true"`
+}
+
+// String returns the string representation
+func (s LoggingConfig) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s LoggingConfig) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *LoggingConfig) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "LoggingConfig"}
+	if s.RecordAllRosTopics == nil {
+		invalidParams.Add(request.NewErrParamRequired("RecordAllRosTopics"))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetRecordAllRosTopics sets the RecordAllRosTopics field's value.
+func (s *LoggingConfig) SetRecordAllRosTopics(v bool) *LoggingConfig {
+	s.RecordAllRosTopics = &v
+	return s
+}
+
+// Describes a network interface.
+type NetworkInterface struct {
+	_ struct{} `type:"structure"`
+
+	// The ID of the network interface.
+	NetworkInterfaceId *string `locationName:"networkInterfaceId" type:"string"`
+
+	// The IPv4 address of the network interface within the subnet.
+	PrivateIpAddress *string `locationName:"privateIpAddress" type:"string"`
+
+	// The IPv4 public address of the network interface.
+	PublicIpAddress *string `locationName:"publicIpAddress" type:"string"`
+}
+
+// String returns the string representation
+func (s NetworkInterface) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s NetworkInterface) GoString() string {
+	return s.String()
+}
+
+// SetNetworkInterfaceId sets the NetworkInterfaceId field's value.
+func (s *NetworkInterface) SetNetworkInterfaceId(v string) *NetworkInterface {
+	s.NetworkInterfaceId = &v
+	return s
+}
+
+// SetPrivateIpAddress sets the PrivateIpAddress field's value.
+func (s *NetworkInterface) SetPrivateIpAddress(v string) *NetworkInterface {
+	s.PrivateIpAddress = &v
+	return s
+}
+
+// SetPublicIpAddress sets the PublicIpAddress field's value.
+func (s *NetworkInterface) SetPublicIpAddress(v string) *NetworkInterface {
+	s.PublicIpAddress = &v
+	return s
+}
+
 // The output location.
 type OutputLocation struct {
 	_ struct{} `type:"structure"`
@@ -8104,6 +8407,119 @@ func (s *OutputLocation) SetS3Bucket(v string) *OutputLocation {
 // SetS3Prefix sets the S3Prefix field's value.
 func (s *OutputLocation) SetS3Prefix(v string) *OutputLocation {
 	s.S3Prefix = &v
+	return s
+}
+
+// Configuration information for port forwarding.
+type PortForwardingConfig struct {
+	_ struct{} `type:"structure"`
+
+	// The port mappings for the configuration.
+	PortMappings []*PortMapping `locationName:"portMappings" type:"list"`
+}
+
+// String returns the string representation
+func (s PortForwardingConfig) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s PortForwardingConfig) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *PortForwardingConfig) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "PortForwardingConfig"}
+	if s.PortMappings != nil {
+		for i, v := range s.PortMappings {
+			if v == nil {
+				continue
+			}
+			if err := v.Validate(); err != nil {
+				invalidParams.AddNested(fmt.Sprintf("%s[%v]", "PortMappings", i), err.(request.ErrInvalidParams))
+			}
+		}
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetPortMappings sets the PortMappings field's value.
+func (s *PortForwardingConfig) SetPortMappings(v []*PortMapping) *PortForwardingConfig {
+	s.PortMappings = v
+	return s
+}
+
+// An object representing a port mapping.
+type PortMapping struct {
+	_ struct{} `type:"structure"`
+
+	// The port number on the application.
+	//
+	// ApplicationPort is a required field
+	ApplicationPort *int64 `locationName:"applicationPort" min:"1024" type:"integer" required:"true"`
+
+	// A Boolean indicating whether to enable this port mapping on public IP.
+	EnableOnPublicIp *bool `locationName:"enableOnPublicIp" type:"boolean"`
+
+	// The port number on the simulation job instance to use as a remote connection
+	// point.
+	//
+	// JobPort is a required field
+	JobPort *int64 `locationName:"jobPort" min:"1" type:"integer" required:"true"`
+}
+
+// String returns the string representation
+func (s PortMapping) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s PortMapping) GoString() string {
+	return s.String()
+}
+
+// Validate inspects the fields of the type to determine if they are valid.
+func (s *PortMapping) Validate() error {
+	invalidParams := request.ErrInvalidParams{Context: "PortMapping"}
+	if s.ApplicationPort == nil {
+		invalidParams.Add(request.NewErrParamRequired("ApplicationPort"))
+	}
+	if s.ApplicationPort != nil && *s.ApplicationPort < 1024 {
+		invalidParams.Add(request.NewErrParamMinValue("ApplicationPort", 1024))
+	}
+	if s.JobPort == nil {
+		invalidParams.Add(request.NewErrParamRequired("JobPort"))
+	}
+	if s.JobPort != nil && *s.JobPort < 1 {
+		invalidParams.Add(request.NewErrParamMinValue("JobPort", 1))
+	}
+
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	}
+	return nil
+}
+
+// SetApplicationPort sets the ApplicationPort field's value.
+func (s *PortMapping) SetApplicationPort(v int64) *PortMapping {
+	s.ApplicationPort = &v
+	return s
+}
+
+// SetEnableOnPublicIp sets the EnableOnPublicIp field's value.
+func (s *PortMapping) SetEnableOnPublicIp(v bool) *PortMapping {
+	s.EnableOnPublicIp = &v
+	return s
+}
+
+// SetJobPort sets the JobPort field's value.
+func (s *PortMapping) SetJobPort(v int64) *PortMapping {
+	s.JobPort = &v
 	return s
 }
 
@@ -8704,6 +9120,39 @@ func (s *RobotSoftwareSuite) SetVersion(v string) *RobotSoftwareSuite {
 	return s
 }
 
+// Information about S3 keys.
+type S3KeyOutput struct {
+	_ struct{} `type:"structure"`
+
+	// The etag for the object.
+	Etag *string `locationName:"etag" type:"string"`
+
+	// The S3 key.
+	S3Key *string `locationName:"s3Key" min:"1" type:"string"`
+}
+
+// String returns the string representation
+func (s S3KeyOutput) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s S3KeyOutput) GoString() string {
+	return s.String()
+}
+
+// SetEtag sets the Etag field's value.
+func (s *S3KeyOutput) SetEtag(v string) *S3KeyOutput {
+	s.Etag = &v
+	return s
+}
+
+// SetS3Key sets the S3Key field's value.
+func (s *S3KeyOutput) SetS3Key(v string) *S3KeyOutput {
+	s.S3Key = &v
+	return s
+}
+
 // Information about a simulation application configuration.
 type SimulationApplicationConfig struct {
 	_ struct{} `type:"structure"`
@@ -8857,6 +9306,9 @@ type SimulationJob struct {
 	// A unique identifier for this SimulationJob request.
 	ClientRequestToken *string `locationName:"clientRequestToken" min:"1" type:"string"`
 
+	// The data sources for the simulation job.
+	DataSources []*DataSource `locationName:"dataSources" type:"list"`
+
 	// The failure behavior the simulation job.
 	//
 	// Continue
@@ -8887,12 +9339,18 @@ type SimulationJob struct {
 	// updated.
 	LastUpdatedAt *time.Time `locationName:"lastUpdatedAt" type:"timestamp"`
 
+	// The logging configuration.
+	LoggingConfig *LoggingConfig `locationName:"loggingConfig" type:"structure"`
+
 	// The maximum simulation job duration in seconds. The value must be 8 days
 	// (691,200 seconds) or less.
 	MaxJobDurationInSeconds *int64 `locationName:"maxJobDurationInSeconds" type:"long"`
 
 	// The name of the simulation job.
 	Name *string `locationName:"name" min:"1" type:"string"`
+
+	// Describes a network interface.
+	NetworkInterface *NetworkInterface `locationName:"networkInterface" type:"structure"`
 
 	// Location for output files generated by the simulation job.
 	OutputLocation *OutputLocation `locationName:"outputLocation" type:"structure"`
@@ -8939,6 +9397,12 @@ func (s *SimulationJob) SetClientRequestToken(v string) *SimulationJob {
 	return s
 }
 
+// SetDataSources sets the DataSources field's value.
+func (s *SimulationJob) SetDataSources(v []*DataSource) *SimulationJob {
+	s.DataSources = v
+	return s
+}
+
 // SetFailureBehavior sets the FailureBehavior field's value.
 func (s *SimulationJob) SetFailureBehavior(v string) *SimulationJob {
 	s.FailureBehavior = &v
@@ -8975,6 +9439,12 @@ func (s *SimulationJob) SetLastUpdatedAt(v time.Time) *SimulationJob {
 	return s
 }
 
+// SetLoggingConfig sets the LoggingConfig field's value.
+func (s *SimulationJob) SetLoggingConfig(v *LoggingConfig) *SimulationJob {
+	s.LoggingConfig = v
+	return s
+}
+
 // SetMaxJobDurationInSeconds sets the MaxJobDurationInSeconds field's value.
 func (s *SimulationJob) SetMaxJobDurationInSeconds(v int64) *SimulationJob {
 	s.MaxJobDurationInSeconds = &v
@@ -8984,6 +9454,12 @@ func (s *SimulationJob) SetMaxJobDurationInSeconds(v int64) *SimulationJob {
 // SetName sets the Name field's value.
 func (s *SimulationJob) SetName(v string) *SimulationJob {
 	s.Name = &v
+	return s
+}
+
+// SetNetworkInterface sets the NetworkInterface field's value.
+func (s *SimulationJob) SetNetworkInterface(v *NetworkInterface) *SimulationJob {
+	s.NetworkInterface = v
 	return s
 }
 
@@ -9036,6 +9512,9 @@ type SimulationJobSummary struct {
 	// The Amazon Resource Name (ARN) of the simulation job.
 	Arn *string `locationName:"arn" min:"1" type:"string"`
 
+	// The names of the data sources.
+	DataSourceNames []*string `locationName:"dataSourceNames" type:"list"`
+
 	// The time, in milliseconds since the epoch, when the simulation job was last
 	// updated.
 	LastUpdatedAt *time.Time `locationName:"lastUpdatedAt" type:"timestamp"`
@@ -9044,10 +9523,10 @@ type SimulationJobSummary struct {
 	Name *string `locationName:"name" min:"1" type:"string"`
 
 	// A list of simulation job robot application names.
-	RobotApplicationNames []*string `locationName:"robotApplicationNames" min:"1" type:"list"`
+	RobotApplicationNames []*string `locationName:"robotApplicationNames" type:"list"`
 
 	// A list of simulation job simulation application names.
-	SimulationApplicationNames []*string `locationName:"simulationApplicationNames" min:"1" type:"list"`
+	SimulationApplicationNames []*string `locationName:"simulationApplicationNames" type:"list"`
 
 	// The status of the simulation job.
 	Status *string `locationName:"status" type:"string" enum:"SimulationJobStatus"`
@@ -9066,6 +9545,12 @@ func (s SimulationJobSummary) GoString() string {
 // SetArn sets the Arn field's value.
 func (s *SimulationJobSummary) SetArn(v string) *SimulationJobSummary {
 	s.Arn = &v
+	return s
+}
+
+// SetDataSourceNames sets the DataSourceNames field's value.
+func (s *SimulationJobSummary) SetDataSourceNames(v []*string) *SimulationJobSummary {
+	s.DataSourceNames = v
 	return s
 }
 
@@ -9760,9 +10245,7 @@ type UpdateSimulationApplicationInput struct {
 	CurrentRevisionId *string `locationName:"currentRevisionId" min:"1" type:"string"`
 
 	// The rendering engine for the simulation application.
-	//
-	// RenderingEngine is a required field
-	RenderingEngine *RenderingEngine `locationName:"renderingEngine" type:"structure" required:"true"`
+	RenderingEngine *RenderingEngine `locationName:"renderingEngine" type:"structure"`
 
 	// Information about the robot software suite.
 	//
@@ -9801,9 +10284,6 @@ func (s *UpdateSimulationApplicationInput) Validate() error {
 	}
 	if s.CurrentRevisionId != nil && len(*s.CurrentRevisionId) < 1 {
 		invalidParams.Add(request.NewErrParamMinLen("CurrentRevisionId", 1))
-	}
-	if s.RenderingEngine == nil {
-		invalidParams.Add(request.NewErrParamRequired("RenderingEngine"))
 	}
 	if s.RobotSoftwareSuite == nil {
 		invalidParams.Add(request.NewErrParamRequired("RobotSoftwareSuite"))
@@ -10200,11 +10680,20 @@ const (
 const (
 	// RobotSoftwareSuiteTypeRos is a RobotSoftwareSuiteType enum value
 	RobotSoftwareSuiteTypeRos = "ROS"
+
+	// RobotSoftwareSuiteTypeRos2 is a RobotSoftwareSuiteType enum value
+	RobotSoftwareSuiteTypeRos2 = "ROS2"
 )
 
 const (
 	// RobotSoftwareSuiteVersionTypeKinetic is a RobotSoftwareSuiteVersionType enum value
 	RobotSoftwareSuiteVersionTypeKinetic = "Kinetic"
+
+	// RobotSoftwareSuiteVersionTypeMelodic is a RobotSoftwareSuiteVersionType enum value
+	RobotSoftwareSuiteVersionTypeMelodic = "Melodic"
+
+	// RobotSoftwareSuiteVersionTypeDashing is a RobotSoftwareSuiteVersionType enum value
+	RobotSoftwareSuiteVersionTypeDashing = "Dashing"
 )
 
 const (
@@ -10246,6 +10735,9 @@ const (
 	// SimulationJobErrorCodeBadPermissionsSimulationApplication is a SimulationJobErrorCode enum value
 	SimulationJobErrorCodeBadPermissionsSimulationApplication = "BadPermissionsSimulationApplication"
 
+	// SimulationJobErrorCodeBadPermissionsS3object is a SimulationJobErrorCode enum value
+	SimulationJobErrorCodeBadPermissionsS3object = "BadPermissionsS3Object"
+
 	// SimulationJobErrorCodeBadPermissionsS3output is a SimulationJobErrorCode enum value
 	SimulationJobErrorCodeBadPermissionsS3output = "BadPermissionsS3Output"
 
@@ -10267,11 +10759,26 @@ const (
 	// SimulationJobErrorCodeInvalidBundleSimulationApplication is a SimulationJobErrorCode enum value
 	SimulationJobErrorCodeInvalidBundleSimulationApplication = "InvalidBundleSimulationApplication"
 
+	// SimulationJobErrorCodeInvalidS3resource is a SimulationJobErrorCode enum value
+	SimulationJobErrorCodeInvalidS3resource = "InvalidS3Resource"
+
+	// SimulationJobErrorCodeMismatchedEtag is a SimulationJobErrorCode enum value
+	SimulationJobErrorCodeMismatchedEtag = "MismatchedEtag"
+
 	// SimulationJobErrorCodeRobotApplicationVersionMismatchedEtag is a SimulationJobErrorCode enum value
 	SimulationJobErrorCodeRobotApplicationVersionMismatchedEtag = "RobotApplicationVersionMismatchedEtag"
 
 	// SimulationJobErrorCodeSimulationApplicationVersionMismatchedEtag is a SimulationJobErrorCode enum value
 	SimulationJobErrorCodeSimulationApplicationVersionMismatchedEtag = "SimulationApplicationVersionMismatchedEtag"
+
+	// SimulationJobErrorCodeResourceNotFound is a SimulationJobErrorCode enum value
+	SimulationJobErrorCodeResourceNotFound = "ResourceNotFound"
+
+	// SimulationJobErrorCodeInvalidInput is a SimulationJobErrorCode enum value
+	SimulationJobErrorCodeInvalidInput = "InvalidInput"
+
+	// SimulationJobErrorCodeWrongRegionS3bucket is a SimulationJobErrorCode enum value
+	SimulationJobErrorCodeWrongRegionS3bucket = "WrongRegionS3Bucket"
 
 	// SimulationJobErrorCodeWrongRegionS3output is a SimulationJobErrorCode enum value
 	SimulationJobErrorCodeWrongRegionS3output = "WrongRegionS3Output"
@@ -10318,4 +10825,7 @@ const (
 const (
 	// SimulationSoftwareSuiteTypeGazebo is a SimulationSoftwareSuiteType enum value
 	SimulationSoftwareSuiteTypeGazebo = "Gazebo"
+
+	// SimulationSoftwareSuiteTypeRosbagPlay is a SimulationSoftwareSuiteType enum value
+	SimulationSoftwareSuiteTypeRosbagPlay = "RosbagPlay"
 )

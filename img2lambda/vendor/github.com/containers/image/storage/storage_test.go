@@ -178,9 +178,8 @@ func TestParse(t *testing.T) {
 func TestParseWithGraphDriverOptions(t *testing.T) {
 	optionLists := [][]string{
 		{},
-		{"unused1"},
-		{"unused1", "unused2"},
-		{"unused1", "unused2", "unused3"},
+		{"vfs.ignore_chown_errors=true"},
+		{"vfs.ignore_chown_errors=false"},
 	}
 	for _, optionList := range optionLists {
 		store := newStoreWithGraphDriverOptions(t, optionList)

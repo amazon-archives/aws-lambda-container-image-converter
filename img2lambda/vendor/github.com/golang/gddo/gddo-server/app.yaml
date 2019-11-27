@@ -1,0 +1,9 @@
+# This YAML file is used for local deployment with GAE development environment.
+env: flex
+runtime: go
+
+liveness_check:
+  path: /_ah/health
+
+readiness_check:
+  path: /_ah/ready

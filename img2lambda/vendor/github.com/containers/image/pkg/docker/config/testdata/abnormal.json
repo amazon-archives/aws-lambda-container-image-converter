@@ -1,0 +1,22 @@
+{
+  "auths": {
+    "example.org": {
+      "auth": "ZXhhbXBsZTpvcmc="
+    },
+    "https://index.docker.io/v1": {
+      "auth": "aW5kZXg6ZG9ja2VyLmlv"
+    },
+    "https://127.0.0.1:5000": {
+      "auth": "MTI3LjA6MC4xLTUwMDA="
+    },
+    "http://localhost": {
+      "auth": "bG9jYWw6aG9zdA=="
+    },
+    "https://localhost:5001": {
+      "auth": "bG9jYWw6aG9zdC01MDAx"
+    },
+    "localhost:5000": {
+      "auth": "bG9jYWw6aG9zdC01MDAw"
+    }
+  }
+}

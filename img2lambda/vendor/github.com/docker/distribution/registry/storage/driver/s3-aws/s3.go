@@ -14,6 +14,7 @@ package s3
 import (
 	"bytes"
 	"context"
+	"crypto/tls"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -30,6 +31,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/credentials/ec2rolecreds"
 	"github.com/aws/aws-sdk-go/aws/ec2metadata"
+	"github.com/aws/aws-sdk-go/aws/endpoints"
 	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
@@ -90,6 +92,7 @@ type DriverParameters struct {
 	Encrypt                     bool
 	KeyID                       string
 	Secure                      bool
+	SkipVerify                  bool
 	V4Auth                      bool
 	ChunkSize                   int64
 	MultipartCopyChunkSize      int64
@@ -103,25 +106,11 @@ type DriverParameters struct {
 }
 
 func init() {
-	for _, region := range []string{
-		"us-east-1",
-		"us-east-2",
-		"us-west-1",
-		"us-west-2",
-		"eu-west-1",
-		"eu-west-2",
-		"eu-central-1",
-		"ap-south-1",
-		"ap-southeast-1",
-		"ap-southeast-2",
-		"ap-northeast-1",
-		"ap-northeast-2",
-		"sa-east-1",
-		"cn-north-1",
-		"us-gov-west-1",
-		"ca-central-1",
-	} {
-		validRegions[region] = struct{}{}
+	partitions := endpoints.DefaultPartitions()
+	for _, p := range partitions {
+		for region := range p.Regions() {
+			validRegions[region] = struct{}{}
+		}
 	}
 
 	for _, objectACL := range []string{
@@ -197,14 +186,14 @@ func FromParameters(parameters map[string]interface{}) (*Driver, error) {
 		regionEndpoint = ""
 	}
 
-	regionName, ok := parameters["region"]
+	regionName := parameters["region"]
 	if regionName == nil || fmt.Sprint(regionName) == "" {
 		return nil, fmt.Errorf("No region parameter provided")
 	}
 	region := fmt.Sprint(regionName)
 	// Don't check the region value if a custom endpoint is provided.
 	if regionEndpoint == "" {
-		if _, ok = validRegions[region]; !ok {
+		if _, ok := validRegions[region]; !ok {
 			return nil, fmt.Errorf("Invalid region provided: %v", region)
 		}
 	}
@@ -246,6 +235,23 @@ func FromParameters(parameters map[string]interface{}) (*Driver, error) {
 		// do nothing
 	default:
 		return nil, fmt.Errorf("The secure parameter should be a boolean")
+	}
+
+	skipVerifyBool := false
+	skipVerify := parameters["skipverify"]
+	switch skipVerify := skipVerify.(type) {
+	case string:
+		b, err := strconv.ParseBool(skipVerify)
+		if err != nil {
+			return nil, fmt.Errorf("The skipVerify parameter should be a boolean")
+		}
+		skipVerifyBool = b
+	case bool:
+		skipVerifyBool = skipVerify
+	case nil:
+		// do nothing
+	default:
+		return nil, fmt.Errorf("The skipVerify parameter should be a boolean")
 	}
 
 	v4Bool := true
@@ -344,6 +350,7 @@ func FromParameters(parameters map[string]interface{}) (*Driver, error) {
 		encryptBool,
 		fmt.Sprint(keyID),
 		secureBool,
+		skipVerifyBool,
 		v4Bool,
 		chunkSize,
 		multipartCopyChunkSize,
@@ -398,6 +405,10 @@ func New(params DriverParameters) (*Driver, error) {
 	}
 
 	awsConfig := aws.NewConfig()
+	sess, err := session.NewSession()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create new session: %v", err)
+	}
 	creds := credentials.NewChainCredentials([]credentials.Provider{
 		&credentials.StaticProvider{
 			Value: credentials.Value{
@@ -408,7 +419,7 @@ func New(params DriverParameters) (*Driver, error) {
 		},
 		&credentials.EnvProvider{},
 		&credentials.SharedCredentialsProvider{},
-		&ec2rolecreds.EC2RoleProvider{Client: ec2metadata.New(session.New())},
+		&ec2rolecreds.EC2RoleProvider{Client: ec2metadata.New(sess)},
 	})
 
 	if params.RegionEndpoint != "" {
@@ -420,13 +431,29 @@ func New(params DriverParameters) (*Driver, error) {
 	awsConfig.WithRegion(params.Region)
 	awsConfig.WithDisableSSL(!params.Secure)
 
-	if params.UserAgent != "" {
-		awsConfig.WithHTTPClient(&http.Client{
-			Transport: transport.NewTransport(http.DefaultTransport, transport.NewHeaderRequestModifier(http.Header{http.CanonicalHeaderKey("User-Agent"): []string{params.UserAgent}})),
-		})
+	if params.UserAgent != "" || params.SkipVerify {
+		httpTransport := http.DefaultTransport
+		if params.SkipVerify {
+			httpTransport = &http.Transport{
+				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			}
+		}
+		if params.UserAgent != "" {
+			awsConfig.WithHTTPClient(&http.Client{
+				Transport: transport.NewTransport(httpTransport, transport.NewHeaderRequestModifier(http.Header{http.CanonicalHeaderKey("User-Agent"): []string{params.UserAgent}})),
+			})
+		} else {
+			awsConfig.WithHTTPClient(&http.Client{
+				Transport: transport.NewTransport(httpTransport),
+			})
+		}
 	}
 
-	s3obj := s3.New(session.New(awsConfig))
+	sess, err = session.NewSession(awsConfig)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create new session with aws config: %v", err)
+	}
+	s3obj := s3.New(sess)
 
 	// enable S3 compatible signature v2 signing instead
 	if !params.V4Auth {
@@ -449,11 +476,11 @@ func New(params DriverParameters) (*Driver, error) {
 	// }
 
 	d := &driver{
-		S3:        s3obj,
-		Bucket:    params.Bucket,
-		ChunkSize: params.ChunkSize,
-		Encrypt:   params.Encrypt,
-		KeyID:     params.KeyID,
+		S3:                          s3obj,
+		Bucket:                      params.Bucket,
+		ChunkSize:                   params.ChunkSize,
+		Encrypt:                     params.Encrypt,
+		KeyID:                       params.KeyID,
 		MultipartCopyChunkSize:      params.MultipartCopyChunkSize,
 		MultipartCopyMaxConcurrency: params.MultipartCopyMaxConcurrency,
 		MultipartCopyThresholdSize:  params.MultipartCopyThresholdSize,
@@ -1150,10 +1177,10 @@ func (w *writer) Write(p []byte) (int, error) {
 				Bucket: aws.String(w.driver.Bucket),
 				Key:    aws.String(w.key),
 			})
-			defer resp.Body.Close()
 			if err != nil {
 				return 0, err
 			}
+			defer resp.Body.Close()
 			w.parts = nil
 			w.readyPart, err = ioutil.ReadAll(resp.Body)
 			if err != nil {

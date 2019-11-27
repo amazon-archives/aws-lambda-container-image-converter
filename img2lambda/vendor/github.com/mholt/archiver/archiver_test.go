@@ -242,6 +242,34 @@ func TestMakeNameInArchive(t *testing.T) {
 	}
 }
 
+// TODO: We need a new .rar file since we moved the test corpus into the testdata/corpus subfolder.
+/*
+func TestRarUnarchive(t *testing.T) {
+	au := DefaultRar
+	auStr := fmt.Sprintf("%s", au)
+
+	tmp, err := ioutil.TempDir("", "archiver_test")
+	if err != nil {
+		t.Fatalf("[%s] %v", auStr, err)
+	}
+	defer os.RemoveAll(tmp)
+
+	dest := filepath.Join(tmp, "extraction_test_"+auStr)
+	os.Mkdir(dest, 0755)
+
+	file := "testdata/sample.rar"
+	err = au.Unarchive(file, dest)
+	if err != nil {
+		t.Fatalf("[%s] extracting archive [%s -> %s]: didn't expect an error, but got: %v", auStr, file, dest, err)
+	}
+
+	// Check that what was extracted is what was compressed
+	// Extracting links isn't implemented yet (in github.com/nwaples/rardecode lib there are no methods to get symlink info)
+	// Files access modes may differs on different machines, we are comparing extracted(as archive host) and local git clone
+	symmetricTest(t, auStr, dest, false, false)
+}
+*/
+
 func TestArchiveUnarchive(t *testing.T) {
 	for _, af := range archiveFormats {
 		au, ok := af.(archiverUnarchiver)
@@ -251,6 +279,27 @@ func TestArchiveUnarchive(t *testing.T) {
 		}
 		testArchiveUnarchive(t, au)
 	}
+}
+
+func TestArchiveUnarchiveWithFolderPermissions(t *testing.T) {
+	dir := "testdata/corpus/proverbs/extra"
+	currentPerms, err := os.Stat(dir)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	err = os.Chmod(dir, 0700)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+
+	defer func() {
+		err := os.Chmod(dir, currentPerms.Mode())
+		if err != nil {
+			t.Fatalf("%v", err)
+		}
+	}()
+
+	TestArchiveUnarchive(t)
 }
 
 func testArchiveUnarchive(t *testing.T, au archiverUnarchiver) {
@@ -264,7 +313,7 @@ func testArchiveUnarchive(t *testing.T, au archiverUnarchiver) {
 
 	// Test creating archive
 	outfile := filepath.Join(tmp, "archiver_test."+auStr)
-	err = au.Archive([]string{"testdata"}, outfile)
+	err = au.Archive([]string{"testdata/corpus"}, outfile)
 	if err != nil {
 		t.Fatalf("[%s] making archive: didn't expect an error, but got: %v", auStr, err)
 	}
@@ -281,7 +330,7 @@ func testArchiveUnarchive(t *testing.T, au archiverUnarchiver) {
 	}
 
 	// Check that what was extracted is what was compressed
-	symmetricTest(t, auStr, dest)
+	symmetricTest(t, auStr, dest, true, true)
 }
 
 // testMatching tests that au can match the format of archiveFile.
@@ -312,10 +361,12 @@ func testMatching(t *testing.T, au archiverUnarchiver, archiveFile string) {
 
 // symmetricTest compares the contents of a destination directory to the contents
 // of the test corpus and tests that they are equal.
-func symmetricTest(t *testing.T, formatName, dest string) {
+func symmetricTest(t *testing.T, formatName, dest string, testSymlinks, testModes bool) {
 	var expectedFileCount int
-	filepath.Walk("testdata", func(fpath string, info os.FileInfo, err error) error {
-		expectedFileCount++
+	filepath.Walk("testdata/corpus", func(fpath string, info os.FileInfo, err error) error {
+		if testSymlinks || (info.Mode()&os.ModeSymlink) == 0 {
+			expectedFileCount++
+		}
 		return nil
 	})
 
@@ -326,11 +377,31 @@ func symmetricTest(t *testing.T, formatName, dest string) {
 		if fpath == dest {
 			return nil
 		}
-		actualFileCount++
+		if testSymlinks || (info.Mode()&os.ModeSymlink) == 0 {
+			actualFileCount++
+		}
 
 		origPath, err := filepath.Rel(dest, fpath)
 		if err != nil {
 			t.Fatalf("[%s] %s: Error inducing original file path: %v", formatName, fpath, err)
+		}
+		origPath = filepath.Join("testdata", origPath)
+
+		expectedFileInfo, err := os.Lstat(origPath)
+		if err != nil {
+			t.Fatalf("[%s] %s: Error obtaining original file info: %v", formatName, fpath, err)
+		}
+		if !testSymlinks && (expectedFileInfo.Mode()&os.ModeSymlink) != 0 {
+			return nil
+		}
+		actualFileInfo, err := os.Lstat(fpath)
+		if err != nil {
+			t.Fatalf("[%s] %s: Error obtaining actual file info: %v", formatName, fpath, err)
+		}
+
+		if testModes && actualFileInfo.Mode() != expectedFileInfo.Mode() {
+			t.Fatalf("[%s] %s: File mode differed between on disk and compressed", formatName,
+				expectedFileInfo.Mode().String()+" : "+actualFileInfo.Mode().String())
 		}
 
 		if info.IsDir() {
@@ -343,29 +414,31 @@ func symmetricTest(t *testing.T, formatName, dest string) {
 			return nil
 		}
 
-		expectedFileInfo, err := os.Stat(origPath)
-		if err != nil {
-			t.Fatalf("[%s] %s: Error obtaining original file info: %v", formatName, fpath, err)
+		if (actualFileInfo.Mode() & os.ModeSymlink) != 0 {
+			expectedLinkTarget, err := os.Readlink(origPath)
+			if err != nil {
+				t.Fatalf("[%s] %s: Couldn't read original symlink target: %v", formatName, origPath, err)
+			}
+			actualLinkTarget, err := os.Readlink(fpath)
+			if err != nil {
+				t.Fatalf("[%s] %s: Couldn't read actual symlink target: %v", formatName, fpath, err)
+			}
+			if expectedLinkTarget != actualLinkTarget {
+				t.Fatalf("[%s] %s: Symlink targets differed between on disk and compressed", formatName, origPath)
+			}
+			return nil
 		}
+
 		expected, err := ioutil.ReadFile(origPath)
 		if err != nil {
 			t.Fatalf("[%s] %s: Couldn't open original file (%s) from disk: %v", formatName,
 				fpath, origPath, err)
-		}
-
-		actualFileInfo, err := os.Stat(fpath)
-		if err != nil {
-			t.Fatalf("[%s] %s: Error obtaining actual file info: %v", formatName, fpath, err)
 		}
 		actual, err := ioutil.ReadFile(fpath)
 		if err != nil {
 			t.Fatalf("[%s] %s: Couldn't open new file from disk: %v", formatName, fpath, err)
 		}
 
-		if actualFileInfo.Mode() != expectedFileInfo.Mode() {
-			t.Fatalf("[%s] %s: File mode differed between on disk and compressed", formatName,
-				expectedFileInfo.Mode().String()+" : "+actualFileInfo.Mode().String())
-		}
 		if !bytes.Equal(expected, actual) {
 			t.Fatalf("[%s] %s: File contents differed between on disk and compressed", formatName, origPath)
 		}
@@ -381,11 +454,13 @@ func symmetricTest(t *testing.T, formatName, dest string) {
 var archiveFormats = []interface{}{
 	DefaultZip,
 	DefaultTar,
+	DefaultTarBrotli,
 	DefaultTarBz2,
 	DefaultTarGz,
 	DefaultTarLz4,
 	DefaultTarSz,
 	DefaultTarXz,
+	DefaultTarZstd,
 }
 
 type archiverUnarchiver interface {

@@ -23,7 +23,7 @@ import (
 	"github.com/containers/image/types"
 	"github.com/docker/distribution/registry/client"
 	"github.com/docker/go-connections/tlsconfig"
-	"github.com/opencontainers/go-digest"
+	digest "github.com/opencontainers/go-digest"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
@@ -81,28 +81,30 @@ type bearerToken struct {
 // dockerClient is configuration for dealing with a single Docker registry.
 type dockerClient struct {
 	// The following members are set by newDockerClient and do not change afterwards.
-	sys                   *types.SystemContext
-	registry              string
-	client                *http.Client
-	insecureSkipTLSVerify bool
+	sys      *types.SystemContext
+	registry string
 
+	// tlsClientConfig is setup by newDockerClient and will be used and updated
+	// by detectProperties(). Callers can edit tlsClientConfig.InsecureSkipVerify in the meantime.
+	tlsClientConfig *tls.Config
 	// The following members are not set by newDockerClient and must be set by callers if needed.
 	username      string
 	password      string
 	signatureBase signatureStorageBase
 	scope         authScope
+
 	// The following members are detected registry properties:
 	// They are set after a successful detectProperties(), and never change afterwards.
-	scheme             string // Empty value also used to indicate detectProperties() has not yet succeeded.
+	client             *http.Client
+	scheme             string
 	challenges         []challenge
 	supportsSignatures bool
 
 	// Private state for setupRequestAuth (key: string, value: bearerToken)
 	tokenCache sync.Map
-	// detectPropertiesError caches the initial error.
-	detectPropertiesError error
-	// detectPropertiesOnce is used to execuute detectProperties() at most once in in makeRequest().
-	detectPropertiesOnce sync.Once
+	// Private state for detectProperties:
+	detectPropertiesOnce  sync.Once // detectPropertiesOnce is used to execute detectProperties() at most once.
+	detectPropertiesError error     // detectPropertiesError caches the initial error.
 }
 
 type authScope struct {
@@ -229,8 +231,7 @@ func newDockerClient(sys *types.SystemContext, registry, reference string) (*doc
 	if registry == dockerHostname {
 		registry = dockerRegistry
 	}
-	tr := tlsclientconfig.NewTransport()
-	tr.TLSClientConfig = serverDefault()
+	tlsClientConfig := serverDefault()
 
 	// It is undefined whether the host[:port] string for dockerHostname should be dockerHostname or dockerRegistry,
 	// because docker/docker does not read the certs.d subdirectory at all in that case.  We use the user-visible
@@ -241,38 +242,34 @@ func newDockerClient(sys *types.SystemContext, registry, reference string) (*doc
 	if err != nil {
 		return nil, err
 	}
-	if err := tlsclientconfig.SetupCertificates(certDir, tr.TLSClientConfig); err != nil {
+	if err := tlsclientconfig.SetupCertificates(certDir, tlsClientConfig); err != nil {
 		return nil, err
 	}
 
 	// Check if TLS verification shall be skipped (default=false) which can
-	// either be specified in the sysregistriesv2 configuration or via the
-	// SystemContext, whereas the SystemContext is prioritized.
+	// be specified in the sysregistriesv2 configuration.
 	skipVerify := false
-	if sys != nil && sys.DockerInsecureSkipTLSVerify != types.OptionalBoolUndefined {
-		// Only use the SystemContext if the actual value is defined.
-		skipVerify = sys.DockerInsecureSkipTLSVerify == types.OptionalBoolTrue
-	} else {
-		reg, err := sysregistriesv2.FindRegistry(sys, reference)
-		if err != nil {
-			return nil, errors.Wrapf(err, "error loading registries")
-		}
-		if reg != nil {
-			skipVerify = reg.Insecure
-		}
+	reg, err := sysregistriesv2.FindRegistry(sys, reference)
+	if err != nil {
+		return nil, errors.Wrapf(err, "error loading registries")
 	}
-	tr.TLSClientConfig.InsecureSkipVerify = skipVerify
+	if reg != nil {
+		if reg.Blocked {
+			return nil, fmt.Errorf("registry %s is blocked in %s", reg.Prefix, sysregistriesv2.ConfigPath(sys))
+		}
+		skipVerify = reg.Insecure
+	}
+	tlsClientConfig.InsecureSkipVerify = skipVerify
 
 	return &dockerClient{
-		sys:                   sys,
-		registry:              registry,
-		client:                &http.Client{Transport: tr},
-		insecureSkipTLSVerify: skipVerify,
+		sys:             sys,
+		registry:        registry,
+		tlsClientConfig: tlsClientConfig,
 	}, nil
 }
 
 // CheckAuth validates the credentials by attempting to log into the registry
-// returns an error if an error occcured while making the http request or the status code received was 401
+// returns an error if an error occurred while making the http request or the status code received was 401
 func CheckAuth(ctx context.Context, sys *types.SystemContext, username, password, registry string) error {
 	client, err := newDockerClient(sys, registry, registry)
 	if err != nil {
@@ -529,17 +526,15 @@ func (c *dockerClient) getBearerToken(ctx context.Context, challenge challenge, 
 		authReq.SetBasicAuth(c.username, c.password)
 	}
 	logrus.Debugf("%s %s", authReq.Method, authReq.URL.String())
-	tr := tlsclientconfig.NewTransport()
-	// TODO(runcom): insecure for now to contact the external token service
-	tr.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-	client := &http.Client{Transport: tr}
-	res, err := client.Do(authReq)
+	res, err := c.client.Do(authReq)
 	if err != nil {
 		return nil, err
 	}
 	defer res.Body.Close()
 	switch res.StatusCode {
 	case http.StatusUnauthorized:
+		err := client.HandleErrorResponse(res)
+		logrus.Debugf("Server response when trying to obtain an access token: \n%q", err.Error())
 		return nil, ErrUnauthorizedForCredentials
 	case http.StatusOK:
 		break
@@ -557,9 +552,14 @@ func (c *dockerClient) getBearerToken(ctx context.Context, challenge challenge, 
 // detectPropertiesHelper performs the work of detectProperties which executes
 // it at most once.
 func (c *dockerClient) detectPropertiesHelper(ctx context.Context) error {
-	if c.scheme != "" {
-		return nil
+	// We overwrite the TLS clients `InsecureSkipVerify` only if explicitly
+	// specified by the system context
+	if c.sys != nil && c.sys.DockerInsecureSkipTLSVerify != types.OptionalBoolUndefined {
+		c.tlsClientConfig.InsecureSkipVerify = c.sys.DockerInsecureSkipTLSVerify == types.OptionalBoolTrue
 	}
+	tr := tlsclientconfig.NewTransport()
+	tr.TLSClientConfig = c.tlsClientConfig
+	c.client = &http.Client{Transport: tr}
 
 	ping := func(scheme string) error {
 		url := fmt.Sprintf(resolvedPingV2URL, scheme, c.registry)
@@ -579,7 +579,7 @@ func (c *dockerClient) detectPropertiesHelper(ctx context.Context) error {
 		return nil
 	}
 	err := ping("https")
-	if err != nil && c.insecureSkipTLSVerify {
+	if err != nil && c.tlsClientConfig.InsecureSkipVerify {
 		err = ping("http")
 	}
 	if err != nil {
@@ -603,7 +603,7 @@ func (c *dockerClient) detectPropertiesHelper(ctx context.Context) error {
 			return true
 		}
 		isV1 := pingV1("https")
-		if !isV1 && c.insecureSkipTLSVerify {
+		if !isV1 && c.tlsClientConfig.InsecureSkipVerify {
 			isV1 = pingV1("http")
 		}
 		if isV1 {

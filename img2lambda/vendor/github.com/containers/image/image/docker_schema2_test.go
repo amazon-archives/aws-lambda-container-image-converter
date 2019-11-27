@@ -45,12 +45,16 @@ func (f unusedImageSource) LayerInfosForCopy(ctx context.Context) ([]types.BlobI
 	panic("Unexpected call to a mock function")
 }
 
-func manifestSchema2FromFixture(t *testing.T, src types.ImageSource, fixture string) genericManifest {
+func manifestSchema2FromFixture(t *testing.T, src types.ImageSource, fixture string, mustFail bool) genericManifest {
 	manifest, err := ioutil.ReadFile(filepath.Join("fixtures", fixture))
 	require.NoError(t, err)
 
 	m, err := manifestSchema2FromManifest(src, manifest)
-	require.NoError(t, err)
+	if mustFail {
+		require.Error(t, err)
+	} else {
+		require.NoError(t, err)
+	}
 	return m
 }
 
@@ -91,7 +95,7 @@ func manifestSchema2FromComponentsLikeFixture(configBlob []byte) genericManifest
 func TestManifestSchema2FromManifest(t *testing.T) {
 	// This just tests that the JSON can be loaded; we test that the parsed
 	// values are correctly returned in tests for the individual getter methods.
-	_ = manifestSchema2FromFixture(t, unusedImageSource{}, "schema2.json")
+	_ = manifestSchema2FromFixture(t, unusedImageSource{}, "schema2.json", false)
 
 	_, err := manifestSchema2FromManifest(nil, []byte{})
 	assert.Error(t, err)
@@ -105,7 +109,7 @@ func TestManifestSchema2FromComponents(t *testing.T) {
 
 func TestManifestSchema2Serialize(t *testing.T) {
 	for _, m := range []genericManifest{
-		manifestSchema2FromFixture(t, unusedImageSource{}, "schema2.json"),
+		manifestSchema2FromFixture(t, unusedImageSource{}, "schema2.json", false),
 		manifestSchema2FromComponentsLikeFixture(nil),
 	} {
 		serialized, err := m.serialize()
@@ -129,7 +133,7 @@ func TestManifestSchema2Serialize(t *testing.T) {
 
 func TestManifestSchema2ManifestMIMEType(t *testing.T) {
 	for _, m := range []genericManifest{
-		manifestSchema2FromFixture(t, unusedImageSource{}, "schema2.json"),
+		manifestSchema2FromFixture(t, unusedImageSource{}, "schema2.json", false),
 		manifestSchema2FromComponentsLikeFixture(nil),
 	} {
 		assert.Equal(t, manifest.DockerV2Schema2MediaType, m.manifestMIMEType())
@@ -138,7 +142,7 @@ func TestManifestSchema2ManifestMIMEType(t *testing.T) {
 
 func TestManifestSchema2ConfigInfo(t *testing.T) {
 	for _, m := range []genericManifest{
-		manifestSchema2FromFixture(t, unusedImageSource{}, "schema2.json"),
+		manifestSchema2FromFixture(t, unusedImageSource{}, "schema2.json", false),
 		manifestSchema2FromComponentsLikeFixture(nil),
 	} {
 		assert.Equal(t, types.BlobInfo{
@@ -195,7 +199,7 @@ func TestManifestSchema2ConfigBlob(t *testing.T) {
 		} else {
 			src = nil
 		}
-		m := manifestSchema2FromFixture(t, src, "schema2.json")
+		m := manifestSchema2FromFixture(t, src, "schema2.json", false)
 		blob, err := m.ConfigBlob(context.Background())
 		if c.blob != nil {
 			assert.NoError(t, err)
@@ -219,7 +223,7 @@ func TestManifestSchema2ConfigBlob(t *testing.T) {
 
 func TestManifestSchema2LayerInfo(t *testing.T) {
 	for _, m := range []genericManifest{
-		manifestSchema2FromFixture(t, unusedImageSource{}, "schema2.json"),
+		manifestSchema2FromFixture(t, unusedImageSource{}, "schema2.json", false),
 		manifestSchema2FromComponentsLikeFixture(nil),
 	} {
 		assert.Equal(t, []types.BlobInfo{
@@ -254,7 +258,7 @@ func TestManifestSchema2LayerInfo(t *testing.T) {
 
 func TestManifestSchema2EmbeddedDockerReferenceConflicts(t *testing.T) {
 	for _, m := range []genericManifest{
-		manifestSchema2FromFixture(t, unusedImageSource{}, "schema2.json"),
+		manifestSchema2FromFixture(t, unusedImageSource{}, "schema2.json", false),
 		manifestSchema2FromComponentsLikeFixture(nil),
 	} {
 		for _, name := range []string{"busybox", "example.com:5555/ns/repo:tag"} {
@@ -288,6 +292,14 @@ func TestManifestSchema2Inspect(t *testing.T) {
 			"sha256:bbd6b22eb11afce63cc76f6bc41042d99f10d6024c96b655dafba930b8d25909",
 			"sha256:960e52ecf8200cbd84e70eb2ad8678f4367e50d14357021872c10fa3fc5935fa",
 		},
+		Env: []string{
+			"PATH=/usr/local/apache2/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+			"HTTPD_PREFIX=/usr/local/apache2",
+			"HTTPD_VERSION=2.4.23",
+			"HTTPD_SHA1=5101be34ac4a509b245adb70a56690a84fcc4e7f",
+			"HTTPD_BZ2_URL=https://www.apache.org/dyn/closer.cgi?action=download&filename=httpd/httpd-2.4.23.tar.bz2",
+			"HTTPD_ASC_URL=https://www.apache.org/dist/httpd/httpd-2.4.23.tar.bz2.asc",
+		},
 	}, *ii)
 
 	// nil configBlob will trigger an error in m.ConfigBlob()
@@ -302,7 +314,7 @@ func TestManifestSchema2Inspect(t *testing.T) {
 
 func TestManifestSchema2UpdatedImageNeedsLayerDiffIDs(t *testing.T) {
 	for _, m := range []genericManifest{
-		manifestSchema2FromFixture(t, unusedImageSource{}, "schema2.json"),
+		manifestSchema2FromFixture(t, unusedImageSource{}, "schema2.json", false),
 		manifestSchema2FromComponentsLikeFixture(nil),
 	} {
 		assert.False(t, m.UpdatedImageNeedsLayerDiffIDs(types.ManifestUpdateOptions{
@@ -430,7 +442,7 @@ func (d *memoryImageDest) Commit(ctx context.Context) error {
 
 func TestManifestSchema2UpdatedImage(t *testing.T) {
 	originalSrc := newSchema2ImageSource(t, "httpd:latest")
-	original := manifestSchema2FromFixture(t, originalSrc, "schema2.json")
+	original := manifestSchema2FromFixture(t, originalSrc, "schema2.json", false)
 
 	// LayerInfos:
 	layerInfos := append(original.LayerInfos()[1:], original.LayerInfos()[0])
@@ -482,7 +494,7 @@ func TestManifestSchema2UpdatedImage(t *testing.T) {
 	}
 
 	// m hasn’t been changed:
-	m2 := manifestSchema2FromFixture(t, originalSrc, "schema2.json")
+	m2 := manifestSchema2FromFixture(t, originalSrc, "schema2.json", false)
 	typedOriginal, ok := original.(*manifestSchema2)
 	require.True(t, ok)
 	typedM2, ok := m2.(*manifestSchema2)
@@ -492,7 +504,7 @@ func TestManifestSchema2UpdatedImage(t *testing.T) {
 
 func TestConvertToManifestOCI(t *testing.T) {
 	originalSrc := newSchema2ImageSource(t, "httpd-copy:latest")
-	original := manifestSchema2FromFixture(t, originalSrc, "schema2.json")
+	original := manifestSchema2FromFixture(t, originalSrc, "schema2.json", false)
 	res, err := original.UpdatedImage(context.Background(), types.ManifestUpdateOptions{
 		ManifestMIMEType: imgspecv1.MediaTypeImageManifest,
 	})
@@ -512,9 +524,35 @@ func TestConvertToManifestOCI(t *testing.T) {
 	assert.Equal(t, byHand, converted)
 }
 
+func TestConvertToManifestOCIAllMediaTypes(t *testing.T) {
+	originalSrc := newSchema2ImageSource(t, "httpd-copy:latest")
+	original := manifestSchema2FromFixture(t, originalSrc, "schema2-all-media-types.json", false)
+	res, err := original.UpdatedImage(context.Background(), types.ManifestUpdateOptions{
+		ManifestMIMEType: imgspecv1.MediaTypeImageManifest,
+	})
+	require.NoError(t, err)
+	convertedJSON, mt, err := res.Manifest(context.Background())
+	require.NoError(t, err)
+	assert.Equal(t, imgspecv1.MediaTypeImageManifest, mt)
+
+	byHandJSON, err := ioutil.ReadFile("fixtures/schema2-all-media-types-to-oci1.json")
+	require.NoError(t, err)
+	var converted, byHand map[string]interface{}
+	err = json.Unmarshal(byHandJSON, &byHand)
+	require.NoError(t, err)
+	err = json.Unmarshal(convertedJSON, &converted)
+	require.NoError(t, err)
+	assert.Equal(t, byHand, converted)
+}
+
+func TestConvertToOCIWithInvalidMIMEType(t *testing.T) {
+	originalSrc := newSchema2ImageSource(t, "httpd-copy:latest")
+	manifestSchema2FromFixture(t, originalSrc, "schema2-invalid-media-type.json", true)
+}
+
 func TestConvertToManifestSchema1(t *testing.T) {
 	originalSrc := newSchema2ImageSource(t, "httpd-copy:latest")
-	original := manifestSchema2FromFixture(t, originalSrc, "schema2.json")
+	original := manifestSchema2FromFixture(t, originalSrc, "schema2.json", false)
 	memoryDest := &memoryImageDest{ref: originalSrc.ref}
 	res, err := original.UpdatedImage(context.Background(), types.ManifestUpdateOptions{
 		ManifestMIMEType: manifest.DockerV2Schema1SignedMediaType,

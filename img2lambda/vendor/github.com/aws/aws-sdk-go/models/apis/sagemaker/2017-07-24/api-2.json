@@ -951,6 +951,10 @@
         "SingleRecord"
       ]
     },
+    "BillableTimeInSeconds":{
+      "type":"integer",
+      "min":1
+    },
     "Boolean":{"type":"boolean"},
     "BooleanOperator":{
       "type":"string",
@@ -1038,6 +1042,14 @@
       "member":{"shape":"ChannelSpecification"},
       "max":8,
       "min":1
+    },
+    "CheckpointConfig":{
+      "type":"structure",
+      "required":["S3Uri"],
+      "members":{
+        "S3Uri":{"shape":"S3Uri"},
+        "LocalPath":{"shape":"DirectoryPath"}
+      }
     },
     "CodeRepositoryArn":{
       "type":"string",
@@ -1527,7 +1539,9 @@
         "StoppingCondition":{"shape":"StoppingCondition"},
         "Tags":{"shape":"TagList"},
         "EnableNetworkIsolation":{"shape":"Boolean"},
-        "EnableInterContainerTrafficEncryption":{"shape":"Boolean"}
+        "EnableInterContainerTrafficEncryption":{"shape":"Boolean"},
+        "EnableManagedSpotTraining":{"shape":"Boolean"},
+        "CheckpointConfig":{"shape":"CheckpointConfig"}
       }
     },
     "CreateTrainingJobResponse":{
@@ -1606,7 +1620,8 @@
     "DataSource":{
       "type":"structure",
       "members":{
-        "S3DataSource":{"shape":"S3DataSource"}
+        "S3DataSource":{"shape":"S3DataSource"},
+        "FileSystemDataSource":{"shape":"FileSystemDataSource"}
       }
     },
     "DeleteAlgorithmInput":{
@@ -2091,7 +2106,11 @@
         "SecondaryStatusTransitions":{"shape":"SecondaryStatusTransitions"},
         "FinalMetricDataList":{"shape":"FinalMetricDataList"},
         "EnableNetworkIsolation":{"shape":"Boolean"},
-        "EnableInterContainerTrafficEncryption":{"shape":"Boolean"}
+        "EnableInterContainerTrafficEncryption":{"shape":"Boolean"},
+        "EnableManagedSpotTraining":{"shape":"Boolean"},
+        "CheckpointConfig":{"shape":"CheckpointConfig"},
+        "TrainingTimeInSeconds":{"shape":"TrainingTimeInSeconds"},
+        "BillableTimeInSeconds":{"shape":"BillableTimeInSeconds"}
       }
     },
     "DescribeTransformJobRequest":{
@@ -2184,6 +2203,11 @@
         "Enabled",
         "Disabled"
       ]
+    },
+    "DirectoryPath":{
+      "type":"string",
+      "max":4096,
+      "pattern":".*"
     },
     "DisassociateAdditionalCodeRepositories":{"type":"boolean"},
     "DisassociateDefaultCodeRepository":{"type":"boolean"},
@@ -2323,6 +2347,40 @@
       "type":"string",
       "max":1024
     },
+    "FileSystemAccessMode":{
+      "type":"string",
+      "enum":[
+        "rw",
+        "ro"
+      ]
+    },
+    "FileSystemDataSource":{
+      "type":"structure",
+      "required":[
+        "FileSystemId",
+        "FileSystemAccessMode",
+        "FileSystemType",
+        "DirectoryPath"
+      ],
+      "members":{
+        "FileSystemId":{"shape":"FileSystemId"},
+        "FileSystemAccessMode":{"shape":"FileSystemAccessMode"},
+        "FileSystemType":{"shape":"FileSystemType"},
+        "DirectoryPath":{"shape":"DirectoryPath"}
+      }
+    },
+    "FileSystemId":{
+      "type":"string",
+      "min":11,
+      "pattern":".*"
+    },
+    "FileSystemType":{
+      "type":"string",
+      "enum":[
+        "EFS",
+        "FSxLustre"
+      ]
+    },
     "Filter":{
       "type":"structure",
       "required":["Name"],
@@ -2359,7 +2417,7 @@
     "FinalMetricDataList":{
       "type":"list",
       "member":{"shape":"MetricData"},
-      "max":20,
+      "max":40,
       "min":0
     },
     "Float":{"type":"float"},
@@ -2493,7 +2551,9 @@
         "ResourceConfig":{"shape":"ResourceConfig"},
         "StoppingCondition":{"shape":"StoppingCondition"},
         "EnableNetworkIsolation":{"shape":"Boolean"},
-        "EnableInterContainerTrafficEncryption":{"shape":"Boolean"}
+        "EnableInterContainerTrafficEncryption":{"shape":"Boolean"},
+        "EnableManagedSpotTraining":{"shape":"Boolean"},
+        "CheckpointConfig":{"shape":"CheckpointConfig"}
       }
     },
     "HyperParameterTrainingJobSummaries":{
@@ -3435,6 +3495,10 @@
       "type":"integer",
       "min":1
     },
+    "MaxWaitTimeInSeconds":{
+      "type":"integer",
+      "min":1
+    },
     "MemberDefinition":{
       "type":"structure",
       "members":{
@@ -3469,7 +3533,7 @@
     "MetricDefinitionList":{
       "type":"list",
       "member":{"shape":"MetricDefinition"},
-      "max":20,
+      "max":40,
       "min":0
     },
     "MetricName":{
@@ -3677,7 +3741,10 @@
       "enum":[
         "ml.eia1.medium",
         "ml.eia1.large",
-        "ml.eia1.xlarge"
+        "ml.eia1.xlarge",
+        "ml.eia2.medium",
+        "ml.eia2.large",
+        "ml.eia2.xlarge"
       ]
     },
     "NotebookInstanceAcceleratorTypes":{
@@ -3984,7 +4051,10 @@
       "enum":[
         "ml.eia1.medium",
         "ml.eia1.large",
-        "ml.eia1.xlarge"
+        "ml.eia1.xlarge",
+        "ml.eia2.medium",
+        "ml.eia2.large",
+        "ml.eia2.xlarge"
       ]
     },
     "ProductionVariantInstanceType":{
@@ -4005,6 +4075,12 @@
         "ml.m5.4xlarge",
         "ml.m5.12xlarge",
         "ml.m5.24xlarge",
+        "ml.m5d.large",
+        "ml.m5d.xlarge",
+        "ml.m5d.2xlarge",
+        "ml.m5d.4xlarge",
+        "ml.m5d.12xlarge",
+        "ml.m5d.24xlarge",
         "ml.c4.large",
         "ml.c4.xlarge",
         "ml.c4.2xlarge",
@@ -4021,12 +4097,37 @@
         "ml.c5.2xlarge",
         "ml.c5.4xlarge",
         "ml.c5.9xlarge",
-        "ml.c5.18xlarge"
+        "ml.c5.18xlarge",
+        "ml.c5d.large",
+        "ml.c5d.xlarge",
+        "ml.c5d.2xlarge",
+        "ml.c5d.4xlarge",
+        "ml.c5d.9xlarge",
+        "ml.c5d.18xlarge",
+        "ml.g4dn.xlarge",
+        "ml.g4dn.2xlarge",
+        "ml.g4dn.4xlarge",
+        "ml.g4dn.8xlarge",
+        "ml.g4dn.12xlarge",
+        "ml.g4dn.16xlarge",
+        "ml.r5.large",
+        "ml.r5.xlarge",
+        "ml.r5.2xlarge",
+        "ml.r5.4xlarge",
+        "ml.r5.12xlarge",
+        "ml.r5.24xlarge",
+        "ml.r5d.large",
+        "ml.r5d.xlarge",
+        "ml.r5d.2xlarge",
+        "ml.r5d.4xlarge",
+        "ml.r5d.12xlarge",
+        "ml.r5d.24xlarge"
       ]
     },
     "ProductionVariantList":{
       "type":"list",
       "member":{"shape":"ProductionVariant"},
+      "max":10,
       "min":1
     },
     "ProductionVariantSummary":{
@@ -4316,7 +4417,9 @@
         "Stopped",
         "MaxRuntimeExceeded",
         "Completed",
-        "Failed"
+        "Failed",
+        "Interrupted",
+        "MaxWaitTimeExceeded"
       ]
     },
     "SecondaryStatusTransition":{
@@ -4463,7 +4566,8 @@
     "StoppingCondition":{
       "type":"structure",
       "members":{
-        "MaxRuntimeInSeconds":{"shape":"MaxRuntimeInSeconds"}
+        "MaxRuntimeInSeconds":{"shape":"MaxRuntimeInSeconds"},
+        "MaxWaitTimeInSeconds":{"shape":"MaxWaitTimeInSeconds"}
       }
     },
     "String":{"type":"string"},
@@ -4558,7 +4662,10 @@
         "deeplens",
         "rk3399",
         "rk3288",
-        "sbe_c"
+        "aisage",
+        "sbe_c",
+        "qcs605",
+        "qcs603"
       ]
     },
     "TaskAvailabilityLifetimeInSeconds":{
@@ -4597,7 +4704,7 @@
     "TaskTimeLimitInSeconds":{
       "type":"integer",
       "max":28800,
-      "min":1
+      "min":30
     },
     "TaskTitle":{
       "type":"string",
@@ -4652,6 +4759,7 @@
         "ml.p3.2xlarge",
         "ml.p3.8xlarge",
         "ml.p3.16xlarge",
+        "ml.p3dn.24xlarge",
         "ml.c5.xlarge",
         "ml.c5.2xlarge",
         "ml.c5.4xlarge",
@@ -4800,6 +4908,10 @@
         "TrainingChannels":{"shape":"ChannelSpecifications"},
         "SupportedTuningJobObjectiveMetrics":{"shape":"HyperParameterTuningJobObjectives"}
       }
+    },
+    "TrainingTimeInSeconds":{
+      "type":"integer",
+      "min":1
     },
     "TransformDataSource":{
       "type":"structure",

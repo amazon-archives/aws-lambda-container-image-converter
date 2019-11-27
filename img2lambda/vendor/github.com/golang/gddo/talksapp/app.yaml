@@ -1,0 +1,28 @@
+runtime: go
+api_version: go1.9
+
+handlers:
+- url: /robots\.txt
+  static_files: assets/robots.txt
+  upload: assets/robots.txt
+  secure: always
+- url: /favicon\.ico
+  static_files: present/static/favicon.ico
+  upload: present/static/favicon.ico
+  secure: always
+- url: /static
+  static_dir: present/static
+  secure: always
+- url: /play\.js
+  static_files: present/play.js
+  upload: present/play.js
+  secure: always
+- url: /.*
+  script: _go_app
+  secure: always
+
+env_variables:
+  CONTACT_EMAIL: ''        # set contact email for /bot.html
+  GITHUB_CLIENT_ID: ''     # used to increase rate-limits; see https://github.com/settings/applications/new
+  GITHUB_CLIENT_SECRET: '' # used to increase rate-limits; see https://github.com/settings/applications/new
+  GITHUB_TOKEN: ''         # personal token used for authentication; see https://github.com/settings/tokens/new

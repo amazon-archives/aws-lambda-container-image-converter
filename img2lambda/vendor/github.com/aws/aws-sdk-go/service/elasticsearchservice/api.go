@@ -2842,9 +2842,12 @@ type CreateElasticsearchDomainInput struct {
 	// For more information, see Amazon Cognito Authentication for Kibana (http://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-cognito-auth.html).
 	CognitoOptions *CognitoOptions `type:"structure"`
 
+	// Options to specify configuration that will be applied to the domain endpoint.
+	DomainEndpointOptions *DomainEndpointOptions `type:"structure"`
+
 	// The name of the Elasticsearch domain that you are creating. Domain names
 	// are unique across the domains owned by an account within an AWS region. Domain
-	// names must start with a letter or number and can contain the following characters:
+	// names must start with a lowercase letter and can contain the following characters:
 	// a-z (lowercase), 0-9, and - (hyphen).
 	//
 	// DomainName is a required field
@@ -2934,6 +2937,12 @@ func (s *CreateElasticsearchDomainInput) SetAdvancedOptions(v map[string]*string
 // SetCognitoOptions sets the CognitoOptions field's value.
 func (s *CreateElasticsearchDomainInput) SetCognitoOptions(v *CognitoOptions) *CreateElasticsearchDomainInput {
 	s.CognitoOptions = v
+	return s
+}
+
+// SetDomainEndpointOptions sets the DomainEndpointOptions field's value.
+func (s *CreateElasticsearchDomainInput) SetDomainEndpointOptions(v *DomainEndpointOptions) *CreateElasticsearchDomainInput {
+	s.DomainEndpointOptions = v
 	return s
 }
 
@@ -3580,6 +3589,83 @@ func (s *DescribeReservedElasticsearchInstancesOutput) SetReservedElasticsearchI
 	return s
 }
 
+// Options to configure endpoint for the Elasticsearch domain.
+type DomainEndpointOptions struct {
+	_ struct{} `type:"structure"`
+
+	// Specify if only HTTPS endpoint should be enabled for the Elasticsearch domain.
+	EnforceHTTPS *bool `type:"boolean"`
+
+	// Specify the TLS security policy that needs to be applied to the HTTPS endpoint
+	// of Elasticsearch domain. It can be one of the following values:
+	//    * Policy-Min-TLS-1-0-2019-07: TLS security policy which supports TLSv1.0
+	//    and higher.
+	//
+	//    * Policy-Min-TLS-1-2-2019-07: TLS security policy which supports only
+	//    TLSv1.2
+	TLSSecurityPolicy *string `type:"string" enum:"TLSSecurityPolicy"`
+}
+
+// String returns the string representation
+func (s DomainEndpointOptions) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DomainEndpointOptions) GoString() string {
+	return s.String()
+}
+
+// SetEnforceHTTPS sets the EnforceHTTPS field's value.
+func (s *DomainEndpointOptions) SetEnforceHTTPS(v bool) *DomainEndpointOptions {
+	s.EnforceHTTPS = &v
+	return s
+}
+
+// SetTLSSecurityPolicy sets the TLSSecurityPolicy field's value.
+func (s *DomainEndpointOptions) SetTLSSecurityPolicy(v string) *DomainEndpointOptions {
+	s.TLSSecurityPolicy = &v
+	return s
+}
+
+// The configured endpoint options for the domain and their current status.
+type DomainEndpointOptionsStatus struct {
+	_ struct{} `type:"structure"`
+
+	// Options to configure endpoint for the Elasticsearch domain.
+	//
+	// Options is a required field
+	Options *DomainEndpointOptions `type:"structure" required:"true"`
+
+	// The status of the endpoint options for the Elasticsearch domain. See OptionStatus
+	// for the status information that's included.
+	//
+	// Status is a required field
+	Status *OptionStatus `type:"structure" required:"true"`
+}
+
+// String returns the string representation
+func (s DomainEndpointOptionsStatus) String() string {
+	return awsutil.Prettify(s)
+}
+
+// GoString returns the string representation
+func (s DomainEndpointOptionsStatus) GoString() string {
+	return s.String()
+}
+
+// SetOptions sets the Options field's value.
+func (s *DomainEndpointOptionsStatus) SetOptions(v *DomainEndpointOptions) *DomainEndpointOptionsStatus {
+	s.Options = v
+	return s
+}
+
+// SetStatus sets the Status field's value.
+func (s *DomainEndpointOptionsStatus) SetStatus(v *OptionStatus) *DomainEndpointOptionsStatus {
+	s.Status = v
+	return s
+}
+
 type DomainInfo struct {
 	_ struct{} `type:"structure"`
 
@@ -3830,6 +3916,9 @@ type ElasticsearchDomainConfig struct {
 	// Cognito Authentication for Kibana (http://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-cognito-auth.html).
 	CognitoOptions *CognitoOptionsStatus `type:"structure"`
 
+	// Specifies the DomainEndpointOptions for the Elasticsearch domain.
+	DomainEndpointOptions *DomainEndpointOptionsStatus `type:"structure"`
+
 	// Specifies the EBSOptions for the Elasticsearch domain.
 	EBSOptions *EBSOptionsStatus `type:"structure"`
 
@@ -3881,6 +3970,12 @@ func (s *ElasticsearchDomainConfig) SetAdvancedOptions(v *AdvancedOptionsStatus)
 // SetCognitoOptions sets the CognitoOptions field's value.
 func (s *ElasticsearchDomainConfig) SetCognitoOptions(v *CognitoOptionsStatus) *ElasticsearchDomainConfig {
 	s.CognitoOptions = v
+	return s
+}
+
+// SetDomainEndpointOptions sets the DomainEndpointOptions field's value.
+func (s *ElasticsearchDomainConfig) SetDomainEndpointOptions(v *DomainEndpointOptionsStatus) *ElasticsearchDomainConfig {
+	s.DomainEndpointOptions = v
 	return s
 }
 
@@ -3962,6 +4057,9 @@ type ElasticsearchDomainStatus struct {
 	// has not been deleted. Once domain deletion is complete, the status of the
 	// domain is no longer returned.
 	Deleted *bool `type:"boolean"`
+
+	// The current status of the Elasticsearch domain's endpoint options.
+	DomainEndpointOptions *DomainEndpointOptions `type:"structure"`
 
 	// The unique identifier for the specified Elasticsearch domain.
 	//
@@ -4068,6 +4166,12 @@ func (s *ElasticsearchDomainStatus) SetCreated(v bool) *ElasticsearchDomainStatu
 // SetDeleted sets the Deleted field's value.
 func (s *ElasticsearchDomainStatus) SetDeleted(v bool) *ElasticsearchDomainStatus {
 	s.Deleted = &v
+	return s
+}
+
+// SetDomainEndpointOptions sets the DomainEndpointOptions field's value.
+func (s *ElasticsearchDomainStatus) SetDomainEndpointOptions(v *DomainEndpointOptions) *ElasticsearchDomainStatus {
+	s.DomainEndpointOptions = v
 	return s
 }
 
@@ -5972,6 +6076,9 @@ type UpdateElasticsearchDomainConfigInput struct {
 	// For more information, see Amazon Cognito Authentication for Kibana (http://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-cognito-auth.html).
 	CognitoOptions *CognitoOptions `type:"structure"`
 
+	// Options to specify configuration that will be applied to the domain endpoint.
+	DomainEndpointOptions *DomainEndpointOptions `type:"structure"`
+
 	// The name of the Elasticsearch domain that you are updating.
 	//
 	// DomainName is a required field
@@ -6043,6 +6150,12 @@ func (s *UpdateElasticsearchDomainConfigInput) SetAdvancedOptions(v map[string]*
 // SetCognitoOptions sets the CognitoOptions field's value.
 func (s *UpdateElasticsearchDomainConfigInput) SetCognitoOptions(v *CognitoOptions) *UpdateElasticsearchDomainConfigInput {
 	s.CognitoOptions = v
+	return s
+}
+
+// SetDomainEndpointOptions sets the DomainEndpointOptions field's value.
+func (s *UpdateElasticsearchDomainConfigInput) SetDomainEndpointOptions(v *DomainEndpointOptions) *UpdateElasticsearchDomainConfigInput {
+	s.DomainEndpointOptions = v
 	return s
 }
 
@@ -6551,6 +6664,54 @@ const (
 	// ESPartitionInstanceTypeM410xlargeElasticsearch is a ESPartitionInstanceType enum value
 	ESPartitionInstanceTypeM410xlargeElasticsearch = "m4.10xlarge.elasticsearch"
 
+	// ESPartitionInstanceTypeM5LargeElasticsearch is a ESPartitionInstanceType enum value
+	ESPartitionInstanceTypeM5LargeElasticsearch = "m5.large.elasticsearch"
+
+	// ESPartitionInstanceTypeM5XlargeElasticsearch is a ESPartitionInstanceType enum value
+	ESPartitionInstanceTypeM5XlargeElasticsearch = "m5.xlarge.elasticsearch"
+
+	// ESPartitionInstanceTypeM52xlargeElasticsearch is a ESPartitionInstanceType enum value
+	ESPartitionInstanceTypeM52xlargeElasticsearch = "m5.2xlarge.elasticsearch"
+
+	// ESPartitionInstanceTypeM54xlargeElasticsearch is a ESPartitionInstanceType enum value
+	ESPartitionInstanceTypeM54xlargeElasticsearch = "m5.4xlarge.elasticsearch"
+
+	// ESPartitionInstanceTypeM512xlargeElasticsearch is a ESPartitionInstanceType enum value
+	ESPartitionInstanceTypeM512xlargeElasticsearch = "m5.12xlarge.elasticsearch"
+
+	// ESPartitionInstanceTypeR5LargeElasticsearch is a ESPartitionInstanceType enum value
+	ESPartitionInstanceTypeR5LargeElasticsearch = "r5.large.elasticsearch"
+
+	// ESPartitionInstanceTypeR5XlargeElasticsearch is a ESPartitionInstanceType enum value
+	ESPartitionInstanceTypeR5XlargeElasticsearch = "r5.xlarge.elasticsearch"
+
+	// ESPartitionInstanceTypeR52xlargeElasticsearch is a ESPartitionInstanceType enum value
+	ESPartitionInstanceTypeR52xlargeElasticsearch = "r5.2xlarge.elasticsearch"
+
+	// ESPartitionInstanceTypeR54xlargeElasticsearch is a ESPartitionInstanceType enum value
+	ESPartitionInstanceTypeR54xlargeElasticsearch = "r5.4xlarge.elasticsearch"
+
+	// ESPartitionInstanceTypeR512xlargeElasticsearch is a ESPartitionInstanceType enum value
+	ESPartitionInstanceTypeR512xlargeElasticsearch = "r5.12xlarge.elasticsearch"
+
+	// ESPartitionInstanceTypeC5LargeElasticsearch is a ESPartitionInstanceType enum value
+	ESPartitionInstanceTypeC5LargeElasticsearch = "c5.large.elasticsearch"
+
+	// ESPartitionInstanceTypeC5XlargeElasticsearch is a ESPartitionInstanceType enum value
+	ESPartitionInstanceTypeC5XlargeElasticsearch = "c5.xlarge.elasticsearch"
+
+	// ESPartitionInstanceTypeC52xlargeElasticsearch is a ESPartitionInstanceType enum value
+	ESPartitionInstanceTypeC52xlargeElasticsearch = "c5.2xlarge.elasticsearch"
+
+	// ESPartitionInstanceTypeC54xlargeElasticsearch is a ESPartitionInstanceType enum value
+	ESPartitionInstanceTypeC54xlargeElasticsearch = "c5.4xlarge.elasticsearch"
+
+	// ESPartitionInstanceTypeC59xlargeElasticsearch is a ESPartitionInstanceType enum value
+	ESPartitionInstanceTypeC59xlargeElasticsearch = "c5.9xlarge.elasticsearch"
+
+	// ESPartitionInstanceTypeC518xlargeElasticsearch is a ESPartitionInstanceType enum value
+	ESPartitionInstanceTypeC518xlargeElasticsearch = "c5.18xlarge.elasticsearch"
+
 	// ESPartitionInstanceTypeT2MicroElasticsearch is a ESPartitionInstanceType enum value
 	ESPartitionInstanceTypeT2MicroElasticsearch = "t2.micro.elasticsearch"
 
@@ -6692,6 +6853,14 @@ const (
 
 	// ReservedElasticsearchInstancePaymentOptionNoUpfront is a ReservedElasticsearchInstancePaymentOption enum value
 	ReservedElasticsearchInstancePaymentOptionNoUpfront = "NO_UPFRONT"
+)
+
+const (
+	// TLSSecurityPolicyPolicyMinTls10201907 is a TLSSecurityPolicy enum value
+	TLSSecurityPolicyPolicyMinTls10201907 = "Policy-Min-TLS-1-0-2019-07"
+
+	// TLSSecurityPolicyPolicyMinTls12201907 is a TLSSecurityPolicy enum value
+	TLSSecurityPolicyPolicyMinTls12201907 = "Policy-Min-TLS-1-2-2019-07"
 )
 
 const (

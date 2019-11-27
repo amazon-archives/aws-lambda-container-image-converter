@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	"github.com/containers/image/types"
-	"github.com/docker/libtrust"
-	"github.com/opencontainers/go-digest"
+	"github.com/containers/libtrust"
+	digest "github.com/opencontainers/go-digest"
 	imgspecv1 "github.com/opencontainers/image-spec/specs-go/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
