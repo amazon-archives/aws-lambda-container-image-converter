@@ -18,6 +18,7 @@ var userAgentHandler = request.NamedHandler{
 func NewLambdaClient(region string, profile string) *lambda.Lambda {
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		Profile: profile,
+		SharedConfigState: session.SharedConfigEnable,
 	}))
 	sess.Handlers.Build.PushBackNamed(userAgentHandler)
 
