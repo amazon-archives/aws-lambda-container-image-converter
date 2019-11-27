@@ -17,7 +17,7 @@ VERSION := $(shell cat VERSION)
 GITFILES := $(shell find ".git/")
 
 .PHONY: build
-build: $(LOCAL_BINARY)
+build: format $(LOCAL_BINARY)
 
 $(LOCAL_BINARY): $(SOURCES) GITCOMMIT_SHA
 	./scripts/build_binary.sh ./bin/local img2lambda $(VERSION) $(shell cat GITCOMMIT_SHA)
@@ -30,6 +30,10 @@ integration-test: $(LOCAL_BINARY)
 .PHONY: generate
 generate: $(SOURCES)
 	PATH=$(LOCAL_PATH) go generate -x $(shell go list ./img2lambda/... | grep -v '/vendor/')
+
+.PHONY: format
+format: $(SOURCES)
+	PATH=$(LOCAL_PATH) go fmt -x $(shell go list ./img2lambda/... | grep -v '/vendor/')
 
 .PHONY: install-deps
 install-deps:
