@@ -481,12 +481,12 @@
   version = "v1.0.1"
 
 [[projects]]
-  digest = "1:0f269f9377ca472b4c88ccfe38c67a6088aca9ef6e8a508e4a0d8b6bccada51a"
+  digest = "1:d0612e2ce73b9236d3986923e0d474f276d8c57183047752c48894750e7be125"
   name = "github.com/mholt/archiver"
   packages = ["."]
   pruneopts = ""
-  revision = "33320f6f730664f9896b05b777e53ae4c917f572"
-  version = "v3.2.0"
+  revision = "3bd45bda8a6db94a901d9f39983d3b2298438e43"
+  version = "v3.3.0"
 
 [[projects]]
   digest = "1:6510fdfb0657dd8a5c6ea3b877650d42b536173ae0a804faf59bf779b644db7e"
