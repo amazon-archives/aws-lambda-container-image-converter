@@ -36,7 +36,7 @@
 
 [[override]]
   name = "github.com/russross/blackfriday"
-  version = "^1.5.2"
+  version = ">= 1.5.2, < 3.0.0"
 
 [[constraint]]
   name = "gopkg.in/yaml.v2"
