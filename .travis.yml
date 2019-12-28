@@ -14,3 +14,8 @@ script:
     - make
     - make integration-test
     - make stage-release-binaries
+    - make clean
+    - make docker-build
+    - make docker-test
+    - make clean
+    - docker build -t img2lambda .
