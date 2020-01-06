@@ -56,6 +56,8 @@ GLOBAL OPTIONS:
    --version, -v                           print the version
 ```
 
+Note: To avoid any sensitive information being packaged into a Lambda function deployment package or Lambda layer, do not store any sensitive information like credentials in the source container image's /opt or /var/task directories.
+
 ## Install
 
 #### Binaries
