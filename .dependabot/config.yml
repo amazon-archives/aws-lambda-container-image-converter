@@ -1,5 +1,5 @@
 version: 1
 update_configs:
-  - package_manager: "go:dep"
-    directory: "/img2lambda"
+  - package_manager: "go:modules"
+    directory: "/"
     update_schedule: "monthly"
