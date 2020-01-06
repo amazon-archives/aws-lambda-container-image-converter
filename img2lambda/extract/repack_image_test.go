@@ -14,7 +14,7 @@ import (
 
 	"github.com/awslabs/aws-lambda-container-image-converter/img2lambda/internal/testing/mocks"
 	"github.com/awslabs/aws-lambda-container-image-converter/img2lambda/types"
-	imgtypes "github.com/containers/image/types"
+	imgtypes "github.com/containers/image/v5/types"
 	"github.com/golang/mock/gomock"
 	"github.com/mholt/archiver"
 	godigest "github.com/opencontainers/go-digest"
