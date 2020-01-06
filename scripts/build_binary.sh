@@ -5,14 +5,8 @@ set -e
 # Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
 
-# Normalize to working directory being build root (up one level from ./scripts)
-ROOT="$GOPATH/src/github.com/awslabs/aws-lambda-container-image-converter/"
-cd "${ROOT}"
-
 # Builds the binary from source in the specified destination paths.
 mkdir -p $1
-
-cd "${ROOT}"
 
 PACKAGE_ROOT="github.com/awslabs/aws-lambda-container-image-converter/img2lambda"
 
