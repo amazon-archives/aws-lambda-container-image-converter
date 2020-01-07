@@ -7,7 +7,7 @@ WORKDIR /go/src/github.com/awslabs/aws-lambda-container-image-converter
 
 COPY . ./
 
-RUN make install-deps && make
+RUN make install-tools && make
 
 FROM busybox:glibc
 COPY --from=builder /go/src/github.com/awslabs/aws-lambda-container-image-converter/bin/local/img2lambda /bin/img2lambda

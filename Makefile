@@ -35,8 +35,8 @@ generate: $(SOURCES)
 format: $(SOURCES)
 	PATH=$(LOCAL_PATH) go fmt -x $(shell go list ./img2lambda/... | grep -v '/vendor/')
 
-.PHONY: install-deps
-install-deps:
+.PHONY: install-tools
+install-tools:
 	go get golang.org/x/tools/cmd/cover
 	go get github.com/golang/mock/mockgen
 	go get golang.org/x/tools/cmd/goimports
