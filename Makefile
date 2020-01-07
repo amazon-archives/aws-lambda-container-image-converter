@@ -37,7 +37,6 @@ format: $(SOURCES)
 
 .PHONY: install-deps
 install-deps:
-	curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
 	go get golang.org/x/tools/cmd/cover
 	go get github.com/golang/mock/mockgen
 	go get golang.org/x/tools/cmd/goimports
