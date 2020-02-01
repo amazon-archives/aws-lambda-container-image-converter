@@ -29,6 +29,6 @@ require (
 	github.com/urfave/cli v1.22.2
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	golang.org/x/time v0.0.0-20191024005414-555d28b269f0 // indirect
-	gopkg.in/yaml.v2 v2.2.7
+	gopkg.in/yaml.v2 v2.2.8
 	k8s.io/client-go v11.0.0+incompatible // indirect
 )
