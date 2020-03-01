@@ -25,7 +25,7 @@ require (
 	github.com/opencontainers/image-spec v1.0.2-0.20190823105129-775207bd45b6
 	github.com/pierrec/lz4 v2.4.0+incompatible // indirect
 	github.com/pkg/errors v0.9.1
-	github.com/stretchr/testify v1.4.0
+	github.com/stretchr/testify v1.5.1
 	github.com/urfave/cli v1.22.2
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	golang.org/x/time v0.0.0-20191024005414-555d28b269f0 // indirect
