@@ -6,7 +6,7 @@ require (
 	github.com/Azure/go-ansiterm v0.0.0-20170929234023-d6e3b3328b78 // indirect
 	github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5 // indirect
 	github.com/aws/aws-sdk-go v1.29.14
-	github.com/containers/image/v5 v5.2.1
+	github.com/containers/image/v5 v5.4.0
 	github.com/containers/storage v1.15.5 // indirect
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/docker v1.4.2-0.20181210162850-6e3113f700de // indirect
