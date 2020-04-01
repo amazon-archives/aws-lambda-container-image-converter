@@ -15,7 +15,7 @@ require (
 	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/frankban/quicktest v1.7.2 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
-	github.com/golang/mock v1.4.1
+	github.com/golang/mock v1.4.3
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/gorilla/mux v1.7.3 // indirect
 	github.com/mattn/go-zglob v0.0.1
