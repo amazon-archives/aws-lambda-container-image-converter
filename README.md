@@ -66,10 +66,11 @@ Download pre-built binaries from the [Releases Page](https://github.com/awslabs/
 
 #### From Source
 
+With go 1.11+:
+
 ```
-$ mkdir -p $GOPATH/src/github.com/awslabs
-$ git clone https://github.com/awslabs/aws-lambda-container-image-converter $GOPATH/src/github.com/awslabs/aws-lambda-container-image-converter
-$ cd !$
+$ git clone https://github.com/awslabs/aws-lambda-container-image-converter
+$ cd aws-lambda-container-image-converter
 $ make
 $ ./bin/local/img2lambda --help
 ```
