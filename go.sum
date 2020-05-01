@@ -62,11 +62,14 @@ github.com/containers/image/v5 v5.2.1 h1:rQR6QSUneWBoW1bTFpP9EJJTevQFv27YsKYQVJI
 github.com/containers/image/v5 v5.2.1/go.mod h1:TfhmLwH+v1/HBVPIWH7diLs8XwcOkP3c7t7JFgqaUEc=
 github.com/containers/image/v5 v5.4.1 h1:MzdepJTDx2ILCM2IIvENQeiEejR+jKt6Mk2NcvaXa44=
 github.com/containers/image/v5 v5.4.1/go.mod h1:EgeC6Ddl294Ob7gCdN+8tgdqoaV/Ib1j5kdKeyN9uaU=
+github.com/containers/image/v5 v5.4.3 h1:zn2HR7uu4hpvT5QQHgjqonOzKDuM1I1UHUEmzZT5sbs=
+github.com/containers/image/v5 v5.4.3/go.mod h1:pN0tvp3YbDd7BWavK2aE0mvJUqVd2HmhPjekyWSFm0U=
 github.com/containers/libtrust v0.0.0-20190913040956-14b96171aa3b h1:Q8ePgVfHDplZ7U33NwHZkrVELsZP5fYj9pM5WBZB2GE=
 github.com/containers/libtrust v0.0.0-20190913040956-14b96171aa3b/go.mod h1:9rfv8iPl1ZP7aqh9YA68wnZv2NUDbXdcdPHVz0pFbPY=
 github.com/containers/ocicrypt v0.0.0-20190930154801-b87a4a69c741 h1:8tQkOcednLJtUcZgK7sPglscXtxvMOnFOa6wd09VWLM=
 github.com/containers/ocicrypt v0.0.0-20190930154801-b87a4a69c741/go.mod h1:MeJDzk1RJHv89LjsH0Sp5KTY3ZYkjXO/C+bKAeWFIrc=
 github.com/containers/ocicrypt v1.0.1/go.mod h1:MeJDzk1RJHv89LjsH0Sp5KTY3ZYkjXO/C+bKAeWFIrc=
+github.com/containers/ocicrypt v1.0.2/go.mod h1:nsOhbP19flrX6rE7ieGFvBlr7modwmNjsqWarIUce4M=
 github.com/containers/storage v1.15.3/go.mod h1:v0lq/3f+cXH3Y/HiDaFYRR0zilwDve7I4W7U5xQxvF8=
 github.com/containers/storage v1.15.5 h1:dBZx9yRFHod9c8FVaXlVtRqr2cmlAhpl+9rt87cE7J4=
 github.com/containers/storage v1.15.5/go.mod h1:v0lq/3f+cXH3Y/HiDaFYRR0zilwDve7I4W7U5xQxvF8=
@@ -265,6 +268,7 @@ github.com/opencontainers/selinux v1.3.0 h1:xsI95WzPZu5exzA6JzkLSfdr/DilzOhCJOqG
 github.com/opencontainers/selinux v1.3.0/go.mod h1:+BLncwf63G4dgOzykXAxcmnFlUaOlkDdmw/CqsW6pjs=
 github.com/opencontainers/selinux v1.3.1/go.mod h1:yTcKuYAh6R95iDpefGLQaPaRwJFwyzAJufJyiTt7s0g=
 github.com/opencontainers/selinux v1.4.0/go.mod h1:yTcKuYAh6R95iDpefGLQaPaRwJFwyzAJufJyiTt7s0g=
+github.com/opencontainers/selinux v1.5.1/go.mod h1:yTcKuYAh6R95iDpefGLQaPaRwJFwyzAJufJyiTt7s0g=
 github.com/ostreedev/ostree-go v0.0.0-20190702140239-759a8c1ac913 h1:TnbXhKzrTOyuvWrjI8W6pcoI9XPbLHFXCdN2dtUw7Rw=
 github.com/ostreedev/ostree-go v0.0.0-20190702140239-759a8c1ac913/go.mod h1:J6OG6YJVEWopen4avK3VNQSnALmmjvniMmni/YFYAwc=
 github.com/peterbourgon/diskv v2.0.1+incompatible/go.mod h1:uqqh8zWWbv1HBMNONnaR/tNboyR3/BZd58JJSHlUSCU=
