@@ -6,7 +6,7 @@ require (
 	github.com/DataDog/zstd v1.4.0 // indirect
 	github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5 // indirect
 	github.com/aws/aws-sdk-go v1.31.7
-	github.com/containers/image/v5 v5.4.3
+	github.com/containers/image/v5 v5.4.4
 	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/frankban/quicktest v1.7.2 // indirect
 	github.com/golang/mock v1.4.3
