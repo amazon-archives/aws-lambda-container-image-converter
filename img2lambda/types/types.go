@@ -65,22 +65,28 @@ func (r Runtimes) Contains(runtime string) bool {
 	return false
 }
 
-// a list of aws supported runtimes as of 26/01/2019
+// a list of aws supported runtimes as of 2020-06-18
 var ValidRuntimes = Runtimes{
-	"nodejs",    // eol = 31/10/2016 but included to support existing versions
-	"nodejs4.3", // eol = 30/04/2018 but included to support existing versions
-	"nodejs6.10",
-	"nodejs8.10",
+	// eol'ed runtimes are included to support existing functions
+	"nodejs",    // eol
+	"nodejs4.3", // eol
+	"nodejs4.3-edge", // eol
+	"nodejs6.10", // eol
+	"nodejs8.10", // eol
 	"nodejs10.x",
+	"nodejs12.x",
 	"java8",
+	"java11",
 	"python2.7",
 	"python3.6",
 	"python3.7",
-	"dotnetcore1.0",
-	"dotnetcore2.0",
+	"python3.8",
+	"dotnetcore1.0", // eol
+	"dotnetcore2.0", // eol
 	"dotnetcore2.1",
-	"nodejs4.3-edge", // eol = 30/04/2018 but included to support existing versions
+	"dotnetcore3.1",
 	"go1.x",
 	"ruby2.5",
+	"ruby2.7",
 	"provided",
 }
