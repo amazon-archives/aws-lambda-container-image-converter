@@ -6,7 +6,7 @@ require (
 	github.com/DataDog/zstd v1.4.0 // indirect
 	github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5 // indirect
 	github.com/aws/aws-sdk-go v1.31.7
-	github.com/containers/image/v5 v5.4.4
+	github.com/containers/image/v5 v5.5.1
 	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/frankban/quicktest v1.7.2 // indirect
 	github.com/golang/mock v1.4.3
@@ -20,7 +20,7 @@ require (
 	github.com/pierrec/lz4 v2.4.0+incompatible // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/pflag v1.0.3 // indirect
-	github.com/stretchr/testify v1.6.0
+	github.com/stretchr/testify v1.6.1
 	github.com/urfave/cli v1.22.4
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	gopkg.in/yaml.v2 v2.3.0
