@@ -1,0 +1,36 @@
+on:
+  [pull_request, push]
+
+name: Check
+
+jobs:
+  dockerfile:
+    name: Build Docker image from Dockerfile
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: |
+        docker build -t img2lambda .
+
+  docker-make-target:
+    name: Build Docker image from Makefile target
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: |
+        make docker-build
+        make docker-test
+
+  build-binaries:
+    name: Build binaries and run integration test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-go@v2
+      with:
+        go-version: '1.13'
+    - run: |
+        make install-tools
+        make
+        make integration-test
+        make stage-release-binaries
