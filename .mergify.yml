@@ -20,7 +20,7 @@ pull_request_rules:
         strict: smart
         strict_method: merge
 
-  - name: Automatically merge Dependabot PRs
+  - name: Automatically approve and merge Dependabot PRs
     conditions:
       - base=master
       - author=dependabot[bot]
@@ -34,6 +34,8 @@ pull_request_rules:
       - -merged
       - -closed
     actions:
+      review:
+        type: APPROVE
       merge:
         method: squash
         strict: smart
