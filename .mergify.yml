@@ -1,4 +1,4 @@
-request_pull_rules:
+pull_request_rules:
   - name: Automatically merge on CI success and review approval
     conditions:
       - base=master
