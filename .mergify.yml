@@ -7,7 +7,7 @@ pull_request_rules:
       - -approved-reviews-by~=author
       - status-success=continuous-integration/travis-ci/pr
       - status-success=continuous-integration/travis-ci/push
-      # - status-success=Semantic Pull Request
+      - status-success=Semantic Pull Request
       - label!=work-in-progress
       - -title~=(WIP|wip)
       - -merged
@@ -20,14 +20,21 @@ pull_request_rules:
         strict: smart
         strict_method: merge
 
-  - name: Automatically approve Dependabot PRs
+  - name: Automatically merge Dependabot PRs
     conditions:
       - base=master
-      - author~=^dependabot(|-preview)\[bot\]$
+      - author=dependabot[bot]
+      - label=dependencies
+      - status-success=continuous-integration/travis-ci/pr
+      - status-success=continuous-integration/travis-ci/push
+      - status-success=Semantic Pull Request
+      - label!=work-in-progress
       - -title~=(WIP|wip)
       - -label~=(blocked|do-not-merge)
       - -merged
       - -closed
     actions:
-      review:
-        type: APPROVE
+      merge:
+        method: squash
+        strict: smart
+        strict_method: rebase
