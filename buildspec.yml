@@ -1,0 +1,11 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      golang: 1.13
+  build:
+    commands:
+      - make install-tools
+      - make
+      - make integration-test
