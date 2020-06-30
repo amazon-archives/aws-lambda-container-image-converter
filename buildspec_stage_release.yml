@@ -1,0 +1,59 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      golang: 1.13
+      nodejs: 10
+    commands:
+      - npm install -g standard-version@^7.0.0
+      - git config user.name "Release Automation"
+      - git config user.email $COMMIT_EMAIL_ADDRESS
+
+  build:
+    commands:
+      # Prevent generating a new release if there are no new commits
+      - export CURRENT_VERSION=`cat VERSION`
+      - export COMMITS_TO_RELEASE=`git log --pretty=oneline v$CURRENT_VERSION..HEAD | wc -l`
+      - |-
+        if [ $COMMITS_TO_RELEASE -eq 0 ]
+        then
+          echo No changes to release!
+          echo Current release: $CURRENT_VERSION
+          exit 1
+        fi
+
+      # Generate a new version number, changelog entry, and version tag, based on conventional commits since the last release
+      - standard-version
+
+      # Print information about the release for review. Prevent major version bumps (these warrant extra scrutiny)
+      - export NEW_VERSION=`cat VERSION`
+      - export GIT_COMMIT_ID=`git rev-parse HEAD`
+      - echo "Commit ID to release: $GIT_COMMIT_ID"
+      - |-
+        if echo "$NEW_VERSION" | grep -q "^1\."
+        then
+          echo New version: v$NEW_VERSION
+          echo Previous version: v$CURRENT_VERSION
+          echo Changes to release:
+          git log --pretty=oneline v$CURRENT_VERSION..v$NEW_VERSION
+        else
+          echo Uh oh, new major version! v$NEW_VERSION
+          exit 1
+        fi
+
+      # Build release binaries
+      - make stage-release-binaries
+      - echo "Built artifacts:"
+      - ls -lah ./bin/release-$NEW_VERSION
+      - ./bin/release-$NEW_VERSION/linux-amd64-img2lambda --version
+
+      # Generate release manifest
+      - export MANIFESTFILE="$GIT_COMMIT_ID.manifest"
+      - echo bin/release-$NEW_VERSION/linux-amd64-img2lambda >> $MANIFESTFILE
+      - echo bin/release-$NEW_VERSION/darwin-amd64-img2lambda >> $MANIFESTFILE
+      - echo bin/release-$NEW_VERSION/windows-amd64-img2lambda.exe >> $MANIFESTFILE
+
+artifacts:
+  files:
+    - '**/*'

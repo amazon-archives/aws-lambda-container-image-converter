@@ -4,8 +4,10 @@ phases:
   install:
     runtime-versions:
       golang: 1.13
+
   build:
     commands:
+      # Run tests
       - make install-tools
       - make
       - make integration-test

@@ -1,0 +1,36 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      ruby: 2.6
+    commands:
+      # TODO: Upgrade to final v2 dpl production version
+      # https://github.com/travis-ci/dpl/tree/v2.0.0.alpha.2#github-releases
+      - "gem install dpl:'<2.0.0'"
+      - git config credential.helper "store --file=.git/credentials"
+      - echo "https://${GITHUB_TOKEN}:@github.com" > .git/credentials
+
+  build:
+    commands:
+      # Push changelog update and new version tag
+      - export NEW_VERSION=`cat VERSION`
+      - export GIT_COMMIT_ID=`git rev-parse HEAD`
+      - git push origin HEAD:mainline
+      - git push origin v$NEW_VERSION
+
+      # Determine the artifacts to publish
+      - echo 'Artifacts to publish to the release target:'
+      - cat ./$GIT_COMMIT_ID.manifest
+      - export DPL_FILE_FLAGS=""
+      - |-
+        for artifact in `cat ./$GIT_COMMIT_ID.manifest`
+        do
+          export DPL_FILE_FLAGS="$DPL_FILE_FLAGS --file=$artifact --file=$artifact.md5 --file=$artifact.sha256"
+        done
+      - echo $DPL_FILE_FLAGS
+
+      # Create a GitHub release for the new version
+      - dpl --provider=releases --skip-cleanup --api_key=$GITHUB_TOKEN --target_commitish=$GIT_COMMIT_ID --name='img2lambda v$NEW_VERSION' --repo=awslabs/aws-lambda-container-image-converter $DPL_FILE_FLAGS
+    finally:
+      - rm -f .git/credentials
