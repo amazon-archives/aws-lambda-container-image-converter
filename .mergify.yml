@@ -41,4 +41,4 @@ pull_request_rules:
       merge:
         method: squash
         strict: smart
-        strict_method: rebase
+        strict_method: merge
