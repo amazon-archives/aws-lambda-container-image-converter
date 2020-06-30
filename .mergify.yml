@@ -1,7 +1,7 @@
 pull_request_rules:
   - name: Automatically merge on CI success and review approval
     conditions:
-      - base=master
+      - base=mainline
       - "#approved-reviews-by>=1"
       - approved-reviews-by=@awslabs/developer-experience
       - -approved-reviews-by~=author
@@ -23,7 +23,7 @@ pull_request_rules:
 
   - name: Automatically approve and merge Dependabot PRs
     conditions:
-      - base=master
+      - base=mainline
       - author=dependabot[bot]
       - label=dependencies
       - status-success=Build Docker image from Dockerfile

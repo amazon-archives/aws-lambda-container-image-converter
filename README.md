@@ -1,6 +1,6 @@
 ## AWS Lambda Container Image Converter
 
-[![Build Status](https://travis-ci.org/awslabs/aws-lambda-container-image-converter.svg?branch=master)](https://travis-ci.org/awslabs/aws-lambda-container-image-converter)
+[![Build Status](https://travis-ci.org/awslabs/aws-lambda-container-image-converter.svg?branch=mainline)](https://travis-ci.org/awslabs/aws-lambda-container-image-converter)
 
 This container image converter tool (img2lambda) extracts an AWS Lambda function deployment package from a container image (such as a Docker image).
 It also extracts AWS Lambda layers from a container image, and publishes them as new layer versions to Lambda.
