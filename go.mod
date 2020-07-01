@@ -5,7 +5,7 @@ go 1.13
 require (
 	github.com/DataDog/zstd v1.4.0 // indirect
 	github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5 // indirect
-	github.com/aws/aws-sdk-go v1.32.12
+	github.com/aws/aws-sdk-go v1.32.13
 	github.com/containers/image/v5 v5.5.1
 	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/frankban/quicktest v1.7.2 // indirect
