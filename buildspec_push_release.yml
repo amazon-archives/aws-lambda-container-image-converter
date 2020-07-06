@@ -20,7 +20,7 @@ phases:
       - git push origin v$NEW_VERSION
 
       # Determine the artifacts to publish
-      - echo 'Artifacts to publish to the release target:'
+      - "echo Artifacts to publish to the release target:"
       - cat ./$GIT_COMMIT_ID.manifest
       - export DPL_FILE_FLAGS=""
       - |-
