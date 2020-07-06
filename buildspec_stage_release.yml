@@ -29,7 +29,7 @@ phases:
       # Print information about the release for review. Prevent major version bumps (these warrant extra scrutiny)
       - export NEW_VERSION=`cat VERSION`
       - export GIT_COMMIT_ID=`git rev-parse HEAD`
-      - echo "Commit ID to release: $GIT_COMMIT_ID"
+      - "echo Commit ID to release: $GIT_COMMIT_ID"
       - |-
         if echo "$NEW_VERSION" | grep -q "^1\."
         then
@@ -44,7 +44,7 @@ phases:
 
       # Build release binaries
       - make stage-release-binaries
-      - echo "Built artifacts:"
+      - "echo Built artifacts:"
       - ls -lah ./bin/release-$NEW_VERSION
       - ./bin/release-$NEW_VERSION/linux-amd64-img2lambda --version
 
