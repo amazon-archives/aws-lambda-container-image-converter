@@ -10,5 +10,6 @@
             "filename": "VERSION",
             "type": "plain-text"
         }
-    ]
+    ],
+    "tagPrefix": ""
 }

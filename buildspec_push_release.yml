@@ -17,7 +17,7 @@ phases:
       - export NEW_VERSION=`cat VERSION`
       - export GIT_COMMIT_ID=`git rev-parse HEAD`
       - git push origin HEAD:mainline
-      - git push origin v$NEW_VERSION
+      - git push origin $NEW_VERSION
 
       # Determine the artifacts to publish
       - "echo Artifacts to publish to the release target:"
@@ -31,6 +31,6 @@ phases:
       - echo $DPL_FILE_FLAGS
 
       # Create a GitHub release for the new version
-      - dpl --provider=releases --skip-cleanup --api_key=$GITHUB_TOKEN --target_commitish=$GIT_COMMIT_ID --name='img2lambda v$NEW_VERSION' --repo=awslabs/aws-lambda-container-image-converter $DPL_FILE_FLAGS
+      - dpl --provider=releases --skip-cleanup --api_key=$GITHUB_TOKEN --target_commitish=$GIT_COMMIT_ID --name='img2lambda $NEW_VERSION' --repo=awslabs/aws-lambda-container-image-converter $DPL_FILE_FLAGS
     finally:
       - rm -f .git/credentials
