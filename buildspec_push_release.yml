@@ -31,6 +31,6 @@ phases:
       - echo $DPL_FILE_FLAGS
 
       # Create a GitHub release for the new version
-      - dpl --provider=releases --skip-cleanup --api_key=$GITHUB_TOKEN --target_commitish=$GIT_COMMIT_ID --name='img2lambda $NEW_VERSION' --repo=awslabs/aws-lambda-container-image-converter $DPL_FILE_FLAGS
+      - dpl --provider=releases --skip-cleanup --api_key=$GITHUB_TOKEN --target_commitish=$GIT_COMMIT_ID --name="img2lambda $NEW_VERSION" --repo=awslabs/aws-lambda-container-image-converter $DPL_FILE_FLAGS --body="See the [changelog](CHANGELOG.md) for details about the changes included in this release."
     finally:
       - rm -f .git/credentials
