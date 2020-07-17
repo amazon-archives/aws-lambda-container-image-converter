@@ -96,7 +96,7 @@ func repackImage(opts *repackOptions) (layers []types.LambdaLayer, function *typ
 	log.Printf("Image %s has %d layers", opts.imageName, len(layerInfos))
 
 	// Unpack and inspect each image layer, copy relevant files to new Lambda layer or to a Lambda deployment package
-	if err := os.MkdirAll(opts.layerOutputDir, 0777); err != nil {
+	if err := os.MkdirAll(opts.layerOutputDir, 0755); err != nil {
 		return nil, nil, err
 	}
 
