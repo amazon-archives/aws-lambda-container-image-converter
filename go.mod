@@ -9,7 +9,7 @@ require (
 	github.com/frankban/quicktest v1.7.2 // indirect
 	github.com/golang/mock v1.4.4
 	github.com/golang/snappy v0.0.1 // indirect
-	github.com/mattn/go-zglob v0.0.2
+	github.com/mattn/go-zglob v0.0.3
 	github.com/mholt/archiver v3.1.1+incompatible
 	github.com/nwaples/rardecode v1.0.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0
