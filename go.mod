@@ -3,7 +3,7 @@ module github.com/awslabs/aws-lambda-container-image-converter
 go 1.13
 
 require (
-	github.com/aws/aws-sdk-go v1.35.0
+	github.com/aws/aws-sdk-go v1.35.19
 	github.com/containers/image/v5 v5.6.0
 	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/frankban/quicktest v1.7.2 // indirect
