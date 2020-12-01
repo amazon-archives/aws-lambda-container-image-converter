@@ -4,7 +4,7 @@ go 1.13
 
 require (
 	github.com/aws/aws-sdk-go v1.35.19
-	github.com/containers/image/v5 v5.7.0
+	github.com/containers/image/v5 v5.8.1
 	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/frankban/quicktest v1.7.2 // indirect
 	github.com/golang/mock v1.4.4
